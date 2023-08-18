@@ -1,0 +1,105 @@
+#+title: PHYS 427
+
+* Projects
+
+** Project 1: N-body simulation
+
+Makes use of ODE integration techniques with a twist (interaction between particles).
+
+Need to find interesting scientific questions for the students to answer
+
+** Project 2: Finite-volume based fluid simulation
+
+Ask the students to write a Godunov-type finite volume fluid solver.
+
+Use this solver to simulate 2D Kelvin-Helmholtz instability
+
+** Project 3: 2D Ising model
+
+Use quantum Monte-Carlo method to solve the 2D Ising model
+
+* Course content
+
+** Week 1
+
+Introduction to the course. How numbers are represented in computers. Floating point representation and its limitations. Simple quadratic formula and pathological cases. Programming languages. Introducing C++. Some introduction to compilers and the C++ grammar. Functions. Loops. Binary search.
+
+** Week 2
+
+Simple algorithms and their time complexity. Computer memory layout. Arrays. Multi-dimensional arrays. Briefly touch upon data structures. Pointers. Sorting. Root finding. Interpolation
+
+** Week 3
+
+Numerical integration. Simpson rule. Trapezoidal rule. Variable transformation. Extending to general quadrature. Gaussian quadrature and orthogonal polynomials. Dimensionality and nondimensionalization.
+
+** Week 4
+
+What are differential equations. Start talking about ODEs. Integrating ODEs. Euler integration. What is bad about Euler's method. Order of convergence. Midpoint method. Generalizing to a family of Runge-Kutta methods. Butcher tableau. Variable timestep.
+
+** Week 5
+
+ODEs continued. Conservation laws and stability. Symplectic methods. Implicit methods. BS method. Predictor-Corrector methods. (Gauss-Jackson algorithm from NASA). Project 1 Due.
+
+** Week 6
+
+ODEs continued. Boundary condition problems. Define the problem. Shooting method. Relaxation methods. Systems of linear equations.
+
+** Week 7
+
+Partial Differential Equations (PDEs). Flux conservative advection equation. Different finite-difference schemes. CFL condition and stability. Higher order methods. Leapfrog. Lax-Windroff.
+
+** Week 8
+
+PDEs continued. Problems with finite difference methods. Burgers equation and shock capturing. Riemann problems. Finite volume methods. Godunov methods. Fluid dynamics applications.
+
+** Week 9
+
+PDEs continued. Diffusion equations. Implicit schemes. Crank-Nicholson. Schrodinger equation and unitarity. Project 2 Due
+
+** Week 10
+
+PDEs continued. Boundary value problems. Relaxation methods. Finite element methods. Unstructured grids. Large linear systems of equations.
+
+** Week 11
+
+Random number generators. Stochastic methods. Monte-Carlo integration. Sampling from a distribution. Inverse function sampling. Rejection sampling
+
+** Week 12
+
+Markov Chain Monte-Carlo. Metropolis algorithm. Monte Carlo simulations and applications in physics.
+
+** Week 13
+
+Bayesian inference. Classification. Machine learning. Neural networks. Gradient Descent.
+
+** Week 14
+
+Parallelization and scaling. High performance computing. How to parallelize grid-based codes. Other parallelization techniques and pitfalls.
+
+* Homeworks
+
+I would like to use homework to force the students to build a scaffold which
+they can then use for their course projects.
+
+** Week 1
+
+Set up a C++ environment. Download GCC compilers. Get familiar with VS Code. Try out some floating point problems. E.g. Adding 1.0 to a sum. Stability of the recurrence relation of the golden ratio.
+
+** Week 2
+
+Exercises of memory management and array manipulation. Try out stack overflow (e.g. on my laptop, a double array of N>1.05e6 will cause a stack overflow and emit a segmentation fault). Implement a simple root-finding routine. Implement a simple binary search.
+
+** Week 3
+
+Write a numerical integration routine. Try out a few different methods. Report on the efficiency and accuracy of the methods
+
+** Week 4
+
+Write a simple skeleton for ODE integration. Implement simple Euler integration and Runge-Kutta. Test for convergence
+
+** Week 5
+
+Implement a conservative method. Compare with previously implemented methods
+
+** Week 6
+
