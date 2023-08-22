@@ -3,3 +3,5 @@
 *.fls
 *.synctex.gz
 reveal.js
+_minted*
+*.dvi

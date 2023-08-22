@@ -1,65 +1,480 @@
-<!doctype html>
-<html class="no-js" lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content=
-      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Computational Physics Week 1</title>
-    <link rel="stylesheet" href="./reveal.js/dist/reset.css">
-    <link rel="stylesheet" href="./reveal.js/dist/reveal.css">
-    <link rel="stylesheet" href="./reveal.js/dist/theme/serif.css" id="theme">
-    <!-- <link rel="stylesheet" href="./reveal.js/dist/theme/night.css" id="theme"> -->
-    <!-- Theme used for syntax highlighted code -->
-    <link rel="stylesheet" href=
-      "./reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Computational Physics Week 1</title>
+  <link rel="stylesheet" href="./reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="./reveal.js/dist/reveal.css">
+  <link rel="stylesheet" href="./reveal.js/dist/theme/serif.css"
+  id="theme">
+  <!-- <link rel="stylesheet" href="./reveal.js/dist/theme/night.css" id="theme"> -->
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href=
+  "./reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <h1>Introduction to Computational Physics</h1>
+        <!-- <h3>Week 1</h3> -->
+        <br>
+        <p>Dr. Alex Chen</p>
+        <p>Department of Physics</p>
+        <p>Washington University in St. Louis</p>
+        <p>Fall 2023</p>
+      </section>
+      <section>
+        <h2>Course Information</h2><br>
+        <p><a href="https://fizban007.github.io/PHYS-427/">Course
+        website</a></p>
+        <p><a href="https://github.com/fizban007/PHYS-427">Course
+        GitHub</a></p>
+        <p><a href=
+        "https://wustl.instructure.com/courses/115854">Course
+        Canvas</a></p>
+        <p><a href=
+        "https://wustl.instructure.com/courses/115854/modules/items/1877999">
+        Syllabus</a></p>
+        <aside class="notes">
+          Discuss the syllabus with the students. Outline the
+          course structure, grading policy, and expectations.
+        </aside>
+      </section>
 
-  </head>
-  <body>
-    <div class="reveal">
-      <div class="slides">
+      <section>
+        <h2>What is Computational Physics?</h2><br>
+        <p>Using computers to solve physics problems that are often too complex or intractable
+        using analytic methods</p>
+        <br>
+        <img data-src="figures/Hadron-F1-Experience_2048x2048.webp"
+          style="display: inline-block; width: 30%;">
+        <img data-src="figures/BH_Accretion_Disk_Sim_360_4k_Prores.00001_print.jpg"
+          style="display: inline-block; width: 30%;">
+        <img data-src="figures/cosmicvoid.jpg"
+          style="display: inline-block; width: 30%;">
+        <p></p>
+
+        <aside class="notes">
+          Start a discussion about what computational physics is. Although
+          everything we do today is done on a computer, we often reserve the
+          term "computational physics" for problems that are too complex or too
+          intractable to solve using analytic methods. This is not a specific
+          branch of physics (like "condense matter physics" or "biophysics"), but a very
+          broad term encompassing all branches of physics.
+        </aside>
+      </section>
+
+      <section>
+        <h2>Computer Architecture</h2>
+        <p>Modern computers are built on the Von Neumann architecture</p>
+        <img data-src="figures/Von_Neumann_Architecture.svg"
+          style="display: inline-block; width: 40%;">
+
+        <aside class="notes">
+          Discuss the Von Neumann architecture. The Von Neumann architecture
+          is a model for how computers are built. It is named after John von
+          Neumann, who was a Hungarian-American mathematician, physicist,
+          computer scientist, and polymath. The Von Neumann architecture
+          describes how a computer is built from a central processing unit
+          (CPU), memory, and input/output devices. The CPU is the "brain" of
+          the computer, and it is where all the calculations are performed.
+          Memory is where the computer stores data and instructions. Input
+          devices are how the computer receives information from the outside
+          world, and output devices are how the computer sends information to
+          the outside world. The Von Neumann architecture is the basis for all
+          modern computers.
+        </aside>
+      </section>
+
+      <section>
+        <h2>Computer Architecture</h2>
+        <p>A modern motherboard</p>
+        <img data-src="figures/motherboard.webp"
+          style="display: inline-block; width: 40%;">
+
+        <aside class="notes">
+          Show a picture of a modern motherboard. The motherboard is the
+          physical circuit board that connects all the components of the
+          computer together. The CPU is the large square in the middle of the
+          motherboard. The memory is the long rectangular chips that are
+          connected to the CPU. The input/output devices are the ports on the
+          back of the motherboard.
+        </aside>
+      </section>
+
+      <section>
         <section>
-          <br><br>
-          <h1>Introduction to Computational Physics</h1>
-          <!-- <h3>Week 1</h3> -->
-          <br>
-          <p>Dr. Alex Chen</p>
-          <p>Department of Physics</p>
-          <p>Washington University in St. Louis</p>
-          <p>Fall 2023</p>
+          <h2>Architecture of a CPU</h2>
+          <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
+            style="display: inline-block; width: 40%;">
+
+          <aside class="notes">
+            Show a picture of a modern CPU. The CPU is the "brain" of the
+            computer. It is where all the calculations are performed. The CPU
+            consists of a number of cores, which are the individual processing
+            units. Each core can perform a single calculation at a time. The
+            number of cores in a CPU is usually 2, 4, 6, 8, 10, or 12. The CPU
+            also has a clock speed, which is the number of calculations it can
+            perform per second. The clock speed is usually measured in gigahertz
+            (GHz). The clock speed is the maximum number of calculations the CPU
+            can perform per second. The actual number of calculations the CPU
+            performs per second depends on the number of cores and the clock
+            speed.
+          </aside>
         </section>
 
         <section>
-          <br><br>
-          <h2>Course Information</h2>
-          <br>
-          <p>Course website: <a href="https://fizban007.github.io/comp-phys/"></a></p>
-          <p>Course GitHub: <a href=""></a></p>
-          <p>Course Canvas: <a href=""></a></p>
+          <h2>CPU Clock</h2>
+          <ul>
+            <li>The CPU clock is the number of calculation cycles the CPU can perform per
+              second per core. </li>
+              Current generation CPUs can typically achieve 3-4 GHz clock
+              speed.
+            <br><br>
+
+            <li>Various operations typically take different amounts of CPU cycles
+              to complete.</li>
+            <br><br>
+            <li>Modern CPUs can do fused multiply and add (FMA) as a single
+            operation. They can also carry out the same operation to several
+            operands in a single cycle (SIMD).</li>
+          </ul>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>Computer Memory</h2>
+          <p>Modern computers use random access memory (RAM)</p>
+          <img data-src="figures/memory-types.avif"
+            style="display: inline-block; width: 40%;">
+          <p></p>
+
+          <aside class="notes">
+            Discuss computer memory. Modern computers use random access memory
+            (RAM). RAM is where the computer stores data and instructions. RAM
+            is volatile, which means that it loses its contents when the power is
+            turned off. RAM is also very fast, which means that the CPU can
+            access it relatively quickly. Nowadays RAM is usually measured in gigabytes
+            (GB). The more RAM a computer has, the more data and instructions it
+            can store. The amount of RAM a computer has is usually 4 GB, 8 GB, 16
+            GB, 32 GB, 64 GB, or 128 GB.
+          </aside>
         </section>
 
-      </div>
+        <section>
+          <h2>Data Storage</h2>
+          <p>For long-term storage, data is stored in non-volatile media</p>
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 40%; float: left;">
+              <img data-src="figures/hard-drive.webp">
+              <p>Hard Drives</p>
+            </div>
+            <div class="column" style="width: 40%; float: left;">
+              <img data-src="figures/samsung-ssd.jpg">
+              <p>Solid-state Drives (SSDs)</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Hierarchy of Memory</h2>
+          <p>Memory access is faster for memory that is closer to the CPU</p>
+          <img data-src="figures/memory-hierarchy.png"
+            style="display: inline-block; width: 60%;">
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>Computers Talk in Binary</h2>
+          <img data-src="figures/binary.png"
+            style="display: inline-block; width: 60%;">
+        </section>
+
+        <section>
+          <h2>Representing Binary Using Hexadecimal Numbers</h2>
+          <img data-src="figures/hex-to-binary.jpg"
+            style="display: inline-block; width: 60%;">
+        </section>
+
+        <section>
+          <h2>Assembly Program</h2>
+          <p>A simple function that return the square of the input</p>
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 40%; float: left;">
+              <pre><code data-trim data-noescape>
+                int square(int num) {
+                    return num * num;
+                }
+              </code></pre>
+            </div>
+            <div class="column" style="width: 40%; float: left;">
+              <pre><code data-trim data-noescape>
+                square(int):
+                0f af ff
+                imul   edi,edi
+                89 f8
+                mov    eax,edi
+                c3
+                ret
+              </code></pre>
+            </div>
+          </div>
+          <p>Compilers translate high-level languages to assembly</p>
+          <p><a href="https://godbolt.org/">Compiler Explorer</a></p>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>Programming Languages</h2>
+          <p>We will use C++ as the primary programming language in this course</p>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 60%; float: left;">
+              <pre><code data-trim data-noescape>
+double quadratic_formula(double a,
+                         double b,
+                         double c) {
+  double discriminant =
+      sqrt(b * b - 4 * a * c);
+  return (-b + discriminant) / (2 * a);
+}
+              </code></pre>
+              <p>C++</p>
+            </div>
+            <div class="column" style="width: 60%; float: left;">
+              <pre><code class="language-python" data-trim data-noescape>
+def quadratic_formula(a, b, c):
+  discriminant = math.sqrt(b * b - 4 * a * c)
+  return (-b + discriminant) / (2 * a)
+              </code></pre>
+              <p>Python</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <ul>
+                <li>Compiled language</li>
+                <!-- <li>Statically typed</li> -->
+                <!-- <li>Explicit memory management</li> -->
+                <!-- <li>Useful when high performance is required</li> -->
+                <!-- <li>Access to modern language features</li> -->
+              </ul>
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <ul>
+                <li>Interpreted language</li>
+                <!-- <li>Dynamically typed</li> -->
+                <!-- <li>Garbage collected</li> -->
+                <!-- <li>Good for rapid prototyping</li> -->
+                <!-- <li>Access to modern language features</li> -->
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <pre><code class="language-bash" data-trim data-noescape>
+g++ -o code code.cpp
+./code
+              </code></pre>
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <pre><code class="language-bash" data-trim data-noescape>
+python code.py
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <ul>
+                <li>Compiled language</li>
+                <li>Statically typed</li>
+                <!-- <li>Explicit memory management</li> -->
+                <!-- <li>Useful when high performance is required</li> -->
+                <!-- <li>Access to modern language features</li> -->
+              </ul>
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <ul>
+                <li>Interpreted language</li>
+                <li>Dynamically typed</li>
+                <!-- <li>Garbage collected</li> -->
+                <!-- <li>Good for rapid prototyping</li> -->
+                <!-- <li>Access to modern language features</li> -->
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <pre><code class="language-c++" data-trim data-noescape>
+double a = 1.0;
+double b = 2.0;
+double c = a * b;
+              </code></pre>
+              <code>a</code>, <code>b</code>, and <code>c</code> are of type <code>double</code> and
+              can no longer be changed to a different type.
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <pre><code class="language-python" data-trim data-noescape>
+a = 1.0
+b = 2.0
+c = a * b
+              </code></pre>
+              <code>a</code>, <code>b</code>, and <code>c</code> are implicitly
+              deduced to be of floating point type, but can be assigned to a
+              different type.
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <ul>
+                <li>Compiled language</li>
+                <li>Statically typed</li>
+                <li>Explicit memory management</li>
+                <!-- <li>Useful when high performance is required</li> -->
+                <!-- <li>Access to modern language features</li> -->
+              </ul>
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <ul>
+                <li>Interpreted language</li>
+                <li>Dynamically typed</li>
+                <li>Garbage collected</li>
+                <!-- <li>Good for rapid prototyping</li> -->
+                <!-- <li>Access to modern language features</li> -->
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <pre><code class="language-c++" data-trim data-noescape>
+double* v = new double[1000000];
+delete[] v;
+              </code></pre>
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <pre><code class="language-python" data-trim data-noescape>
+v = np.zeros(1000000)
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>C++ vs Python</h2>
+
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 45%; float: left;">
+              <p>C++</p>
+              <ul>
+                <li>Compiled language</li>
+                <li>Statically typed</li>
+                <li>Explicit memory management</li>
+                <li>Useful when high performance is required</li>
+              </ul>
+            </div>
+            <div class="column" style="width: 45%; float: left;">
+              <p>Python</p>
+              <ul>
+                <li>Interpreted language</li>
+                <li>Dynamically typed</li>
+                <li>Garbage collected</li>
+                <li>Good for rapid prototyping</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section>
+        <h2>A Crash Course in C++</h2>
+      </section>
+
+      <section>
+        <h2>Floating Point Numbers</h2>
+      </section>
+
+      <section>
+        <h2>Algorithms and Data Structures</h2>
+      </section>
     </div>
+  </div><!-- <script src="js/head.min.js"></script> -->
+  <!-- <script>
+       head.js(
+       "vendor/jquery.min.js",
+       // "vendor/three.js/build/three.min.js",
+       // "vendor/three.js/examples/js/controls/OrbitControls.js",
+       /* "vendor/socket.io-client/dist/socket.io.js", */
+       // "vendor/THREE.MeshLine.js",
+       /* "vendor/dat.gui.min.js",*/
+       "vendor/EventEmitter.js",
+       // "js/samples.js",
+       );
+       </script> -->
+  <script src="./reveal.js/dist/reveal.js"></script>
+  <script src="./reveal.js/plugin/math/math.js"></script>
+  <script src="./reveal.js/plugin/notes/notes.js"></script>
+  <script src="./reveal.js/plugin/markdown/markdown.js"></script>
+  <script src="./reveal.js/plugin/highlight/highlight.js"></script>
 
-    <!-- <script src="js/head.min.js"></script> -->
-    <script>
-      head.js(
-        "vendor/jquery.min.js",
-        // "vendor/three.js/build/three.min.js",
-        // "vendor/three.js/examples/js/controls/OrbitControls.js",
-        /* "vendor/socket.io-client/dist/socket.io.js", */
-        // "vendor/THREE.MeshLine.js",
-        /* "vendor/dat.gui.min.js",*/
-        "vendor/EventEmitter.js",
-        // "js/samples.js",
-      );
-    </script>
-    <script src="./reveal.js/dist/reveal.js"></script>
-    <script src="./reveal.js/plugin/math/math.js"></script>
-    <script src="./reveal.js/plugin/notes/notes.js"></script>
-    <script src="./reveal.js/plugin/markdown/markdown.js"></script>
-    <script src="./reveal.js/plugin/highlight/highlight.js"></script>
-
-    <script>
+  <script>
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
       // - https://revealjs.com/config/
@@ -67,14 +482,15 @@
         transition: "fade",
         slideNumber: true,
         history: true,
-        center: false,
+        center: true,
         width: "100%",
         height: "100%",
         disableLayout: false,
+        navigationMode: "default",
         // minScale: 1,
         // maxScale: 1,
-        // margin: 0.1,
-        // padding: 0,
+        margin: 0.2,
+        padding: 0,
         hash: true,
         math: {
           mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
@@ -104,6 +520,6 @@
       //   }
       // });
       //
-    </script>
-  </body>
+  </script>
+</body>
 </html>

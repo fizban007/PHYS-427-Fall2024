@@ -1,0 +1,89 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[left=0.75in, top=1.25in, right=0.75in, bottom=1.25in]{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\lstset{language=C,keywordstyle={\ttfamily \color{blue}}}
+
+\title{Homework 0}
+\author{PHYS 427}
+\date{No Due Date}
+
+\begin{document}
+
+\maketitle
+
+\section{Setting Up C++ and Compile a Simple Program}
+
+First let us set up a C++ compiler on your computer. We will be using the GNU
+Compiler Collection (GCC), which includes a C++ compiler called \verb|g++|.
+Follow the instructions depending on your operating system:
+
+\subsection{Windows}
+
+We will install the Windows Subsystem for Linux (WSL), which lets you install a Linux distribution such as Ubuntu on your system, allowing you to run Linux applications and commandline utilities directly on Windows. If you use Windows 10 version 2004 and higher, or Windows 11, you can directly install WSL with a single command:
+
+Open PowerShell or Windows Command Prompt in administrator mode by
+right-clicking and selecting \textbf{Run as administrator}, enter the
+\verb|wsl --install| command, then restart your machine. For more information,
+refer to the
+\href{https://learn.microsoft.com/en-us/windows/wsl/install}{official tutorial}.
+
+By default, the above command will install the Ubuntu distribution on your computer. Follow the official \href{https://learn.microsoft.com/en-us/windows/wsl/setup/environment}{setup guide} to set up your WSL development environment including a Linux user name and password, updating packages, and setting up Windows Terminal. You \emph{don't} need to add additional distributions.
+
+Once you have WSL, enter the Linux command line and install \verb+gcc+ using:
+\begin{minted}{bash}
+sudo apt-get install gcc
+\end{minted}
+
+\subsection{Mac OS}
+
+You can install GCC using \verb+homebrew+. First, install \verb+homebrew+
+following the instructions on its \href{https://brew.sh/}{official website}.
+\verb+homebrew+ can install packages that are often used in the Linux community
+but not typically included in Mac OS.
+
+You can now run the following command to install GCC:
+\begin{minted}{bash}
+brew install gcc
+\end{minted}
+
+\subsection{Linux}
+
+If you use Linux, I expect that you know how to manage software packages on your
+computer. Make sure you install GCC using your package manager.
+
+\subsection{Compiling a Hello World Program}
+
+Write the following snippet into a text file and save it as \verb|hello_world.cpp|:
+\begin{minted}{cpp}
+#include <iostream>
+int main() {
+  std::cout << "Hello World" << std::endl;
+  return 0;
+}
+\end{minted}
+
+Now compile and run the code using the following command:
+\begin{minted}{bash}
+  g++ hello_world.cpp && ./a.out
+\end{minted}
+The default output of \verb|g++| is an executable binary file called
+\verb|a.out|, and we call that executable using \verb|./a.out|.
+
+\section{Setup Git}
+
+
+
+\section{Setup a Code Editor}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
