@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content=
   "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Computational Physics Week 1</title>
+  <title>Computational Physics Lecture 1</title>
   <link rel="stylesheet" href="./reveal.js/dist/reset.css">
   <link rel="stylesheet" href="./reveal.js/dist/reveal.css">
   <link rel="stylesheet" href="./reveal.js/dist/theme/serif.css"
@@ -18,7 +18,7 @@
   <div class="reveal">
     <div class="slides">
       <section>
-        <h1>Introduction to Computational Physics</h1>
+        <h2>Introduction to Computational Physics</h2>
         <!-- <h3>Week 1</h3> -->
         <br>
         <p>Dr. Alex Chen</p>
@@ -29,7 +29,7 @@
       <section>
         <h2>Course Information</h2><br>
         <p><a href="https://fizban007.github.io/PHYS-427/">Course
-        website</a></p>
+        Website</a></p>
         <p><a href="https://github.com/fizban007/PHYS-427">Course
         GitHub</a></p>
         <p><a href=
@@ -45,10 +45,9 @@
       </section>
 
       <section>
-        <h2>What is Computational Physics?</h2><br>
+        <h2>What is Computational Physics?</h2>
         <p>Using computers to solve physics problems that are often too complex or intractable
         using analytic methods</p>
-        <br>
         <img data-src="figures/Hadron-F1-Experience_2048x2048.webp"
           style="display: inline-block; width: 30%;">
         <img data-src="figures/BH_Accretion_Disk_Sim_360_4k_Prores.00001_print.jpg"
@@ -90,26 +89,26 @@
       </section>
 
       <section>
-        <h2>Computer Architecture</h2>
-        <p>A modern motherboard</p>
-        <img data-src="figures/motherboard.webp"
-          style="display: inline-block; width: 40%;">
+        <section>
+          <h2>Computer Architecture</h2>
+          <p>A modern motherboard</p>
+          <img data-src="figures/motherboard.webp"
+            style="display: inline-block; width: 40%;">
 
-        <aside class="notes">
-          Show a picture of a modern motherboard. The motherboard is the
-          physical circuit board that connects all the components of the
-          computer together. The CPU is the large square in the middle of the
-          motherboard. The memory is the long rectangular chips that are
-          connected to the CPU. The input/output devices are the ports on the
-          back of the motherboard.
-        </aside>
-      </section>
+          <aside class="notes">
+            Show a picture of a modern motherboard. The motherboard is the
+            physical circuit board that connects all the components of the
+            computer together. The CPU is the large square in the middle of the
+            motherboard. The memory is the long rectangular chips that are
+            connected to the CPU. The input/output devices are the ports on the
+            back of the motherboard.
+          </aside>
+        </section>
 
-      <section>
         <section>
           <h2>Architecture of a CPU</h2>
           <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
-            style="display: inline-block; width: 40%;">
+            style="display: inline-block; width: 60%;">
 
           <aside class="notes">
             Show a picture of a modern CPU. The CPU is the "brain" of the
@@ -129,18 +128,16 @@
         <section>
           <h2>CPU Clock</h2>
           <ul>
-            <li>The CPU clock is the number of calculation cycles the CPU can perform per
-              second per core. </li>
+            <li>The CPU clock is the number of computation cycles the CPU can
+              perform per second per core. </li>
               Current generation CPUs can typically achieve 3-4 GHz clock
               speed.
-            <br><br>
 
             <li>Various operations typically take different amounts of CPU cycles
               to complete.</li>
-            <br><br>
             <li>Modern CPUs can do fused multiply and add (FMA) as a single
             operation. They can also carry out the same operation to several
-            operands in a single cycle (SIMD).</li>
+            operands in a single cycle (SIMD, AVX, AVX2...).</li>
           </ul>
         </section>
       </section>
@@ -166,6 +163,12 @@
         </section>
 
         <section>
+          <h2>Cache Lives on the CPU Die</h2>
+          <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
+            style="display: inline-block; width: 60%;">
+        </section>
+
+        <section>
           <h2>Data Storage</h2>
           <p>For long-term storage, data is stored in non-volatile media</p>
           <div class="row" style="text-align: center; display:flex;
@@ -187,6 +190,7 @@
           <img data-src="figures/memory-hierarchy.png"
             style="display: inline-block; width: 60%;">
         </section>
+
       </section>
 
       <section>
@@ -238,7 +242,7 @@
 
           <div class="row" style="text-align: center; display:flex;
             justify-content: center;">
-            <div class="column" style="width: 60%; float: left;">
+            <div class="column" style="width: 65%; float: left;">
               <pre><code data-trim data-noescape>
 double quadratic_formula(double a,
                          double b,
@@ -250,7 +254,7 @@ double quadratic_formula(double a,
               </code></pre>
               <p>C++</p>
             </div>
-            <div class="column" style="width: 60%; float: left;">
+            <div class="column" style="width: 65%; float: left;">
               <pre><code class="language-python" data-trim data-noescape>
 def quadratic_formula(a, b, c):
   discriminant = math.sqrt(b * b - 4 * a * c)
@@ -403,14 +407,14 @@ c = a * b
             <div class="column" style="width: 45%; float: left;">
               <p>C++</p>
               <pre><code class="language-c++" data-trim data-noescape>
-double* v = new double[1000000];
+double* v = new double[10000];
 delete[] v;
               </code></pre>
             </div>
             <div class="column" style="width: 45%; float: left;">
               <p>Python</p>
               <pre><code class="language-python" data-trim data-noescape>
-v = np.zeros(1000000)
+v = np.zeros(10000)
               </code></pre>
             </div>
           </div>
@@ -441,19 +445,132 @@ v = np.zeros(1000000)
             </div>
           </div>
         </section>
+
+        <section>
+          <h2>Why C++?</h2>
+          <ul>
+            <li>C++ is widely used in scientific computing, as well as in the
+            industry wherever performance is critical</li>
+            <li>Over the past several decades, C++ has evolved to become a
+            modern and expressive language. Many large-scale projects are written in C++</li>
+            <li>We will restrict ourselves to a subset of C++ that is more
+            manageable, and will make extensive use of "modern C++"</li>
+          </ul>
+        </section>
       </section>
 
       <section>
-        <h2>A Crash Course in C++</h2>
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <p>Real numbers are represented using floating point numbers, which
+          is very similar to the scientific notation</p>
+          <br>
+          <p>However, both the fractional part and the integrand are represented in binary!</p>
+          <br>
+        </section>
+
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <img data-src="figures/IEEE-754-floating-point-32b.jpg"
+            style="display: inline-block; width: 80%;">
+        </section>
+
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <p>Decimal real numbers may not have an exact representation in binary</p>
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center; width: 100%;">
+            <div class="column" style="width: 65%; float: left;">
+              <p>Code</p>
+              <pre><code class="language-c++" data-trim data-noescape>
+double a = (1.0 - 0.1) - 0.9;
+double b = (1.0 - 0.05 - 0.05) - 0.9;
+std::cout << a << std::endl;
+std::cout << b << std::endl;
+              </code></pre>
+            </div>
+            <div class="column" style="width: 65%; float: left;">
+              <p>Output</p>
+              <pre><code class="language-bash" data-trim data-noescape>
+0
+-1.11022e-16
+              </code></pre>
+            </div>
+          </div>
+          <p>Due to rounding error, $(a + b) + c$ may not be exactly the same as
+          $a + (b + c)$.</p>
+        </section>
+
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <p>Floating point numbers have a "machine precision", which is defined
+          to be the maximum relative rounding error during floating point calculations:</p>
+          <br>
+          <p>Minimum $\epsilon$ such that $1.0 + \epsilon \neq 1.0$</p>
+          <br>
+          <p>It is unrealistic to expect a floating point calculation to be more
+          accurate than this machine precision</p>
+        </section>
+
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <p>Do not directly compare whether two floating points are equal.
+          Instead test whether the absolute value of their difference is within
+          some tolerance limit</p>
+          <div class="row" style="text-align: center; display:flex;
+            justify-content: center;">
+            <div class="column" style="width: 55%; float: left;">
+              <p>Do NOT</p>
+              <pre><code class="language-c++" data-trim data-noescape>
+double a = 1.345;
+double b = 1.123;
+double c = a + b;
+if (c == 2.468) { ... }
+              </code></pre>
+            </div>
+            <div class="column" style="width: 55%; float: left;">
+              <p>Do</p>
+              <pre><code class="language-c++" data-trim data-noescape>
+double a = 1.345;
+double b = 1.123;
+double c = a + b;
+double EPSILON = 1e-10;
+if (std::abs(c - 2.468) < EPSILON) {
+ ...
+}
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <p><code>float</code>: single precision numbers, 32 bits, 4 bytes</p>
+          <p><code>double</code>: double precision numbers, 64 bits, 8 bytes</p>
+          <p><code>long double</code>: quadruple precision numbers, 128 bits, 16 bytes</p>
+          <p>C++ standard does not provide a 16-bit half precision type, but
+          custom 16-bit floating point numbers are now quite popular with
+          machine learning</p>
+        </section>
+
+        <section>
+          <h2>Floating Point Numbers</h2>
+          <ul>
+            <li>If you just write "<code>1.0</code>", it is interpreted as a <code>double</code> in
+              C++.</li>
+            <br>
+            <li>If you write <code>1</code>, it is interpreted as an integer.
+              Operations between two integers give an integer result. Therefore <code>1/2</code> will yield <code>0</code>.</li>
+            <br>
+            <li>Write numbers with a decimal point to avoid confusion!</li>
+          </ul>
+        </section>
       </section>
 
-      <section>
-        <h2>Floating Point Numbers</h2>
-      </section>
-
-      <section>
-        <h2>Algorithms and Data Structures</h2>
-      </section>
+      <!-- <section>
+           <h2>A Crash Course in C++</h2>
+           </section>
+      -->
     </div>
   </div><!-- <script src="js/head.min.js"></script> -->
   <!-- <script>
@@ -489,7 +606,7 @@ v = np.zeros(1000000)
         navigationMode: "default",
         // minScale: 1,
         // maxScale: 1,
-        margin: 0.2,
+        margin: 0.1,
         padding: 0,
         hash: true,
         math: {
