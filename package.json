@@ -1,0 +1,17 @@
+{
+  "name": "phys-427",
+  "version": "1.0.0",
+  "description": "lectures of phys-427",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gh-pages -d ."
+  },
+  "author": "Alex Chen",
+  "license": "ISC",
+  "dependencies": {
+    "reveal.js": "^4.5.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.0.0"
+  }
+}
