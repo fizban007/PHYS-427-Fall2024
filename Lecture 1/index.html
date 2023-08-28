@@ -29,23 +29,33 @@
       <section>
         <h2>Course Information</h2><br>
         <p><a href="https://fizban007.github.io/PHYS-427/">Course
-        Website</a></p>
+          Website</a></p>
         <p><a href=
-        "https://wustl.instructure.com/courses/115854">Course
-        Canvas</a></p>
+             "https://wustl.instructure.com/courses/115854">Course
+          Canvas</a></p>
         <p><a href=
-        "https://wustl.instructure.com/courses/115854/modules/items/1877999">
-        Syllabus</a></p>
+             "https://wustl.instructure.com/courses/115854/modules/items/1877999">
+          Syllabus</a></p>
         <aside class="notes">
           Discuss the syllabus with the students. Outline the
           course structure, grading policy, and expectations.
         </aside>
       </section>
 
+      <!-- <section>
+           <h2>Git</h2>
+           <p>We will use <code>GitHub Classroom</code> to distribute and collect
+           assignments.</p>
+           <br>
+           <p><code>Git</code> is a version control system that allows you to
+           track changes to your code. <code>GitHub</code> is an online service
+           that hosts <code>git</code> repositories.</p>
+           </section>
+      -->
       <section>
         <h2>What is Computational Physics?</h2>
         <p>Using computers to solve physics problems that are often too complex or intractable
-        using analytic methods</p>
+          using analytic methods</p>
         <img data-src="figures/Hadron-F1-Experience_2048x2048.webp"
           style="display: inline-block; width: 30%;">
         <img data-src="figures/BH_Accretion_Disk_Sim_360_4k_Prores.00001_print.jpg"
@@ -87,137 +97,137 @@
       </section>
 
       <section>
-        <section>
-          <h2>Computer Architecture</h2>
-          <p>A modern motherboard</p>
-          <img data-src="figures/motherboard.webp"
-            style="display: inline-block; width: 40%;">
+        <h2>Computer Architecture</h2>
+        <p>A modern motherboard</p>
+        <img data-src="figures/motherboard.webp"
+          style="display: inline-block; width: 40%;">
 
-          <aside class="notes">
-            Show a picture of a modern motherboard. The motherboard is the
-            physical circuit board that connects all the components of the
-            computer together. The CPU is the large square in the middle of the
-            motherboard. The memory is the long rectangular chips that are
-            connected to the CPU. The input/output devices are the ports on the
-            back of the motherboard.
-          </aside>
-        </section>
+        <aside class="notes">
+          Show a picture of a modern motherboard. The motherboard is the
+          physical circuit board that connects all the components of the
+          computer together. The CPU is the large square in the middle of the
+          motherboard. The memory is the long rectangular chips that are
+          connected to the CPU. The input/output devices are the ports on the
+          back of the motherboard.
+        </aside>
+      </section>
 
-        <section>
-          <h2>Architecture of a CPU</h2>
-          <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
-            style="display: inline-block; width: 60%;">
+      <section>
+        <h2>Architecture of a CPU</h2>
+        <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
+          style="display: inline-block; width: 60%;">
 
-          <aside class="notes">
-            Show a picture of a modern CPU. The CPU is the "brain" of the
-            computer. It is where all the calculations are performed. The CPU
-            consists of a number of cores, which are the individual processing
-            units. Each core can perform a single calculation at a time. The
-            number of cores in a CPU is usually 2, 4, 6, 8, 10, or 12. The CPU
-            also has a clock speed, which is the number of calculations it can
-            perform per second. The clock speed is usually measured in gigahertz
-            (GHz). The clock speed is the maximum number of calculations the CPU
-            can perform per second. The actual number of calculations the CPU
-            performs per second depends on the number of cores and the clock
-            speed.
-          </aside>
-        </section>
+        <aside class="notes">
+          Show a picture of a modern CPU. The CPU is the "brain" of the
+          computer. It is where all the calculations are performed. The CPU
+          consists of a number of cores, which are the individual processing
+          units. Each core can perform a single calculation at a time. The
+          number of cores in a CPU is usually 2, 4, 6, 8, 10, or 12. The CPU
+          also has a clock speed, which is the number of calculations it can
+          perform per second. The clock speed is usually measured in gigahertz
+          (GHz). The clock speed is the maximum number of calculations the CPU
+          can perform per second. The actual number of calculations the CPU
+          performs per second depends on the number of cores and the clock
+          speed.
+        </aside>
+      </section>
 
-        <section>
-          <h2>CPU Clock</h2>
-          <ul>
-            <li>The CPU clock is the number of computation cycles the CPU can
-              perform per second per core. </li>
-              Current generation CPUs can typically achieve 3-4 GHz clock
-              speed.
-
-            <li>Various operations typically take different amounts of CPU cycles
-              to complete.</li>
-            <li>Modern CPUs can do fused multiply and add (FMA) as a single
+      <section>
+        <h2>CPU Clock</h2>
+        <ul>
+          <li>The CPU clock is the number of computation cycles the CPU can
+            perform per second per core. </li>
+          Current generation CPUs can typically achieve 3-4 GHz clock
+          speed.
+          <br> <br>
+          <!-- <li>Various operations typically take different amounts of CPU cycles
+               to complete.</li>
+               <br> -->
+          <li>Modern CPUs can do fused multiply and add (FMA) as a single
             operation. They can also carry out the same operation to several
             operands in a single cycle (SIMD, AVX, AVX2...).</li>
-          </ul>
-        </section>
+          <br>
+          <li>Performance is often measured in FLOPS (Floating point operations per second).
+          A personal computer can typically achieve several 10s of GFLOPS.
+          Current fastest supercomputer, Frontier, can achieve more than an ExaFLOPS.</li>
+        </ul>
       </section>
 
       <section>
-        <section>
-          <h2>Computer Memory</h2>
-          <p>Modern computers use random access memory (RAM)</p>
-          <img data-src="figures/memory-types.avif"
-            style="display: inline-block; width: 40%;">
-          <p></p>
+        <h2>Computer Memory</h2>
+        <p>Modern computers use random access memory (RAM)</p>
+        <img data-src="figures/memory-types.avif"
+          style="display: inline-block; width: 40%;">
+        <p></p>
 
-          <aside class="notes">
-            Discuss computer memory. Modern computers use random access memory
-            (RAM). RAM is where the computer stores data and instructions. RAM
-            is volatile, which means that it loses its contents when the power is
-            turned off. RAM is also very fast, which means that the CPU can
-            access it relatively quickly. Nowadays RAM is usually measured in gigabytes
-            (GB). The more RAM a computer has, the more data and instructions it
-            can store. The amount of RAM a computer has is usually 4 GB, 8 GB, 16
-            GB, 32 GB, 64 GB, or 128 GB.
-          </aside>
-        </section>
+        <aside class="notes">
+          Discuss computer memory. Modern computers use random access memory
+          (RAM). RAM is where the computer stores data and instructions. RAM
+          is volatile, which means that it loses its contents when the power is
+          turned off. RAM is also very fast, which means that the CPU can
+          access it relatively quickly. Nowadays RAM is usually measured in gigabytes
+          (GB). The more RAM a computer has, the more data and instructions it
+          can store. The amount of RAM a computer has is usually 4 GB, 8 GB, 16
+          GB, 32 GB, 64 GB, or 128 GB.
+        </aside>
+      </section>
 
-        <section>
-          <h2>Cache Lives on the CPU Die</h2>
-          <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
-            style="display: inline-block; width: 60%;">
-        </section>
+      <section>
+        <h2>Cache Lives on the CPU Die</h2>
+        <img data-src="figures/1200px-intel_raptor_lake_die_(8+16)_(annotated).png"
+          style="display: inline-block; width: 60%;">
+      </section>
 
-        <section>
-          <h2>Data Storage</h2>
-          <p>For long-term storage, data is stored in non-volatile media</p>
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 40%; float: left;">
-              <img data-src="figures/hard-drive.webp">
-              <p>Hard Drives</p>
-            </div>
-            <div class="column" style="width: 40%; float: left;">
-              <img data-src="figures/samsung-ssd.jpg">
-              <p>Solid-state Drives (SSDs)</p>
-            </div>
+      <section>
+        <h2>Data Storage</h2>
+        <p>For long-term storage, data is stored in non-volatile media</p>
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 40%; float: left;">
+            <img data-src="figures/hard-drive.webp">
+            <p>Hard Drives</p>
           </div>
-        </section>
-
-        <section>
-          <h2>Hierarchy of Memory</h2>
-          <p>Memory access is faster for memory that is closer to the CPU</p>
-          <img data-src="figures/memory-hierarchy.png"
-            style="display: inline-block; width: 60%;">
-        </section>
-
+          <div class="column" style="width: 40%; float: left;">
+            <img data-src="figures/samsung-ssd.jpg">
+            <p>Solid-state Drives (SSDs)</p>
+          </div>
+        </div>
       </section>
 
       <section>
-        <section>
-          <h2>Computers Talk in Binary</h2>
-          <img data-src="figures/binary.png"
-            style="display: inline-block; width: 60%;">
-        </section>
+        <h2>Hierarchy of Memory</h2>
+        <p>Memory access is faster for memory that is closer to the CPU</p>
+        <img data-src="figures/memory-hierarchy.png"
+          style="display: inline-block; width: 60%;">
+      </section>
 
-        <section>
-          <h2>Representing Binary Using Hexadecimal Numbers</h2>
-          <img data-src="figures/hex-to-binary.jpg"
-            style="display: inline-block; width: 60%;">
-        </section>
 
-        <section>
-          <h2>Assembly Program</h2>
-          <p>A simple function that return the square of the input</p>
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 40%; float: left;">
-              <pre><code data-trim data-noescape>
+      <section>
+        <h2>Computers Talk in Binary</h2>
+        <img data-src="figures/binary.png"
+          style="display: inline-block; width: 60%;">
+      </section>
+
+      <section>
+        <h2>Representing Binary Using Hexadecimal Numbers</h2>
+        <img data-src="figures/hex-to-binary.jpg"
+          style="display: inline-block; width: 60%;">
+      </section>
+
+      <section>
+        <h2>Assembly Program</h2>
+        <p>A simple function that return the square of the input</p>
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 40%; float: left;">
+            <pre><code data-trim data-noescape>
                 int square(int num) {
                     return num * num;
                 }
-              </code></pre>
-            </div>
-            <div class="column" style="width: 40%; float: left;">
-              <pre><code data-trim data-noescape>
+            </code></pre>
+          </div>
+          <div class="column" style="width: 40%; float: left;">
+            <pre><code data-trim data-noescape>
                 square(int):
                 0f af ff
                 imul   edi,edi
@@ -225,23 +235,21 @@
                 mov    eax,edi
                 c3
                 ret
-              </code></pre>
-            </div>
+            </code></pre>
           </div>
-          <p>Compilers translate high-level languages to assembly</p>
-          <p><a href="https://godbolt.org/">Compiler Explorer</a></p>
-        </section>
+        </div>
+        <p>Compilers translate high-level languages to assembly</p>
+        <p><a href="https://godbolt.org/">Compiler Explorer</a></p>
       </section>
 
       <section>
-        <section>
-          <h2>Programming Languages</h2>
-          <p>We will use C++ as the primary programming language in this course</p>
+        <h2>Programming Languages</h2>
+        <p>We will use C++ as the primary programming language in this course</p>
 
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 65%; float: left;">
-              <pre><code data-trim data-noescape>
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 65%; float: left;">
+            <pre><code data-trim data-noescape>
 double quadratic_formula(double a,
                          double b,
                          double c) {
@@ -249,286 +257,284 @@ double quadratic_formula(double a,
       sqrt(b * b - 4 * a * c);
   return (-b + discriminant) / (2 * a);
 }
-              </code></pre>
-              <p>C++</p>
-            </div>
-            <div class="column" style="width: 65%; float: left;">
-              <pre><code class="language-python" data-trim data-noescape>
+            </code></pre>
+            <p>C++</p>
+          </div>
+          <div class="column" style="width: 65%; float: left;">
+            <pre><code class="language-python" data-trim data-noescape>
 def quadratic_formula(a, b, c):
   discriminant = math.sqrt(b * b - 4 * a * c)
   return (-b + discriminant) / (2 * a)
-              </code></pre>
-              <p>Python</p>
-            </div>
+            </code></pre>
+            <p>Python</p>
           </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <ul>
-                <li>Compiled language</li>
-                <!-- <li>Statically typed</li> -->
-                <!-- <li>Explicit memory management</li> -->
-                <!-- <li>Useful when high performance is required</li> -->
-                <!-- <li>Access to modern language features</li> -->
-              </ul>
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <ul>
-                <li>Interpreted language</li>
-                <!-- <li>Dynamically typed</li> -->
-                <!-- <li>Garbage collected</li> -->
-                <!-- <li>Good for rapid prototyping</li> -->
-                <!-- <li>Access to modern language features</li> -->
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <pre><code class="language-bash" data-trim data-noescape>
-g++ -o code code.cpp
-./code
-              </code></pre>
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <pre><code class="language-bash" data-trim data-noescape>
-python code.py
-              </code></pre>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <ul>
-                <li>Compiled language</li>
-                <li>Statically typed</li>
-                <!-- <li>Explicit memory management</li> -->
-                <!-- <li>Useful when high performance is required</li> -->
-                <!-- <li>Access to modern language features</li> -->
-              </ul>
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <ul>
-                <li>Interpreted language</li>
-                <li>Dynamically typed</li>
-                <!-- <li>Garbage collected</li> -->
-                <!-- <li>Good for rapid prototyping</li> -->
-                <!-- <li>Access to modern language features</li> -->
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <pre><code class="language-c++" data-trim data-noescape>
-double a = 1.0;
-double b = 2.0;
-double c = a * b;
-              </code></pre>
-              <code>a</code>, <code>b</code>, and <code>c</code> are of type <code>double</code> and
-              can no longer be changed to a different type.
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <pre><code class="language-python" data-trim data-noescape>
-a = 1.0
-b = 2.0
-c = a * b
-              </code></pre>
-              <code>a</code>, <code>b</code>, and <code>c</code> are implicitly
-              deduced to be of floating point type, but can be assigned to a
-              different type.
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <ul>
-                <li>Compiled language</li>
-                <li>Statically typed</li>
-                <li>Explicit memory management</li>
-                <!-- <li>Useful when high performance is required</li> -->
-                <!-- <li>Access to modern language features</li> -->
-              </ul>
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <ul>
-                <li>Interpreted language</li>
-                <li>Dynamically typed</li>
-                <li>Garbage collected</li>
-                <!-- <li>Good for rapid prototyping</li> -->
-                <!-- <li>Access to modern language features</li> -->
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <pre><code class="language-c++" data-trim data-noescape>
-double* v = new double[10000];
-delete[] v;
-              </code></pre>
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <pre><code class="language-python" data-trim data-noescape>
-v = np.zeros(10000)
-              </code></pre>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>C++ vs Python</h2>
-
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 45%; float: left;">
-              <p>C++</p>
-              <ul>
-                <li>Compiled language</li>
-                <li>Statically typed</li>
-                <li>Explicit memory management</li>
-                <li>Useful when high performance is required</li>
-              </ul>
-            </div>
-            <div class="column" style="width: 45%; float: left;">
-              <p>Python</p>
-              <ul>
-                <li>Interpreted language</li>
-                <li>Dynamically typed</li>
-                <li>Garbage collected</li>
-                <li>Good for rapid prototyping</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>Why C++?</h2>
-          <ul>
-            <li>C++ is widely used in scientific computing, as well as in the
-            industry wherever performance is critical</li>
-            <li>Over the past several decades, C++ has evolved to become a
-            modern and expressive language. Many large-scale projects are written in C++</li>
-            <li>We will restrict ourselves to a subset of C++ that is more
-            manageable, and will make extensive use of "modern C++"</li>
-          </ul>
-        </section>
+        </div>
       </section>
 
       <section>
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <p>Real numbers are represented using floating point numbers, which
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <ul>
+              <li>Compiled language</li>
+              <!-- <li>Statically typed</li> -->
+              <!-- <li>Explicit memory management</li> -->
+              <!-- <li>Useful when high performance is required</li> -->
+              <!-- <li>Access to modern language features</li> -->
+            </ul>
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <ul>
+              <li>Interpreted language</li>
+              <!-- <li>Dynamically typed</li> -->
+              <!-- <li>Garbage collected</li> -->
+              <!-- <li>Good for rapid prototyping</li> -->
+              <!-- <li>Access to modern language features</li> -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <pre><code class="language-bash" data-trim data-noescape>
+g++ -o code code.cpp
+./code
+            </code></pre>
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <pre><code class="language-bash" data-trim data-noescape>
+python code.py
+            </code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <ul>
+              <li>Compiled language</li>
+              <li>Statically typed</li>
+              <!-- <li>Explicit memory management</li> -->
+              <!-- <li>Useful when high performance is required</li> -->
+              <!-- <li>Access to modern language features</li> -->
+            </ul>
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <ul>
+              <li>Interpreted language</li>
+              <li>Dynamically typed</li>
+              <!-- <li>Garbage collected</li> -->
+              <!-- <li>Good for rapid prototyping</li> -->
+              <!-- <li>Access to modern language features</li> -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <pre><code class="language-c++" data-trim data-noescape>
+double a = 1.0;
+double b = 2.0;
+double c = a * b;
+            </code></pre>
+            <code>a</code>, <code>b</code>, and <code>c</code> are of type <code>double</code> and
+            can no longer be changed to a different type.
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <pre><code class="language-python" data-trim data-noescape>
+a = 1.0
+b = 2.0
+c = a * b
+            </code></pre>
+            <code>a</code>, <code>b</code>, and <code>c</code> are implicitly
+            deduced to be of floating point type, but can be assigned to a
+            different type.
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <ul>
+              <li>Compiled language</li>
+              <li>Statically typed</li>
+              <li>Explicit memory management</li>
+              <!-- <li>Useful when high performance is required</li> -->
+              <!-- <li>Access to modern language features</li> -->
+            </ul>
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <ul>
+              <li>Interpreted language</li>
+              <li>Dynamically typed</li>
+              <li>Garbage collected</li>
+              <!-- <li>Good for rapid prototyping</li> -->
+              <!-- <li>Access to modern language features</li> -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <pre><code class="language-c++" data-trim data-noescape>
+double* v = new double[10000];
+delete[] v;
+            </code></pre>
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <pre><code class="language-python" data-trim data-noescape>
+v = np.zeros(10000)
+            </code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>C++ vs Python</h2>
+
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 45%; float: left;">
+            <p>C++</p>
+            <ul>
+              <li>Compiled language</li>
+              <li>Statically typed</li>
+              <li>Explicit memory management</li>
+              <li>Useful when high performance is required</li>
+            </ul>
+          </div>
+          <div class="column" style="width: 45%; float: left;">
+            <p>Python</p>
+            <ul>
+              <li>Interpreted language</li>
+              <li>Dynamically typed</li>
+              <li>Garbage collected</li>
+              <li>Good for rapid prototyping</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Why C++?</h2>
+        <ul>
+          <li>C++ is widely used in scientific computing, as well as in the
+            industry wherever performance is critical</li>
+          <li>Over the past several decades, C++ has evolved to become a
+            modern and expressive language. Many large-scale projects are written in C++</li>
+          <li>We will restrict ourselves to a subset of C++ that is more
+            manageable, and will make extensive use of "modern C++"</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <p>Real numbers are represented using floating point numbers, which
           is very similar to the scientific notation</p>
-          <br>
-          <p>However, both the fractional part and the integrand are represented in binary!</p>
-          <br>
-        </section>
+        <br>
+        <p>However, both the fractional part and the integrand are represented in binary!</p>
+        <br>
+      </section>
 
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <img data-src="figures/IEEE-754-floating-point-32b.jpg"
-            style="display: inline-block; width: 80%;">
-        </section>
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <img data-src="figures/IEEE-754-floating-point-32b.jpg"
+          style="display: inline-block; width: 80%;">
+      </section>
 
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <p>Decimal real numbers may not have an exact representation in binary</p>
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center; width: 100%;">
-            <div class="column" style="width: 65%; float: left;">
-              <p>Code</p>
-              <pre><code class="language-c++" data-trim data-noescape>
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <p>Decimal real numbers may not have an exact representation in binary</p>
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center; width: 100%;">
+          <div class="column" style="width: 65%; float: left;">
+            <p>Code</p>
+            <pre><code class="language-c++" data-trim data-noescape>
 double a = (1.0 - 0.1) - 0.9;
 double b = (1.0 - 0.05 - 0.05) - 0.9;
 std::cout << a << std::endl;
 std::cout << b << std::endl;
-              </code></pre>
-            </div>
-            <div class="column" style="width: 65%; float: left;">
-              <p>Output</p>
-              <pre><code class="language-bash" data-trim data-noescape>
+            </code></pre>
+          </div>
+          <div class="column" style="width: 65%; float: left;">
+            <p>Output</p>
+            <pre><code class="language-bash" data-trim data-noescape>
 0
 -1.11022e-16
-              </code></pre>
-            </div>
+            </code></pre>
           </div>
-          <p>Due to rounding error, $(a + b) + c$ may not be exactly the same as
+        </div>
+        <p>Due to rounding error, $(a + b) + c$ may not be exactly the same as
           $a + (b + c)$.</p>
-        </section>
+      </section>
 
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <p>Floating point numbers have a "machine precision", which is defined
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <p>Floating point numbers have a "machine precision", which is defined
           to be the maximum relative rounding error during floating point calculations:</p>
-          <br>
-          <p>Minimum $\epsilon$ such that $1.0 + \epsilon \neq 1.0$</p>
-          <br>
-          <p>It is unrealistic to expect a floating point calculation to be more
+        <br>
+        <p>Minimum $\epsilon$ such that $1.0 + \epsilon \neq 1.0$</p>
+        <br>
+        <p>It is unrealistic to expect a floating point calculation to be more
           accurate than this machine precision</p>
-        </section>
+      </section>
 
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <p>Do not directly compare whether two floating points are equal.
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <p>Do not directly compare whether two floating points are equal.
           Instead test whether the absolute value of their difference is within
           some tolerance limit</p>
-          <div class="row" style="text-align: center; display:flex;
-            justify-content: center;">
-            <div class="column" style="width: 55%; float: left;">
-              <p>Do NOT</p>
-              <pre><code class="language-c++" data-trim data-noescape>
+        <div class="row" style="text-align: center; display:flex;
+          justify-content: center;">
+          <div class="column" style="width: 55%; float: left;">
+            <p>Do NOT</p>
+            <pre><code class="language-c++" data-trim data-noescape>
 double a = 1.345;
 double b = 1.123;
 double c = a + b;
 if (c == 2.468) { ... }
-              </code></pre>
-            </div>
-            <div class="column" style="width: 55%; float: left;">
-              <p>Do</p>
-              <pre><code class="language-c++" data-trim data-noescape>
+            </code></pre>
+          </div>
+          <div class="column" style="width: 55%; float: left;">
+            <p>Do</p>
+            <pre><code class="language-c++" data-trim data-noescape>
 double a = 1.345;
 double b = 1.123;
 double c = a + b;
@@ -536,34 +542,34 @@ double EPSILON = 1e-10;
 if (std::abs(c - 2.468) < EPSILON) {
  ...
 }
-              </code></pre>
-            </div>
+            </code></pre>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <p><code>float</code>: single precision numbers, 32 bits, 4 bytes</p>
-          <p><code>double</code>: double precision numbers, 64 bits, 8 bytes</p>
-          <p><code>long double</code>: quadruple precision numbers, 128 bits, 16 bytes</p>
-          <p>C++ standard does not provide a 16-bit half precision type, but
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <p><code>float</code>: single precision numbers, 32 bits, 4 bytes</p>
+        <p><code>double</code>: double precision numbers, 64 bits, 8 bytes</p>
+        <p><code>long double</code>: quadruple precision numbers, 128 bits, 16 bytes</p>
+        <p>C++ standard does not provide a 16-bit half precision type, but
           custom 16-bit floating point numbers are now quite popular with
           machine learning</p>
-        </section>
-
-        <section>
-          <h2>Floating Point Numbers</h2>
-          <ul>
-            <li>If you just write "<code>1.0</code>", it is interpreted as a <code>double</code> in
-              C++.</li>
-            <br>
-            <li>If you write <code>1</code>, it is interpreted as an integer.
-              Operations between two integers give an integer result. Therefore <code>1/2</code> will yield <code>0</code>.</li>
-            <br>
-            <li>Write numbers with a decimal point to avoid confusion!</li>
-          </ul>
-        </section>
       </section>
+
+      <section>
+        <h2>Floating Point Numbers</h2>
+        <ul>
+          <li>If you just write "<code>1.0</code>", it is interpreted as a <code>double</code> in
+            C++.</li>
+          <br>
+          <li>If you write <code>1</code>, it is interpreted as an integer.
+            Operations between two integers give an integer result. Therefore <code>1/2</code> will yield <code>0</code>.</li>
+          <br>
+          <li>Write numbers with a decimal point to avoid confusion!</li>
+        </ul>
+      </section>
+
 
       <!-- <section>
            <h2>A Crash Course in C++</h2>
