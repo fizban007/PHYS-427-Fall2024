@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content=
-  "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Computational Physics Lecture 1</title>
-  <link rel="stylesheet" href="../dist/reset.css">
-  <link rel="stylesheet" href="../dist/reveal.css">
-  <link rel="stylesheet" href="../dist/theme/serif.css"
-  id="theme">
-  <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
-  <!-- Theme used for syntax highlighted code -->
-  <link rel="stylesheet" href=
-  "../plugin/highlight/monokai.css" id="highlight-theme">
-</head>
-<body>
-  <div class="reveal">
-    <div class="slides">
-      <section>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 1</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
         <section>
           <h2>A Crash Course in C++</h2>
         </section>
@@ -32,7 +33,7 @@
         -->
         <section>
           <h2>Hello World</h2>
-          <div style="width: 50%; margin: auto;">
+          <div style="width: 60%; margin: auto;">
             <pre><code class="language-c++" data-trim data-noescape>
 #include &lt;iostream&gt;
 int main() {
@@ -42,62 +43,134 @@ int main() {
             </code></pre>
           </div>
         </section>
-      </section>
 
-      <section>
-      <section>
-        <h2>Variables</h2>
-        <p>Every variable needs to have a type</p>
-        <table>
-          <tr>
-            <td><code>bool</code></td>
-            <td>1 bit</td>
-            <td><code>true</code> or <code>false</code></td>
-          </tr>
-          <tr>
-            <td><code>char</code></td>
-            <td>1 byte</td>
-            <td>-128 to 127</td>
-          </tr>
-          <tr>
-            <td><code>int</code></td>
-            <td>4 bytes (typically)</td>
-            <td>-2,147,483,648 to 2,147,483,647</td>
-          </tr>
-          <tr>
-            <td><code>long</code></td>
-            <td>8 bytes (typically)</td>
-            <td>$\sim -9.2\times 10^{18}$ to $\sim 9.2\times 10^{18}$</td>
-          </tr>
-          <tr>
-            <td><code>float</code></td>
-            <td>4 bytes</td>
-            <td>$\pm 1.18\times 10^{-38}$ to $\pm 3.40\times 10^{38}$</td>
-          </tr>
-          <tr>
-            <td><code>double</code></td>
-            <td>8 bytes</td>
-            <td>$\pm 2.23\times 10^{-308}$ to $\pm 1.80\times 10^{308}$</td>
-          </tr>
-        </table>
-      </section>
+        <section>
+          <h2>Hello World</h2>
+          <p>Including a header file</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+#include &lt;iostream&gt;
+            </code></pre>
+          </div>
+          <p>Use <code>&lt;&gt;</code> for standard library headers, and <code>""</code> for
+          your own headers.</p>
+        </section>
 
-      <section>
-        <h2>Declaring and Initializing Variables</h2>
-        <div style="width: 50%; margin: auto;">
-        <pre><code class="language-c++" data-trim data-noescape>
+        <section>
+          <h2>Hello World</h2>
+          <p>Main function</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+int main() {
+  return 0;
+}
+            </code></pre>
+          </div>
+          <p>When the program is run, it executes the <code>main</code> function. The return value
+          of <code>main</code> is an integer, which is returned to the operating
+          system when the program exits. A return value of 0 means the program
+          exited successfully.</p>
+        </section>
+
+        <section>
+          <h2>Hello World</h2>
+          <p>Writing to standard output</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+  std::cout << "Hello World" << std::endl;
+            </code></pre>
+          </div>
+          <p><code>std::cout</code> is the standard output stream. <code>&lt;&lt;</code> is the
+          insertion operator, which inserts the string "Hello World" into the
+          output stream. <code>std::endl</code> ends the output line and forces
+          it to be printed to the terminal.</p>
+        </section>
+
+        <section>
+          <h2>Variables</h2>
+          <p>Every variable needs to have a type</p>
+          <table>
+            <tr>
+              <td><code>bool</code></td>
+              <td>1 bit</td>
+              <td><code>true</code> or <code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>char</code></td>
+              <td>1 byte</td>
+              <td>-128 to 127</td>
+            </tr>
+            <tr>
+              <td><code>int</code></td>
+              <td>4 bytes (typically)</td>
+              <td>-2,147,483,648 to 2,147,483,647</td>
+            </tr>
+            <tr>
+              <td><code>long</code></td>
+              <td>8 bytes (typically)</td>
+              <td>$\sim -9.2\times 10^{18}$ to $\sim 9.2\times 10^{18}$</td>
+            </tr>
+            <tr>
+              <td><code>float</code></td>
+              <td>4 bytes</td>
+              <td>$\pm 1.18\times 10^{-38}$ to $\pm 3.40\times 10^{38}$</td>
+            </tr>
+            <tr>
+              <td><code>double</code></td>
+              <td>8 bytes</td>
+              <td>$\pm 2.23\times 10^{-308}$ to $\pm 1.80\times 10^{308}$</td>
+            </tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Declaring and Initializing Variables</h2>
+          <div style="width: 50%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
 int m;
 m = 20;
 int n = 10;
-        </code></pre>
-        </div>
-        <p>Variables can be declared without being initialized, but they will
-        have random initial values. Therefore it is recommended to always give
-        variables an initial value.</p>
-      </section>
-      </section>
+            </code></pre>
+          </div>
+          <p>Variables can be declared without being initialized, but they will
+            have random initial values. Therefore it is recommended to always give
+            variables an initial value.</p>
+        </section>
 
-      <section>
+        <section>
+          <h2>Arrays and Vectors</h2>
+          <p>You can declare an array using the following syntax:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+int a[10];
+            </code></pre>
+          </div>
+          <p>Arrays are indexed starting from 0. The first element is <code>a[0]</code>,
+          the second element is <code>a[1]</code>, and so on.</p>
+        </section>
+
+        <section>
+          <h2>Arrays and Vectors</h2>
+          <p>Arrays live on the "stack", which is a fixed memory space pre-allocated to
+          the running program. It's limited in size.</p>
+          <p>For large arrays, use <code>std::vector</code> instead:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+#include &lt;vector&gt;
+std::vector&lt;int&gt; a(10);
+            </code></pre>
+          </div>
+          <p>Vectors live on the "heap", which is a large memory space that can grow
+          as needed, up to the total available memory on the system.</p>
+          <p>The angular bracket <code>&lt;&gt;</code> denotes a "template",
+          where you can plug in any data type.</p>
+        </section>
+
+        <!-- <section>
+             <h2>Prefer <code>int</code> and <code>long</code></h2>
+             <p>Signed integers behave better under subtraction. </p>
+             </section>
+        -->
         <section>
           <h2>Operators</h2>
           <p>Operators are used to perform operations on variables and values.</p>
@@ -176,19 +249,17 @@ int n = 10;
             </tr>
           </table>
         </section>
-      </section>
 
-      <section>
         <section>
           <h2>Math Functions</h2>
           <p>Math functions are mostly defined in the <code>cmath</code> header,
-          under the namespace <code>std</code></p>
+            under the namespace <code>std</code></p>
           <table>
             <tr>
               <td><code>abs(x)</code></td>
               <td><code>acos(x)</code></td>
               <td><code>asin(x)</code></td>
-              <td><code>atan(x)</code></td>
+              <td><code>atan2(y, x)</code></td>
             </tr>
             <tr>
               <td><code>cbrt(x)</code></td>
@@ -205,7 +276,7 @@ int n = 10;
             <tr>
               <td><code>sinh(x)</code></td>
               <td><code>sqrt(x)</code></td>
-              <td><code>tan2(x, y)</code></td>
+              <td><code>tan(x)</code></td>
               <td><code>tanh(x)</code></td>
             </tr>
           </table>
@@ -216,28 +287,28 @@ int n = 10;
           <ul>
             <li>Use <code>std::abs(x)</code> instead of <code>abs(x)</code></li>
             <li>Use <code>x*x</code> instead of <code>std::pow(x, 2)</code></li>
+            <li>Use <code>x*x*x</code> instead of <code>std::pow(x, 3)</code></li>
             <li>Use <code>std::sqrt(x)</code> instead of <code>std::pow(x, 0.5)</code></li>
-            <li>Use <code>std::tan2(x, y)</code> instead of <code>std::tan(x)</code></li>
+            <li>Use <code>std::atan2(x, y)</code> instead of <code>std::atan(x)</code></li>
           </ul>
         </section>
-      </section>
 
-      <section>
         <section>
           <h2>Conditional Statements</h2>
           <p>Conditionals are used to perform different actions based on different
-          conditions.</p>
-          <div style="width: 50%; margin: auto;">
+            conditions.</p>
+          <div style="width: 70%; margin: auto;">
             <pre><code class="language-c++" data-trim data-noescape>
-if (condition) {
-  \\ some code
-} else if (condition) {
-  \\ some other code
+if (x &lt; 0) {
+  std::cout << "x is negative" << std::endl;
+} else if (x &gt; 1) {
+  std::cout << "x is greater than 1" << std::endl;
 } else {
-  \\ some code
+  std::cout << "x is between 0 and 1" << std::endl;
 }
             </code></pre>
           </div>
+          <p>Prefer not to omit the curly brackets!</p>
         </section>
 
         <section>
@@ -296,30 +367,278 @@ if (condition) {
               <td><code>!(x &gt; 5)</code></td>
             </tr>
           </table>
+          <p>Writing <code>&</code> instead of <code>&&</code>, or <code>|</code> instead of <code>||</code> is
+          another common mistake!</p>
         </section>
-      </section>
 
+        <section>
+          <h2>Loops</h2>
+          <p>Loops are used to execute a block of code repeatedly.</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+for (int i = 0; i &lt; 10; i++) {
+  std::cout << i << std::endl;
+}
+            </code></pre>
+          </div>
+          <!-- <p>Nowadays you can also use the range-based <code>for</code> loop:</p>
+               <div style="width: 60%; margin: auto;">
+               <pre><code class="language-c++" data-trim data-noescape>
+               for (auto i : {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}) {
+               std::cout << i << std::endl;
+               }
+               </code></pre>
+               </div> -->
+        </section>
+
+        <section>
+          <h2>Loops</h2>
+          <p>You can break out from a loop early using <code>break</code></p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+for (int i = 0; i &lt; 10; i++) {
+  std::cout << i << std::endl;
+  if (i == 5) {
+    break;
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Loops</h2>
+          <p>You can skip to the next iteration using <code>continue</code></p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+for (int i = 0; i &lt; 10; i++) {
+  std::cout << i << std::endl;
+  if (i == 5) {
+    continue;
+  }
+}
+            </code></pre>
+        </section>
+
+        <section>
+          <h2>Loops</h2>
+          <p>You can also use <code>while</code> loops</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+int i = 0;
+while (i &lt; 10) {
+  std::cout << i << std::endl;
+  i++;
+}
+            </code></pre>
+          </div>
+          <p><code>while</code> loops are good for when the number of iterations
+          is not known in advance.</p>
+        </section>
+
+        <section>
+          <h2>Functions</h2>
+          <p>Functions are used to encapsulate repeated calculations, or group a
+          series of calculations together</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+int add(int x, int y) {
+  return x + y;
+}
+            </code></pre>
+          </div>
+          <p>Functions can also be declared without a return value:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+void print_hello() {
+  std::cout << "Hello" << std::endl;
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Passing by Value vs Reference</h2>
+          <p>By default, function parameters are passed by value (copied). However this
+          is not desirable if you pass a large array or vector:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+void print_array(vector&lt;int&gt; a) {
+  for (int i = 0; i &lt; a.size(); i++) {
+    std::cout << a[i] << std::endl;
+  }
+}
+            </code></pre>
+          </div>
+          <p>Instead, pass by reference:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+void print_array(vector&lt;int&gt; &amp;a) {
+  for (int i = 0; i &lt; a.size(); i++) {
+    std::cout << a[i] << std::endl;
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Passing by Reference</h2>
+          <p>Passing by reference is also useful if you want to modify the original array:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+void add_by_one(vector&lt;int&gt; &amp;a) {
+  for (int i = 0; i &lt; a.size(); i++) {
+    a[i] += 1;
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Passing by Reference</h2>
+          <p>Use constant reference for arrays that are not supposed to be modified:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+void print_array(const vector&lt;int&gt; &amp;a) {
+  for (int i = 0; i &lt; a.size(); i++) {
+    std::cout << a[i] << std::endl;
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Passing by Reference</h2>
+          <p>Always use reference or constant reference except for when passing
+          numerical constants!</p>
+        </section>
+
+        <section>
+          <h2>Classes</h2>
+          <p>A <code>class</code> is a new type defined by the programmer. It is
+          useful for grouping data and functions together.</p>
+          <br>
+          <p>An instance of a class is called an "object". For example, a <code>vector&lt;double&gt;</code> is
+            a class, and a specific <code>vector&lt;double&gt;</code> <code>v</code> is an object.</p>
+          <br>
+          <p>C++ is an object-oriented language!</p>
+        </section>
+
+        <section>
+          <h2>Classes</h2>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+class Vector3D {
+ public:
+  // Member variables
+  double x, y, z;
+
+  // Constructor
+  Vector3D(double x0, double y0, double z0) {
+    x = x0;
+    y = y0;
+    z = z0;
+  }
+
+  // Destructor
+  ~Vector3D() {}
+
+  // Method
+  double norm() {
+    return std::sqrt(x*x + y*y + z*z);
+  }
+};
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Classes</h2>
+          <p>Member variables and methods are accessed using the dot operator "<code>.</code>":</p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+Vector3D v(1.0, 2.0, 3.0);
+std::cout << "x component of v is " << v.x << std::endl;
+std::cout << "Norm of v is " << v.norm() << std::endl;
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Classes</h2>
+          <p>You can define operators for classes</p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+class Vector3D {
+...
+  // Operator overloading
+  Vector3D operator+(const Vector3D &amp;v) {
+    return Vector3D(x + v.x, y + v.y, z + v.z);
+  }
+
+  Vector3D& operator=(const Vector3D &amp;v) {
+    x = v.x;
+    y = v.y;
+    z = v.z;
+    return *this;
+  }
+};
+            </code></pre>
+          </div>
+          <p>Now you can add two vectors together:</p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+Vector3D v1(1.0, 2.0, 3.0);
+Vector3D v2(4.0, 5.0, 6.0);
+Vector3D v3 = v1 + v2;
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>File Output</h2>
+          <p>You can write to a file similar to the standard output</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+#include &lt;fstream&gt;
+int main() {
+  // Open the file for writing
+  std::ofstream file("output.txt");
+
+  // Write content to the file
+  file << "Hello World" << std::endl;
+
+  // Close the file
+  file.close();
+  return 0;
+}
+        </section>
+
+      </div>
     </div>
-  </div><!-- <script src="js/head.min.js"></script> -->
-  <!-- <script>
-       head.js(
-       "vendor/jquery.min.js",
-       // "vendor/three.js/build/three.min.js",
-       // "vendor/three.js/examples/js/controls/OrbitControls.js",
-       /* "vendor/socket.io-client/dist/socket.io.js", */
-       // "vendor/THREE.MeshLine.js",
-       /* "vendor/dat.gui.min.js",*/
-       "vendor/EventEmitter.js",
-       // "js/samples.js",
-       );
-       </script> -->
-  <script src="../dist/reveal.js"></script>
-  <script src="../plugin/math/math.js"></script>
-  <script src="../plugin/notes/notes.js"></script>
-  <script src="../plugin/markdown/markdown.js"></script>
-  <script src="../plugin/highlight/highlight.js"></script>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
 
-  <script>
+    <script>
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
       // - https://revealjs.com/config/
@@ -334,7 +653,7 @@ if (condition) {
         navigationMode: "default",
         // minScale: 1,
         // maxScale: 1,
-        margin: 0.1,
+        margin: 0.2,
         padding: 0,
         hash: true,
         math: {
@@ -365,6 +684,6 @@ if (condition) {
       //   }
       // });
       //
-  </script>
-</body>
+    </script>
+  </body>
 </html>
