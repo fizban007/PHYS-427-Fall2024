@@ -87,6 +87,23 @@ int main() {
         </section>
 
         <section>
+          <h2>Namespaces</h2>
+          <p><code>std</code> is a "namespace" that contains the whole C++ standard library</p>
+          <p>A namespace is a group of related elements, used to avoid name
+            collisions. For example, if you define something in your program
+            called <code>cout</code>, it will be different from <code>std::cout</code>.</p>
+          <p>You can write the following to automatically include everything from the
+            <code>std</code> namespace:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+using namespace std;
+            </code></pre>
+          </div>
+          <p>However, it is recommended to avoid this, and instead always use the <code>std::</code>
+          prefix.</p>
+        </section>
+
+        <section>
           <h2>Variables</h2>
           <p>Every variable needs to have a type</p>
           <table>
@@ -152,12 +169,18 @@ int a[10];
         <section>
           <h2>Arrays and Vectors</h2>
           <p>Arrays live on the "stack", which is a fixed memory space pre-allocated to
-          the running program. It's limited in size.</p>
+          the running program. It's limited in size. The following code triggers a
+          "stack overflow" on my laptop.</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+double a[1'100'000];
+            </code></pre>
+          </div>
           <p>For large arrays, use <code>std::vector</code> instead:</p>
           <div style="width: 60%; margin: auto;">
             <pre><code class="language-c++" data-trim data-noescape>
 #include &lt;vector&gt;
-std::vector&lt;int&gt; a(10);
+std::vector&lt;double&gt; a(1'100'000);
             </code></pre>
           </div>
           <p>Vectors live on the "heap", which is a large memory space that can grow
@@ -508,10 +531,6 @@ void print_array(const vector&lt;int&gt; &amp;a) {
 }
             </code></pre>
           </div>
-        </section>
-
-        <section>
-          <h2>Passing by Reference</h2>
           <p>Always use reference or constant reference except for when passing
           numerical constants!</p>
         </section>
@@ -615,8 +634,65 @@ int main() {
   file.close();
   return 0;
 }
+            </code></pre>
+          </div>
         </section>
 
+        <section>
+          <h2>Pointers</h2>
+          <p>The "pointer" is the main way to access low level memory.</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+int a = 100;
+int *p = &a;
+std::cout << p << ", " << *p << std::endl;
+            </code></pre>
+          </div>
+          <p>Output:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-bash" data-trim data-noescape>
+0x7ffcbbfe477c, 100
+            </code></pre>
+          </div>
+          <p><code>p</code> is a pointer pointing at <code>a</code>. The value of <code>p</code> is
+            <code>a</code>'s address, represented by <code>&a</code>. <code>*p</code> extracts
+            the value at the address, which is the value of <code>a</code>.</p>
+        </section>
+
+        <section>
+          <h2>Pointers</h2>
+          <p>Pointers are also used to manage memory</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+double *data = new double[1'000'000];
+delete[] data;
+Vector3D *v = new Vector3D(1.0, 2.0, 3.0);
+delete v;
+            </code></pre>
+          </div>
+          <p>However, memory will be "leaked" if you forget to call <code>delete</code>.
+            It's also dangerous to use <code>data</code> again after you've <code>delete</code>d
+            the memory, since it will write to an address that may be occupied
+            by something else.</p>
+          <p>Memory error is the most common type of bugs in large programs.</p>
+        </section>
+
+        <section>
+          <h2>Pointers</h2>
+          <p>Avoid using pointers directly unless absolutely necessary!</p>
+          <p>Use <code>std::vector</code> instead of <code>new</code> and <code>delete</code>.</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+std::vector&lt;double&gt; data(1'000'000);
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- <section>
+             <h2>More C++ Resources</h2>
+             <a href="https://www.geeksforgeeks.org/cpp-tutorial/">https://www.geeksforgeeks.org/cpp-tutorial</a>
+             </section>
+        -->
       </div>
     </div>
     <!-- <script src="js/head.min.js"></script> -->
