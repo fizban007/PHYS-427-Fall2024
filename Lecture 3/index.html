@@ -34,12 +34,15 @@
                </code></pre>
                </div> -->
           <!-- </section> -->
+        <section>
+          <h2>Floating Point Numbers Continued</h2>
+        </section>
 
         <section>
           <h2>NaN</h2>
           <p>Floating point numbers can have a special value: NaN (Not a Number).</p>
           <p>It's most common to have NaNs from a few operations: zero divided by zero, or
-          taking the square root or log of a negative number</p>
+          taking the square root or logarithm of a negative number</p>
           <div style="width: 70%; margin: auto;">
             <pre><code class="language-c++" data-trim data-noescape>
 double x = 0.0;
@@ -72,7 +75,7 @@ if (x != x) {
         <section>
           <h2>Algorithms</h2>
           <p>Algorithms are step-by-step procedures for solving a problem.</p>
-          <p>In the context of this course, these will include algorithms that
+          <p>In the context of this course, these will include numerical algorithms that
             solve mathematical problems that are relevant to physics.</p>
         </section>
 
@@ -88,15 +91,15 @@ if (x != x) {
 
         <section>
           <h2>Quadratic Formula</h2>
-          <p>Given $ax^2 + bx + c = 0$, the solutions are:</p>
+          <p>For a standard quadratic equation $ax^2 + bx + c = 0$, the solutions are:</p>
           $$
           x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
           $$
           <p>The equation has only one solution when $b^2 - 4ac = 0$, and no
           real solution when $b^2 - 4ac < 0$.</p>
           <p>However, this formula is not good when $b^2 \gg 4ac$. In that case,
-            one of the numerators will evaluate to zero due to machine precision. This is called <i>catastrophic
-            cancellation</i></p>
+            one of the numerators will evaluate to zero due to machine
+            precision. This is called <em>catastrophic cancellation</em>.</p>
         </section>
 
         <section>
@@ -153,15 +156,17 @@ $$
         <section>
           <h2>Fixed Point Iteration</h2>
           <p>Why does this method work?</p>
-          <p>Let $x_*$ be the solution. We can expand $x_{n+1} = g(x_n)$ around $x_*$:</p>
-          $$
-          x_{n+1} = g(x_*) + g'(x_*)(x_n - x_*) + \cdots
-          $$
-          <p>Since $x_*$ is a solution, $g(x_*) = x_*$, so</p>
-          $$
-          x_{n+1} - x_* = g'(x_*)(x_n - x_*) + \cdots
-          $$
-          <p>The distance to the solution shrinks if $\left|g'(x)\right|<1$</p>
+          <div class="fragment">
+            <p>Let $x_*$ be the solution. We can expand $x_{n+1} = g(x_n)$ around $x_*$:</p>
+            $$
+            x_{n+1} = g(x_*) + g'(x_*)(x_n - x_*) + \cdots
+            $$
+            <p>Since $x_*$ is a solution, $g(x_*) = x_*$, so</p>
+            $$
+            x_{n+1} - x_* = g'(x_*)(x_n - x_*) + \cdots
+            $$
+            <p>The distance to the solution shrinks if $\left|g'(x)\right|<1$</p>
+          </div>
         </section>
 
         <section>
@@ -250,10 +255,20 @@ $$
           <h2>Bisection Method</h2>
           <p>Bisection method does not work when:</p>
           <ul>
-            <li>$f(x)$ only touches the $x$ axis and does not go negative</li>
+            <li>$f(x)$ only touches the $x$ axis and does not change sign</li>
             <li>If $f(x)$ has multiple roots within $[a, b]$, the method will only converge to a single root</li>
             <li>$f(x)$ is not continuous</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>Bisection Method</h2>
+          <p>Real life example from research</p>
+          $$
+          x = 600\frac{x^2b}{\ell_B E_1\left[(8x^2b)^{-1}\right]},\quad E_1(z) = \int_z^\infty t^{-1}e^{-t}\,dt
+          $$
+          <p>Mathematica has trouble finding the solution, however a simple
+          bisection program works well</p>
         </section>
 
         <section>
@@ -272,15 +287,17 @@ $$
         <section>
           <h2>Newton's Method</h2>
           <p>Why does it work?</p>
-          <p>Let $x_*$ be the solution. We can expand $x_{n+1} = x_n - f(x_n)/f'(x_n)$ around $x_*$:</p>
-          $$
-          x_{n+1} = x_* - \frac{f(x_*)}{f'(x_*)} + \frac{f''(x_*)}{2f'(x_*)}(x_n - x_*)^2 + \cdots
-          $$
-          <p>Since $x_*$ is a solution, $f(x_*) = 0$, so</p>
-          $$
-          x_{n+1} - x_* = \frac{f''(x_*)}{2f'(x_*)}(x_n - x_*)^2 + \cdots
-          $$
-          <p>The distance to the solution shrinks quadratically. Convergence is much faster than the previous two methods.</p>
+          <div class="fragment">
+            <p>Let $x_*$ be the solution. We can expand $x_{n+1} = x_n - f(x_n)/f'(x_n)$ around $x_*$:</p>
+            $$
+            x_{n+1} = x_* - \frac{f(x_*)}{f'(x_*)} + \frac{f''(x_*)}{2f'(x_*)}(x_n - x_*)^2 + \cdots
+            $$
+            <p>Since $x_*$ is a solution, $f(x_*) = 0$, so</p>
+            $$
+            x_{n+1} - x_* = \frac{f''(x_*)}{2f'(x_*)}(x_n - x_*)^2 + \cdots
+            $$
+            <p>The distance to the solution shrinks quadratically. Convergence is much faster than the previous two methods.</p>
+          </div>
         </section>
 
         <section>
