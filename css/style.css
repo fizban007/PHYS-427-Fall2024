@@ -5,6 +5,13 @@
   margin-right: 0.2;
 }
 
+.reveal section .center p {
+  text-align: center;
+  text-margin: 0.2;
+  margin-left: 0.2;
+  margin-right: 0.2;
+}
+
 .reveal section pre code {
   font-size: 1.4em;
   line-height: 1.1;
