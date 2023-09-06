@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 4</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Implementing Root Finding</h2>
+        </section>
+
+        <section>
+          <h2>Root Finding Algorithms</h2>
+          <p>We discussed 3 root-finding algorithms to solve the equation $f(x) = 0$ in
+          the previous lecture:</p>
+          <ul>
+            <li>Fixed Point Iteration</li>
+            <li>Bisection</li>
+            <li>Newton's Method</li>
+          </ul>
+          <p>All of them involve some iteration procedure.</p>
+        </section>
+
+        <section>
+          <h2>When to terminate?</h2>
+          <p>How do we know when to stop iterating?</p>
+          <div class="fragment">
+            <ul>
+              <li>Stop when the function value is close enough to 0</li>
+              <li>Stop when the change in $x$ is small enough</li>
+              <li>Stop when the interval is small enough</li>
+            </ul>
+            <p>How small is "small enough"?</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Tolerance</h2>
+          <p>Typically, we need to supply a given tolerance to the algorithm,
+          letting it know that this the precision we would like to achieve.</p>
+          <p>There are two types of tolerance: <em>absolute</em> and <em>relative</em>.</p>
+          <p>For example, we can stop when $|f(x_n)| < 10^{-8}$, or when $|x_n -
+          x_{n-1}| < 10^{-8}$. Both are given in absolute tolerance.</p>
+          <p>We can also choose to stop when $|1 - x_n/x_{n-1}| < 10^{-8}$. This
+          is an example of relative tolerance.</p>
+        </section>
+
+        <section>
+          <h2>Tolerance</h2>
+          <p>Which tolerance should we use?</p>
+          <div class="fragment">
+            <p>It depends on the problem:</p>
+            <ul>
+              <li>If the target value is close or equal to zero, then it makes
+              sense to use absolute tolerance. Our $f(x) = 0$ problem falls into
+              this category.</li>
+              <li>If there are multiple values to compare, and they are each
+              very different in magnitude, then relative tolerance provides a
+              universal test. This can be useful e.g. when iterating towards the
+              solution set of multiple coupled equations.</li>
+            </ul>
+            <p>Sometimes both are used together: $|x_n - y_n| < \epsilon_a + |y_n|\epsilon_r$.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implementing Root Finding in C++</h2>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>You can use "templates" to write functions that accept a parameter
+          of generic type, such as another function:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+template &lt;typename F&gt;
+double evaluate(const F& f, double x) {
+  return f(x);
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>Then you can pass in any function that takes a double and returns
+            a double:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+double square(double x) {
+  return x * x;
+}
+
+evaluate(square, 3.0); // returns 9.0
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>Another way to write this is to use a lambda function:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+evaluate([](double x) { return x * x; }, 3.0); // returns 9.0
+            </code></pre>
+          </div>
+          <p>The structure <code>[] (double x) { return x * x; }</code> is
+          called a lambda function. It is essentially an anonymous function that
+          can be defined inline.</p>
+          <p>You can pass external variables to the lambda function in the <code>[]</code>.
+            Anything inside will be "captured" within the function. You can use <code>[&]</code> to
+            capture everything by reference.</p>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>Function templates can be used to implement generic root-finding
+          functions:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+template &lt;typename F&gt;
+double bisection(const F& f,
+                 double a, double b,
+                 double tolerance) {
+  // ...
+}
+            </code></pre>
+          </div>
+          <p>This function can apply the bisection algorithm on an arbitrary function <code>f</code> on
+          an initial interval $[a, b]$, until the interval shrinks down to
+          within a given tolerence.</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+        </section>
+
+        <section>
+          <h2>Everything has a Unit in Physics</h2>
+          <br>
+          <p>Length is never just $5$. It's $5\,\mathrm{km}$ or $5\,\mathrm{in}$
+          or $5\,\mathrm{mm}$.</p>
+          <p>Velocity is never just $42$. It's $42\,\mathrm{m/s}$ or
+          $42\,\mathrm{km/h}$ or $42\,\mathrm{mi/h}$.</p>
+          <p>An equation is only valid if the units on both sides match.</p>
+        </section>
+
+        <section>
+          <h2>Computers only Deals with Pure Numbers</h2>
+          <br>
+          <p>Computers do not understand units. Mathematical functions also
+          typically need to operate on <em>dimensionless</em> quantities:</p>
+          <p>E.g. $\sin(x)$, $\exp(x)$, $\log(x)$, $P_m(x)$, etc.</p>
+          <p>$\sin(5\,\mathrm{km})$ does not make sense.</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>This is the partial or full removal of physical dimensions from an
+          equation involving physical quantities.</p>
+          <p>Very powerful technique to simplify the form of equations and
+          extract intrinsic qualities of the system.</p>
+          <p>Also closely related to dimensional analysis.</p>
+        </section>
+
+        <section>
+          <h2>Dimension vs Unit</h2>
+          <p>Velocity can have many units: $\mathrm{m/s}$, $\mathrm{km/h}$, etc.</p>
+          <p>Its dimension is always $\mathrm{Length/Time}$.</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>Typically, we choose a set of <em>reference units</em> for all the
+            physical quantities involved, that are intrinsic to the system.</p>
+          <p>Consider Planck's law of blackbody radiation:</p>
+          $$
+          B_\nu(\nu, T) = \frac{2h\nu^3}{c^2}\frac{1}{e^{h\nu/ k_B T} - 1}
+          $$
+          <p>I wish to know at what frequency gives the highest radiation intensity</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>Set $x = h\nu/k_B T$:</p>
+          $$
+          B_\nu(x, T) = \frac{2(k_B T)^3}{c^2h^2}\frac{x^3}{e^x - 1}
+          $$
+          <p>The maximum occurs where $dB_\nu/dx = 0$:</p>
+          $$
+          e^x(3 - x) = 3
+          $$
+          <p>This is a simple mathematical equation (with no units) that can be
+          plugged into a root-finding program. The result is $x \approx 2.82$. The
+          maximum intensity occurs at $\nu \approx 2.82k_B T/h$.</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>Another example: the equation of motion for a pendulum:</p>
+          $$
+          \frac{d^2\theta}{dt^2} + \frac{g}{L}\sin\theta = 0
+          $$
+          <p>$\theta$ is already dimensionless. What should be chosen to be the
+          unit for time?</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>Choose a time unit $t_0 = \sqrt{L/g}$, and set $x = t/t_0$.
+          We can write down a <em>dimensionless</em> equation:</p>
+          $$
+          \frac{d^2\theta}{dx^2} + \sin\theta = 0
+          $$
+          <p>It's a significant simplification from the original equation, and
+          gives us an intrinsic time scale $t_0$ which is related to the
+          pendulum period.</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>Another example: Lagrange points</p>
+          <img data-src="lagrange.png"
+            style="display: inline-block; width: 90%;">
+          <p>Location of $L_1$ is given by the following equation:</p>
+$$
+\frac{GM_1}{(R - r_1)^2} - \frac{GM_2}{r_1^2} = \left(\frac{M_1}{M_1 + M_2}R - r_1\right)\frac{G(M_1 + M_2)}{R^3}
+$$
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <p>$R$ is the natural length scale in the problem. Define $x_1 = r_1/R$.</p>
+          <p>The natural scale of mass is $M_1 + M_2$. Define $\mu = M_2/(M_1 +
+          M_2)$. The other mass becomes $1 - \mu$.</p>
+          <p>The equation now becomes</p>
+          $$
+          \frac{1 - \mu}{(1 - x_1)^2} - \frac{\mu}{x_1^2} = \left(1 - \mu - x_1\right)
+          $$
+          <p>It's significantly simpler, and the number of numerical parameters
+          has been reduced to only 1. This dimensionless equation can now be
+          used with root-finding algorithms.</p>
+        </section>
+
+        <section>
+          <h2>Nondimensionalization</h2>
+          <br>
+          <p>In the future, we will encounter many more examples of
+          nondimensionalization. It will be even more important for differential
+          equations.</p>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
