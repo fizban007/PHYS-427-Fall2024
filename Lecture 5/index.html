@@ -210,7 +210,7 @@
           $$
           f(x_1, x_2) = \left[\sin\left(\frac{x_1}{x_2}\right) + \frac{x_1}{x_2} - e^{x_1}\right]\times \left[\frac{x_2}{x_1} - e^{x_2}\right]
           $$
-          <p>Let's try to simultaneously calculate $f(1.5, 0.5)$ and $\partial f/\partial x_1(1.5, 0.5)$</p>
+          <p>Let's try to simultaneously calculate $f(1.5, 0.5)$ and $\partial f/\partial x_1(1.5, 0.5)$ using "forward mode".</p>
         </section>
 
         <section>
@@ -246,15 +246,15 @@
             </tr>
             <tr>
               <td>$v_7 = v_3 + v_2 - v_4 = -1.341$</td>
-              <td>$\dot{v}_7 = \dot{v}_3 + \dot{v}_2 - \dot{v}_4 = -4.480$</td>
+              <td>$\dot{v}_7 = \dot{v}_3 + \dot{v}_2 - \dot{v}_4 = -4.462$</td>
             </tr>
             <tr>
               <td>$v_8 = v_5 - v_6 = -1.316$</td>
               <td>$\dot{v}_8 = \dot{v}_5 - \dot{v}_6 = -0.222$</td>
             </tr>
             <tr>
-              <td>$f(x_1, x_2) = v_7 \times v_8 = 1.765$</td>
-              <td>$\partial f/\partial x_1 = \dot{v}_7 \times v_8 + v_7 \times \dot{v}_8 = 6.193$</td>
+              <td>$f(x_1, x_2) = v_7 \times v_8 = 1.76$</td>
+              <td>$\partial f/\partial x_1 = \dot{v}_7 \times v_8 + v_7 \times \dot{v}_8 = 6.17$</td>
             </tr>
           </table>
         </section>
