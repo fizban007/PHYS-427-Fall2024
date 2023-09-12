@@ -27,7 +27,7 @@
           <h2>Numerical Integration</h2>
           <p>The ordinary Riemann integral is defined as the limit:</p>
           $$
-          \int_a^b f(x) dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i) \Delta x
+          \int_a^b f(x) dx = \lim_{n \to \infty} \sum_{i=0}^n f(x_i) \Delta x
           $$
           <img src="Riemann_Integration_4.png" alt="integral" width="60%">
         </section>
@@ -37,7 +37,7 @@
           <p>The definition of Riemann integral can be used to calculate the
           numerical value:</p>
           $$
-          \int_a^b f(x) dx \approx \sum_{i=1}^N f(x_i) \Delta x
+          \int_a^b f(x) dx \approx \sum_{0=1}^N f(x_i) \Delta x
           $$
           <img src="naive.png" alt="integral" width="40%">
         </section>
@@ -128,7 +128,7 @@
           rule, since its error is second order.</p>
           <p>The rest of the Euler-Maclaurin formula gives error to all orders:</p>
           $$
-          \varepsilon = \sum_1^\infty \frac{B_{2k}}{(2k)!}h^{2k}\left[f^{(2k-1)}(a) - f^{(2k-1)}(b)\right]
+          \varepsilon = \sum_{k=1}^\infty \frac{B_{2k}}{(2k)!}h^{2k}\left[f^{(2k-1)}(a) - f^{(2k-1)}(b)\right]
           $$
           <p>where $B_{2k}$ are called <em>Bernoulli numbers</em></p>
         </section>
