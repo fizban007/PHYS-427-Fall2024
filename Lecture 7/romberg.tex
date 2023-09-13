@@ -1,0 +1,29 @@
+\documentclass{article}
+
+\usepackage{tikz}
+
+\begin{document}
+
+\begin{table}[h]
+  \centering
+  \bgroup
+  \setlength{\tabcolsep}{0.2em}
+  \def\arraystretch{1.1}
+  \begin{tabular}{cccccccc}
+    $S_1 \equiv R_{1,1}$ & & & & & & & \\
+    & $\searrow$ & & & & & & \\
+    $S_{2} \equiv R_{2,1}$ & $\rightarrow$ & $R_{2,2}$ & & & & & \\
+    & $\searrow$ & & $\searrow$ & & & & \\
+    $S_{3} \equiv R_{3,1}$ & $\rightarrow$ & $R_{3,2}$ & $\rightarrow$ & $R_{3,3}$ & & & \\
+    & $\searrow$ & & $\searrow$ & & $\searrow$ & & \\
+    $S_{4} \equiv R_{4,1}$ & $\rightarrow$ & $R_{4,2}$ & $\rightarrow$ & $R_{4,3}$ & $\rightarrow$ & $R_{4,4}$ & \\
+    & $\searrow$ & & $\searrow$ & & $\searrow$ & & $\searrow$
+  \end{tabular}
+  \egroup
+\end{table}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
