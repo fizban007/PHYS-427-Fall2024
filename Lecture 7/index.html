@@ -219,6 +219,16 @@
 
         <section>
           <h2>Gauss Quadrature</h2>
+          <p>Gauss quadrature works extremely well when the function to be
+          integrated is very smooth.</p>
+          <p>Integration using adaptive Simpson:</p>
+          <img src="convergence-simpson.png" alt="integral" width="80%">
+          <p>Integration using Gauss quadrature:</p>
+          <img src="convergence-gauss.png" alt="integral" width="80%">
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
           <p>Why does Gauss quadrature work?</p>
           <div class="fragment">
             <p>In essence, Gauss quadrature is using a degree $2n - 1$
@@ -255,7 +265,7 @@
 
         <section>
           <h2>Gauss Quadrature</h2>
-          <p>Given $n$ and $x_i$, we can form the
+          <p>Given $n$ and $\{x_i\}$, we can form the
           so-called <em>Lagrange interpolation polynomials</em>:</p>
           $$
           \ell_i(x) = \prod_{\substack{m=0\dots n-1 \\ m\neq i}}\frac{(x - x_m)}{(x_i - x_m)}
