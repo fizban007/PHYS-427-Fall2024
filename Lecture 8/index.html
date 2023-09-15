@@ -138,6 +138,55 @@
         </section>
 
         <section>
+          <h2>Improper Integrals</h2>
+          <p>Several possibilities:</p>
+          <ul>
+            <li>A singularity exists at either or both ends of the integration interval</li>
+            <li>One or both of the integration limits concern $\infty$</li>
+            <li>There exists an integrable infinity somewhere within the interval, e.g.:</li>
+            $$
+            \int_{-1}^1\frac{dx}{x^{2/3}} = 6
+            $$
+          </ul>
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>The most common trick is to use change of variables to eliminate the infinity. For example:</p>
+          $$
+          \int_a^bf(x)\,dx = \int_{1/b}^{1/a}\frac{1}{t^2}f\left(\frac{1}{t}\right)\,dt, \quad ab > 0
+          $$
+          <p>This can work when $a>0$ and $b\to\infty$, or $a\to-\infty$ and $b<0$. If
+          the interval goes through 0, break it apart first.</p>
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>If the integrand goes to infinity at end points as $1/\sqrt{x}$, we
+          can do the following change of variable if singularity happens at $a$:</p>
+          $$
+          \int_a^b f(x)\,dx = \int_0^\sqrt{b-a}2tf(a + t^2)\,dt,
+          $$
+          <p>If singularity is at $b$, then:</p>
+          $$
+          \int_a^b f(x)\,dx = \int_0^\sqrt{b-a}2tf(b - t^2)\,dt,
+          $$
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>In general, if the integrand diverges as $(x - a)^{-\gamma}$ with $0\leq\gamma
+          < 1$:</p>
+          $$
+          \int_a^bf(x)\,dx = \frac{1}{1-\gamma}\int_0^{(b-a)^{1-\gamma}}t^{\frac{\gamma}{1-\gamma}}f(t^{\frac{1}{1-\gamma}} + a)\,dt
+          $$
+          <p>If the singularity as at the upper limit $b$, then:</p>
+          $$
+          \int_a^bf(x)\,dx = \frac{1}{1-\gamma}\int_0^{(b-a)^{1-\gamma}}t^{\frac{\gamma}{1-\gamma}}f(b - t^{\frac{1}{1-\gamma}})\,dt
+          $$
+        </section>
+
+        <section>
           <h2>Monte Carlo Integration</h2>
           <p>Monte Carlo integration is a method to estimate the value of an
             integral by using random numbers.</p>
