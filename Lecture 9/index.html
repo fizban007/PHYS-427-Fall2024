@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 9</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Ordinary Differential Equations</h2>
+        </section>
+
+        <section>
+          <h2>Ordinary Differential Equations</h2>
+          <p>Ordinary Differential Equations (ODEs) are equations for functions
+          with only one variable (but there may be multiple unknown functions):</p>
+          $$
+          \frac{dy_i}{dx} = f(x, y_i)
+          $$
+          <p>The goal is to solve for the unknown funtions $y_i(x)$.</p>
+        </section>
+
+        <section>
+          <h2>Ordinary Differential Equations</h2>
+          <p>Example:</p>
+          $$
+          \frac{dy}{dx} = -y
+          $$
+          <div class="fragment">
+            <p>has the solution</p>
+            $$
+            y(x) = C e^{-x}
+            $$
+            <p>Solutions to first order ODEs always involve an unknown constant.
+            It needs to be determined using some external conditions.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Initial Value Problems</h2>
+          <p>Initial value problems (IVPs) are ODEs with a given value of the
+          function at some point $x_0$:</p>
+          $$
+          \frac{dy}{dx} = f(x, y), \quad y(x_0) = y_0
+          $$
+          <p>In physics, this most often arises from time evolution: you know
+          the state of a system at time $t = t_0$, and you want to predict its
+          behavior at future times.</p>
+        </section>
+
+        <section>
+          <h2>Boundary Value Problems</h2>
+          <p>Another common type of ODEs are boundary value problems (BVPs):</p>
+          $$
+          \frac{dy}{dx} = f(x, y), \quad y(a) = y_0, \quad y(b) = y_1
+          $$
+          <p>We seek solution $y(x)$ in the interval $x\in [a, b]$. We will deal
+          with IVPs first, then BVPs later.</p>
+        </section>
+
+        <section>
+          <h2>Euler Integration</h2>
+          <p>The simplest way to solve an IVP is to use Euler integration:</p>
+          $$
+          y_{n + 1} = y_n + h f(x_n, y_n)
+          $$
+          <p>where $h$ is the step size, and $y_n$ is the value of $y(x)$ at $x_0 + nh$.
+          What is the order of accuracy of this method?</p>
+          <div class="fragment">
+            <p>Since this is effectively truncating the Taylor series right
+            after the first derivative, this method is accurate to first order
+            in $h$.</p>
+            $$
+            y(x + h) = y(x) + h y'(x) + O(h^2)
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Euler Integration</h2>
+          <img src="Euler.png" alt="euler" width="60%">
+        </section>
+
+        <section>
+          <h2>Euler Integration</h2>
+          <p>The idea of Euler integration is very instructive, but the method
+          itself is not very useful in practice:</p>
+          <ul>
+            <li>It is not very accurate, being only first order in $h$.</li>
+            <li>Since it's not very accurate, it requires very small $h$ and
+            many more steps to achieve the same accuracy as other methods, which is not very efficient.</li>
+            <li>It is not very stable (to be defined next week).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Midpoint Method</h2>
+          <p>Consider the following extension of the Euler method:</p>
+          $$
+          \begin{align}
+          k_1 &= f(x_n, y_n) \\
+          k_2 &= f\left(x_n + \frac{1}{2} h, y_n + \frac{1}{2} h k_1\right) \\
+          y_{n + 1} &= y_n + h k_2
+          \end{align}
+          $$
+          <p>$k_1$ is the slope at the beginning of the interval, and $k_2$ is
+          the slope at the midpoint of the interval (estimated using $k_1$).</p>
+          <p>What is the order of accuracy of this method?</p>
+        </section>
+
+        <section>
+          <h2>Midpoint Method</h2>
+          <p>Expanding both $y(x + h)$ and $y(x)$ around $x + \frac{1}{2} h$ in
+          Taylor series:</p>
+          $$
+          \begin{align}
+          y(x + h) &= y(x + h/2) + \frac{h}{2}y'(x + h/2) + \frac{1}{8} h^2 y''(x + h/2) + O(h^3) \\
+          y(x) &= y(x + h/2) - \frac{h}{2} y'(x + h/2) + \frac{1}{8} h^2 y''(x + h/2) + O(h^3)
+          \end{align}
+          $$
+          <p>Taking the difference between these two equations:</p>
+          $$
+          y(x + h) = y(x) + h y'(x + h/2) + O(h^3)
+          $$
+          <p>The midpoint method is accurate to second order in $h$.</p>
+        </section>
+
+        <section>
+          <h2>Runge-Kutta Methods</h2>
+          <p>Runge-Kutta methods are a family of methods that are more accurate
+          than Euler integration. The midpoint method is also known as the 2nd
+            order Runge-Kutta method, or RK2.</p>
+
+          <p>The most common one is the 4th order Runge-Kutta method, aka RK4:</p>
+          $$
+          \begin{align}
+          k1 &= f(x_n, y_n) \\
+          k2 &= f\left(x_n + \frac{1}{2} h, y_n + \frac{1}{2} h k_1\right) \\
+          k3 &= f\left(x_n + \frac{1}{2} h, y_n + \frac{1}{2} h k_2\right) \\
+          k4 &= f(x_n + h, y_n + h k_3) \\
+          y_{n + 1} &= y_n + h\left(\frac{1}{6} k_1 + \frac{1}{3}k_2 + \frac{1}{3}k_3 + \frac{1}{6}k_4\right)
+          \end{align}
+          $$
+        </section>
+
+        <section>
+          <h2>4th Order Runge Kutta</h2>
+          <img src="rk4.png" alt="rk4" width="60%">
+        </section>
+
+        <section>
+          <h2>4th Order Runge Kutta</h2>
+          <p>The accuracy of RK4 is, as advertised, 4th order in $h$.</p>
+          <p>For many physicists, RK4 is THE method of choice for solving numerical ODEs. It
+          is accurate enough for many applications. In a lot of contexts, Runge-Kutta
+          simply means RK4.</p>
+          <p>What are some of its drawbacks?</p>
+        </section>
+
+        <section>
+          <h2>4th Order Runge Kutta</h2>
+          <p>Drawbacks of RK4:</p>
+          <ul>
+            <li>It is not very stable. It is not very good at solving stiff
+            equations (to be defined next week).</li><br>
+            <li>It is not very efficient. Fixed step size means you need to
+            choose $h$ according to the most challenging part of the solution.</li><br>
+            <li>4th order accuracy sometimes is not enough!</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Implementation</h3>
+          <p>Let's implement Euler's method in C++.</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+class euler_method {
+ public:
+  template &lt;typename F, typename StopCondition&gt;
+  std::vector&lt;double&gt; integrate(const F& f,
+                                const StopCondition& stop,
+                                double h, double x0,
+                                const std::vector&lt;double&gt;& y0) {
+    double x = x0;
+    std::vector&lt;double&gt; y = y0;
+    while(stop(x, y) == false) {
+      xs.push_back(x);
+      result.push_back(y);
+      y += h * f(x, y);
+      x += h;
+    }
+    return y;
+  }
+
+  std::vector&lt;double&gt; xs;
+  std::vector&lt;std::vector&lt;double&gt;&gt; result;
+};
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          <p>Using this class for a toy problem, solve $dy/dx = \cos(x)$:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+auto dydx = [](double x, const std::vector&lt;double&gt;& y) {
+  return std::vector{std::cos(t)};
+};
+
+auto stop = [](double x, const std::vector&lt;double&gt;& y) {
+  return x &gt; 10;
+};
+
+euler_method solver;
+auto y = solver.integrate(dydx, stop, 0.01, 0.0, {0.0});
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          Euler method $h = 0.1$<br>
+          <img src="sin-h0.1.png" alt="h0.1" width="60%">
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          Euler method $h = 0.01$<br>
+          <img src="sin-h0.01.png" alt="h0.01" width="60%">
+        </section>
+
+        <section>
+          <h2>Output and Plotting</h2>
+          <p>We can directly write to a text file using <code>ofstream</code>.
+          Include the header <code>&lt;fstream&gt;</code>.</p>
+          <div style="width: 100%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+std::ofstream output_file("output.csv");
+for (int i = 0; i &lt; solver.xs.size(); i++) {
+  output_file << solver.xs[i] << "," << solver.result[i][0] << std::endl;
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Output and Plotting</h2>
+          <p>Then we can plot the result using Python:</p>
+          <div style="width: 100%; margin: auto;">
+            <pre><code class="language-python" data-trim data-noescape>
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt("output.csv", delimiter=",")
+plt.plot(data[:, 0], data[:, 1])
+plt.show()
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          <p>We will be implementing RK4 in the homework using C++.</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+class runge_kutta_4 {
+ public:
+  runge_kutta_4(int num_equations);
+
+  template &lt;typename F, typename StopCondition&gt;
+  std::vector&lt;double&gt; integrate(const F& f,
+                                const StopCondition& stop,
+                                double x0,
+                                const std::vector&lt;double&gt;& y0,
+                                double h);
+
+  int n_eq;
+  std::vector&lt;double&gt; k1, k2, k3, k4, y_tmp;
+  std::vector&lt;double&gt; xs;
+  std::vector&lt;std::vector&lt;double&gt;&gt; result;
+};
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>RK4 vs Euler</h2>
+          Euler with $h = 1.0$<br>
+          <img src="sin-h1-euler.png" alt="euler-h1.0" width="60%">
+        </section>
+
+        <section>
+          <h2>RK4 vs Euler</h2>
+          RK4 with $h = 1.0$<br>
+          <img src="sin-h1-rk4.png" alt="rk4-h1.0" width="60%">
+        </section>
+
+        <section>
+          <h2>What's Next?</h2>
+          <p>We will go further than RK4 in the next lectures:</p>
+          <ul>
+            <li>Error estimate</li>
+            <li>Adaptive step size control</li>
+            <li>Higher order methods</li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
