@@ -199,7 +199,9 @@ class euler_method {
     while(stop(x, y) == false) {
       xs.push_back(x);
       result.push_back(y);
-      y += h * f(x, y);
+      for (int i = 0; i < y.size(); i++) {
+        y[i] += h * f(x, y)[i];
+      }
       x += h;
     }
     return y;
