@@ -218,7 +218,7 @@ class euler_method {
           <div style="width: 90%; margin: auto;">
             <pre><code class="language-cpp" data-trim data-noescape>
 auto dydx = [](double x, const std::vector&lt;double&gt;& y) {
-  return std::vector{std::cos(t)};
+  return std::vector{std::cos(x)};
 };
 
 auto stop = [](double x, const std::vector&lt;double&gt;& y) {
