@@ -138,6 +138,20 @@
         </section>
 
         <section>
+          <h2>General Strategy</h2>
+          <p>A few possible practical improvements to the strategy:</p>
+          <ul>
+            <li>When the previous step size was rejected, do not increase the
+            step size immediately afterwards.</li>
+            <li>An empirically more stable way to update the step size:</li>
+            $$
+            h' = S h(\mathrm{err})^{-0.7/5}(\mathrm{err}_\mathrm{prev})^{0.4/5}
+            $$
+            <li>Use interpolation so that we have a uniform set of output points</li>
+          </ul>
+        </section>
+
+        <section>
           <h2>Adaptive RK4 Example</h2>
           <p>Let's look at an example</p>
           $$
@@ -167,7 +181,9 @@
           <img src="example-h.png" alt="y" width="60%">
         </section>
 
-
+        <section>
+          <h2>Workflow</h2>
+        </section>
 
       </div>
     </div>
