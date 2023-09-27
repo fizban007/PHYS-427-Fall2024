@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 13</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Stiff Problems and Stability</h2>
+        </section>
+
+        <section>
+          <h2>Stiff Problems</h2>
+          <p>Consider the following set of equations:</p>
+          $$
+          \begin{align}
+          \frac{du}{dx} &= 998u + 1998v \\
+          \frac{dv}{dx} &= -999u - 1999v
+          \end{align}
+          $$
+          <p>with initial conditions $u(0) = 1$ and $v(0) = 0$.</p>
+        </section>
+
+        <section>
+          <h2>Stiff Problems</h2>
+          <p>Solving it using RK4:</p>
+          <img src="stiff.png" alt="stiff" width="60%">
+        </section>
+
+        <section>
+          <h2>Stiff Problems</h2>
+          <p>The exact solution is:</p>
+          $$
+          \begin{align}
+          u(x) &= 2e^{-x} - e^{-1000x} \\
+          v(x) &= -e^{-x} + e^{-1000x}
+          \end{align}
+          $$
+          <div class="fragment">
+            <p>At the beginning of the integration, the second term rapidly drops to
+              zero. If this process is not resolved correctly, then numerical
+              solutions becomes completely off.</p>
+            <p>Due to this rapid change at small length scales, this problem is <em>stiff</em>.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Stiff Problems</h2>
+          <p>Stiffness often occurs in a problem where there are two very
+            different scales of $x$ where $y$ is changing.</p>
+          <div class="fragment">
+            <p>This occurs more often than you might think. Consider the following chemical reaction:</p>
+            $$
+            \begin{align}
+            A &\xrightarrow{0.04} B \\
+            B + B &\xrightarrow{3\times 10^7} C + B \\
+            B + C &\xrightarrow{1\times 10^4} A + C
+            \end{align}
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Stiff Problems</h2>
+          <p>The concentration of chemicals $A$, $B$, and $C$ are described by
+          the following differential equations:</p>
+          $$
+          \begin{align}
+          \frac{dA}{dt} &= -0.04A + 10^4BC \\
+          \frac{dB}{dt} &= 0.04A - 3\times 10^7B^2 - 10^4BC \\
+          \frac{dC}{dt} &= 3\times 10^7B^2
+          \end{align}
+          $$
+        </section>
+
+        <!-- <section>
+             <h2>Stability</h2>
+             <p>For the system of equations we looked at earlier, RK4 is <em>unstable</em> at
+             $h = 3\times 10^{-3}$, but is <em>stable</em> at $h = 2\times 10^{-3}$.</p>
+             How to quantify stability?
+             </section>
+        -->
+        <section>
+          <h2>Stability of a Single Equation</h2>
+          <p>Consider the simple equation:</p>
+          $$
+          \frac{dy}{dx} = -\lambda y
+          $$
+          <div class="fragment">
+            <p>Let's apply the simple Euler method to solve it:</p>
+            $$
+            y_{n+1} = y_n + h(-\lambda y_n) = (1 - h\lambda)y_n
+            $$
+            <p class="fragment">
+              How does $|y_n|$ behave as $n \to \infty$?
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Stability of a Single Equation</h2>
+          <p>For our simple Euler method on the sample equation:</p>
+          $$
+          |y_{n+1}| = |(1 - h\lambda)y_n| = |1 - h\lambda||y_n|
+          $$
+          <p class="fragment">So, if $|1 - h\lambda| < 1$, then $|y_n| \to 0$ as $n \to \infty$. </p>
+          <p class="fragment">If $|1 - h\lambda| > 1$, then $|y_n| \to \infty$ as $n \to \infty$.
+          This causes unstable behavior. The
+          stability criteria is $h < 2/\lambda$.</p>
+          <p class="fragment">If $\lambda$ is large, then $h$ needs to be very small!</p>
+        </section>
+
+        <section>
+          <h2>Stability of Multiple Equations</h2>
+          <p>We can generalize this to a set of linear equations:</p>
+          $$
+          \frac{d\mathbf{y}}{dx} = -\mathbf{A}\cdot\mathbf{y}
+          $$
+          <p>where $\mathbf{A}$ is an $n\times n$ matrix.</p>
+        </section>
+
+        <section>
+          <h2>Stability of Multiple Equations</h2>
+          <p>If we apply the Euler method to this system, we get:</p>
+          $$
+          \mathbf{y}_{n+1} = \mathbf{y}_n + h(-\mathbf{A}\cdot\mathbf{y}_n) = (1 - h\mathbf{A})\mathbf{y}_n = (1 - h\mathbf{A})^n \mathbf{y}_0
+          $$
+          <div class="fragment">
+            <p>If $\mathbf{A}$ is diagonalizable, with eigenvalues $\{\lambda_i\}$ and eigenvectors
+            $\{\boldsymbol{\xi}_i\}$, then we can expand $y_0$ in terms of the eigenvectors:</p>
+            $$
+            \mathbf{y}_0 = \sum_i c_i\boldsymbol{\xi}_i
+            $$
+            <div class="fragment">
+              <p>Then, we can write:</p>
+              $$
+              \mathbf{y}_n = \sum_i c_i(1 - h\lambda_i)^n\boldsymbol{\xi}_i
+              $$
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Stability of Multiple Equations</h2>
+          <p>For stability, we need $|1 - h\lambda_i| < 1$ for all $i$. Otherwise
+          one of the components may blow up. The criteria becomes:</p>
+          $$
+          h < \frac{2}{\lambda_\mathrm{max}}
+          $$
+          <p>A system of equations is stiff if $\lambda_\mathrm{max} /
+          \lambda_\mathrm{min} \gg 1$.</p>
+        </section>
+
+        <section>
+          <h2>Stability of Multiple Equations</h2>
+          <p>The system we looked at in the beginning of this lecture has matrix:</p>
+          $$
+          \mathbf{A} = \begin{pmatrix}
+          998 & 1998 \\
+          -999 & -1999
+          \end{pmatrix}
+          $$
+          <div class="fragment">
+          <p>Its diagonalized form is:</p>
+          $$
+          \mathbf{A}_\mathrm{diag} = \begin{pmatrix}
+          -1000 & 0 \\
+          0 & -1
+          \end{pmatrix}
+          $$
+          </div>
+        </section>
+
+        <section>
+          <h2>How to Overcome Stiffness?</h2>
+          <div class="fragment">(without resorting to a tiny step size)</div>
+        </section>
+
+        <section>
+          <h2>Implicit Schemes</h2>
+          <p>Consider the following modification to Euler's method:</p>
+          $$
+          y_{n+1} = y_n + h y'_{n+1}
+          $$
+          <div class="fragment">
+          <p>$y'_{n+1}$ is the derivative $dy/dx$ evaluated at step $n+1$. Then
+          applying this to our simple equation $y' = -\lambda y$, we get:</p>
+          $$
+          y_{n+1} = y_n - h\lambda y_{n+1},\quad y_{n+1} = \frac{y_n}{1 +
+          h\lambda} $$
+          <p>Now this is absolutely stable. As long as $\lambda > 0$, you always get decreasing $|y_n|$.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implicit Schemes</h2>
+          <p>The method we constructed is called the <em>implicit</em> Euler's method. How
+          do we actually carry it out?</p>
+          <div class="fragment">
+            <p>We need to solve the following equation at every step:</p>
+            $$
+            y_{n+1} = y_n + h f(x_n + h, y_{n+1})
+            $$
+            <p>Remember root-finding?</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implicit Schemes</h2>
+          <p>A way to avoid solving a nonlinear equation at every step is to linearize it:</p>
+          $$
+          y_{n+1} = y_n + h\left[ f(y_n) + \left.\frac{df}{dy}\right|_{y_n}(y_{n+1} - y_n)\right]
+          $$
+          <div class="fragment">
+            <p>Rearranging terms, we get:</p>
+            $$
+            y_{n+1} = y_n + h\left(1 - h\frac{df}{dy}\right)^{-1} f(y_n)
+            $$
+            <p>This is called the <em>semi-implicit Euler's method</em>.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implicit Schemes</h2>
+          <p>Semi-implicit methods are typically much more stable than explicit
+          schemes, but it's not guaranteed. To guarantee stability, one needs to
+          solve the nonlinear equation for $y_{n+1}$ at every step to a target
+          tolerance.</p>
+          <div class="fragment">
+            <p>In the case of multiple-equation systems, the equation for
+            $\mathbf{y}_{n+1}$ is a nonlinear matrix equation:</p>
+            $$
+            \mathbf{y}_{n+1} = \mathbf{y}_n + h \mathbf{f}(\mathbf{y}_{n+1})
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>For the group project 1, you will be using <code>git</code> to
+          collaborate. The workflow for multiple collaborators is slightly
+          different from your usual single-person workflow.</p>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>Always <code>git pull</code> before <code>git push</code>.</p>
+          <div class="fragment">
+            <p>Someone else might have pushed to the GitHub online repository.
+            If that is true, you will not be allowed to push to it. You will
+            first need to incorporate their commits to your own repository.</p>
+            <p><code>VS Code</code> does this for you if you click on the
+            "Synchronize" button.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>The first time you pull and there are other people's commits, you
+            may see an error message from <code>git</code> not knowing how to
+            handle it. You need to run one of the two following commands:</p>
+          <ul>
+            <li><code>git config --global pull.rebase false</code></li>
+            <li><code>git config --global pull.rebase true</code></li>
+          </ul>
+          <div class="fragment">
+          <p>The first option is usually the default behavior. Under this
+          option, every time you pull someone else's commits while you have your
+          own commits, a "merge" commit will be generated.</p>
+          <p>The second option skips this merge commit, but conflict handling
+          can be a bit more annoying.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>Try to work on different files, or different sections of the same file.</p>
+          <div class="fragment">
+            <p><code>git</code> is usually very good at figuring out who did
+            what and merging those changes together. The exception is when two
+              people changed the same line. Then <code>git</code> will have no
+              idea whose version to use, and you will need to resolve the conflict by hand.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Reach out if you have questions!</h2>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
