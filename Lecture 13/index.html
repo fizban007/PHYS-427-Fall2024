@@ -286,7 +286,7 @@
           option, every time you pull someone else's commits while you have your
           own commits, a "merge" commit will be generated.</p>
           <p>The second option skips this merge commit, but conflict handling
-          can be a bit more annoying.</p>
+            can be a bit more annoying. See a guide <a href="https://sakhawat-ali.medium.com/git-resolving-conflict-while-git-rebase-33b70ddb528e">here</a></p>
           </div>
         </section>
 
@@ -298,6 +298,8 @@
             what and merging those changes together. The exception is when two
               people changed the same line. Then <code>git</code> will have no
               idea whose version to use, and you will need to resolve the conflict by hand.</p>
+            <p>Add the file after you solve the conflict, then commit it. It
+            will generate a merge commit.</p>
           </div>
         </section>
 
