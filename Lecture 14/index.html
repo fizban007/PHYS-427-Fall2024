@@ -28,7 +28,7 @@
           <p>Runge-Kutta methods use the values of $x$ and $y$ at step $n$ to
           calculate the value of $y$ at step $n+1$. For example RK4:</p>
           $$
-          y_{n+1} = y_n + \frac{1}{6}(k_1 + 2k_2 + 2k_3 + k_4)
+          y_{n+1} = y_n + \frac{1}{6}h(k_1 + 2k_2 + 2k_3 + k_4)
           $$
           <p>Although $k_1$ through $k_4$ makes estimates between $n$ and $n+1$,
           they all use values starting at $x_n$ and $y_n$</p>
@@ -127,6 +127,33 @@
         </section>
 
         <section>
+          <h2>Recap for Initial Value Problems</h2>
+        </section>
+
+        <section>
+          <h2>Methods to Solve IVPs</h2>
+          <p>We have discussed many methods of solving initial value problems of
+          the following type:</p>
+          $$
+          \frac{d\mathbf{y}}{dx} = f(x, \mathbf{y})
+          $$
+          <p>with known $\mathbf{y}(0)$.</p>
+        </section>
+
+        <section>
+          <h2>Methods to Solve IVPs</h2>
+          <ul>
+            <li class="fragment">4th-order Runge-Kutta Method</li>
+            <li class="fragment">RK4 with adaptive stepsize control</li>
+            <li class="fragment">Higher order RK methods, with stepsize control</li>
+            <li class="fragment">Leapfrog integration, symplectic methods</li>
+            <li class="fragment">Bulirsch-Stoer method</li>
+            <li class="fragment">Implicit methods</li>
+            <li class="fragment">Predictor-Corrector methods</li>
+          </ul>
+        </section>
+
+        <section>
           <h2>Real World Applications</h2>
         </section>
 
@@ -138,8 +165,9 @@
         <section>
           <h2>How Does NASA Calculate Satellite Trajectories?</h2>
           <div class="fragment">
-          <p>In the NASA space flight handbook volume 1 (1963), they examined
-          many ODE integration algorithms:</p>
+            <p>In the <a href="https://ntrs.nasa.gov/citations/19630011221">NASA
+            space flight handbook volume 1 (1963)</a>, they examined
+          many ODE integration algorithms.</p>
           </div>
         </section>
 
