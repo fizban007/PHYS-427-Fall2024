@@ -397,9 +397,16 @@
           <h2>Tri-diagonal Matrices</h2>
           <p>Do not use a general LU solver for tridiagonal matrices, since it
           will spend most of the time working on 0s.</p>
-          <p>You can typically implement a tridiagonal solver within 10 lines of
+          <p class="fragment">You can typically implement a tridiagonal solver within 10 lines of
           code, so it's often practical to embed it into your program when you
           need it.</p>
+          <p class="fragment">In general, one can use the LU form of the
+          tridiagonal matrix $\mathbf{A}$ to compute the matrix product
+          $\mathbf{A}^{-1}\mathbf{B}$, solving each column as a linear system.
+          This is both faster and more accurate than finding the inverse.</p>
+          <p class="fragment">If you really want to find the inverse
+            $\mathbf{A}^{-1}$ explicitly, there is a general formula derived by <a href="https://www.sciencedirect.com/science/article/pii/0898122194900663?ref=cra_js_challenge&fr=RR-1">Usmami (1994)</a>. Note
+            that the inverse is no longer sparse.</p>
         </section>
 
       </div>
