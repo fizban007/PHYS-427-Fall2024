@@ -278,6 +278,29 @@
           <img src="pca-example.png" width="60%">
         </section>
 
+        <section>
+          <h2>SVD vs Eigenvalues</h2>
+          <p>Eigen-decomposition requires the matrix $\mathbf{M}$ to be square
+          and symmetric (or Hermitian).</p>
+          <p class="fragment">
+            However, for any $m\times n$ matrix $\mathbf{A}$, we can form an
+            $n\times n$ symmetric matrix using:
+            $$
+            \mathbf{M} = \mathbf{A}^T\mathbf{A}
+            $$
+          </p>
+          <p class="fragment">
+            Lets use SVD to decompose the matrix $\mathbf{A} = \mathbf{U}\mathbf{S}\mathbf{V}^T$:
+            $$
+            \mathbf{V}\mathbf{S}^T\mathbf{U}^T\mathbf{U}\mathbf{S}\mathbf{V}^T = \mathbf{V}\mathbf{S}^T\mathbf{S}\mathbf{V}^T = \mathbf{M}
+            $$
+          </p>
+          <p class="fragment">
+            $\mathbf{S}^T\mathbf{S}$ is the diagonalized form of $\mathbf{M}$.
+            The eigenvalues $\lambda_i$ of $\mathbf{M}$ are squares of the singular values $s_i^2$ of $\mathbf{A}$.
+          </p>
+        </section>
+
       </div>
     </div>
     <!-- <script src="js/head.min.js"></script> -->
