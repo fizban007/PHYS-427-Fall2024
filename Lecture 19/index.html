@@ -34,9 +34,9 @@
           <div class="fragment">
             <p>Given any real $m\times n$ matrix $\mathbf{A}$, it can be decomposed as:</p>
             $$
-            \mathbf{A} = \mathbf{U}\mathbf{S}\mathbf{V}^T
+            \mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T
             $$
-            <p>where $\mathbf{U}$ is a $m\times m$ orthogonal matrix, $\mathbf{S}$ is a
+            <p>where $\mathbf{U}$ is a $m\times m$ orthogonal matrix, $\boldsymbol{\Sigma}$ is a
               $m\times n$ diagonal matrix with non-negative real elements (the singular
               values), and $\mathbf{V}$ is a $n\times n$ orthogonal matrix.</p>
           </div>
@@ -68,7 +68,7 @@
             0 & 0 & 0 & 1 \\
             -1 & 0 & 0 & 0
           \end{pmatrix},\quad
-          \mathbf{S} = \begin{pmatrix}
+          \boldsymbol{\Sigma} = \begin{pmatrix}
             4 & 0 & 0 & 0 & 0 \\
             0 & 3 & 0 & 0 & 0 \\
             0 & 0 & \sqrt{5} & 0 & 0 \\
@@ -141,26 +141,26 @@
           <p>If the matrix $\mathbf{A}$ is invertible, then its inverse is
           trivial to find when we know its SVD:</p>
           $$
-          \mathbf{A}^{-1} = \mathbf{V}\cdot \mathbf{S}^{-1}\cdot\mathbf{U}^{T}
+          \mathbf{A}^{-1} = \mathbf{V}\cdot \boldsymbol{\Sigma}^{-1}\cdot\mathbf{U}^{T}
           $$
           <div class="fragment">
-            <p>Since $\mathbf{S}$ is a diagonal matrix, its inverse is obtained by
+            <p>Since $\boldsymbol{\Sigma}$ is a diagonal matrix, its inverse is obtained by
               inverting its diagonal elements.</p>
             $$
             \begin{pmatrix}
-            s_1 & 0 & 0 & \dots \\
-            0 & s_2 & 0 & \dots \\
-            0 & 0 & s_3 & \dots \\
+            \sigma_1 & 0 & 0 & \dots \\
+            0 & \sigma_2 & 0 & \dots \\
+            0 & 0 & \sigma_3 & \dots \\
             \vdots & \vdots & \vdots & \ddots
             \end{pmatrix}^{-1} =
             \begin{pmatrix}
-            1/s_1 & 0 & 0 & \dots \\
-            0 & 1/s_2 & 0 & \dots \\
-            0 & 0 & 1/s_3 & \dots \\
+            1/\sigma_1 & 0 & 0 & \dots \\
+            0 & 1/\sigma_2 & 0 & \dots \\
+            0 & 0 & 1/\sigma_3 & \dots \\
             \vdots & \vdots & \vdots & \ddots
             \end{pmatrix}
             $$
-            <p>We denote this inverse $\left[\mathrm{diag} (1/s_i)\right]$.</p>
+            <p>We denote this inverse $\left[\mathrm{diag} (1/\sigma_i)\right]$.</p>
           </div>
         </section>
 
@@ -170,7 +170,7 @@
             Even when the matrix $\mathbf{A}$ is not invertible, this construction is very useful
           </p>
           $$
-          \mathbf{A}^{-1} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / s_i) \right] \cdot \mathbf{U}^T
+          \mathbf{A}^{-1} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / \sigma_i) \right] \cdot \mathbf{U}^T
           $$
           <p>This is called the <em>pseudoinverse</em> of matrix $\mathbf{A}$.</p>
           <div class="fragment">
@@ -178,9 +178,9 @@
             \mathbf{b}$, the following vector <em>minimizes</em> the difference
             $|\mathbf{A}\mathbf{x} - \mathbf{b}|$:</p>
           $$
-          \mathbf{x} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / s_i) \right] \cdot (\mathbf{U}^T \mathbf{b})
+          \mathbf{x} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / \sigma_i) \right] \cdot (\mathbf{U}^T \mathbf{b})
           $$
-          <p>If there are zero singular values $s_i$, the diagonal entry $1/s_i$ is also replaced by zero.</p>
+          <p>If there are zero singular values $\sigma_i$, the diagonal entry $1/\sigma_i$ is also replaced by zero.</p>
           </div>
         </section>
 
@@ -219,14 +219,14 @@
         <section>
           <h2>Matrix Approximations</h2>
           <p>When forming the SVD of a matrix $\mathbf{A}$, its singular values
-          in the middle matrix $\mathbf{S}$ is ordered from largest to smallest
+          in the middle matrix $\boldsymbol{\Sigma}$ is ordered from largest to smallest
           along the diagonal. You can think of these singular values as ranking
           from the "most important" to the "least important".</p>
           <p class="fragment">
             You can truncate the diagonal and set any singular values below
             certain threshold to zero. This will give you an approximate matrix:
             $$
-            \tilde{\mathbf{A}} = \mathbf{U}\tilde{\mathbf{S}}\mathbf{V}^T
+            \tilde{\mathbf{A}} = \mathbf{U}\tilde{\boldsymbol{\Sigma}}\mathbf{V}^T
             $$
             that keeps "most" of the information about $\mathbf{A}$. This is
             useful in model simplification or data compression.
@@ -237,7 +237,7 @@
           <h2>Matrix Approximations</h2>
           <p>This can be used for image compression. Given an image of $m\times n$ pixels,
           one can treat it as a matrix and perform an SVD. If we truncate the
-          singular matrix $\mathbf{S}$ and keep some of the largest singular
+          singular matrix $\boldsymbol{\Sigma}$ and keep some of the largest singular
           values, we retain an approximate image.</p>
 
           <a href="http://timbaumann.info/svd-image-compression-demo/">Demo</a>
@@ -264,7 +264,7 @@
             We can use the SVD of the data matrix to transform $\mathbf{X}$ into
             data components that are ordered by their variance:
             $$
-            \mathbf{T} = \mathbf{U}\mathbf{S}
+            \mathbf{T} = \mathbf{U}\boldsymbol{\Sigma}
             $$
           </p>
           <p class="fragment">
@@ -290,14 +290,14 @@
             $$
           </p>
           <p class="fragment">
-            Lets use SVD to decompose the matrix $\mathbf{A} = \mathbf{U}\mathbf{S}\mathbf{V}^T$:
+            Lets use SVD to decompose the matrix $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T$:
             $$
-            \mathbf{V}\mathbf{S}^T\mathbf{U}^T\mathbf{U}\mathbf{S}\mathbf{V}^T = \mathbf{V}\mathbf{S}^T\mathbf{S}\mathbf{V}^T = \mathbf{M}
+            \mathbf{V}\boldsymbol{\Sigma}^T\mathbf{U}^T\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T = \mathbf{V}\boldsymbol{\Sigma}^T\boldsymbol{\Sigma}\mathbf{V}^T = \mathbf{M}
             $$
           </p>
           <p class="fragment">
-            $\mathbf{S}^T\mathbf{S}$ is the diagonalized form of $\mathbf{M}$.
-            The eigenvalues $\lambda_i$ of $\mathbf{M}$ are squares of the singular values $s_i^2$ of $\mathbf{A}$.
+            $\boldsymbol{\Sigma}^T\boldsymbol{\Sigma}$ is the diagonalized form of $\mathbf{M}$.
+            The eigenvalues $\lambda_i$ of $\mathbf{M}$ are squares of the singular values $\sigma_i^2$ of $\mathbf{A}$.
           </p>
         </section>
 
