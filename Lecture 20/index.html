@@ -200,14 +200,14 @@
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Lax demo with $\Delta t = \Delta x$:</p>
+          <p>Lax demo with $v\Delta t = \Delta x$:</p>
           <video controls="" style="width: 50%;"><source src=
             "./lax.mp4" type="video/mp4"></video>
         </section>
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Lax demo with $\Delta t = 1.5\Delta x$:</p>
+          <p>Lax demo with $v\Delta t = 1.5\Delta x$:</p>
           <video controls="" style="width: 50%;"><source src=
             "./lax2.mp4" type="video/mp4"></video>
         </section>
@@ -226,19 +226,25 @@
             \frac{\partial u}{\partial t} = -v \frac{\partial u}{\partial x} + \frac{(\Delta x)^2}{2\Delta t} \frac{\partial^2 u}{\partial x^2}
             $$
             <p class="fragment">
-              The second term is a diffusion term which represents dissipation.
-              This is why the Lax scheme is stable.
+              The second term is a <em>viscosity term</em>, which represents a
+              dissipation. Since this term arises from our numerical scheme, we call this <em>numerical
+              viscosity</em> or <em>numerical dissipation</em>.
             </p>
           </div>
         </section>
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Adding numerical diffusion to stabilize the solution is a very
-          common technique. It is often the smallest waves (close to grid scale)
-          that tend to be the most unstable, therefore numerical dissipation
-          helps tame these waves. We are often more interested in the behavior
-          of the solution at larger length scales.</p>
+          <p>The magnitude square of the amplification factor $|\xi|^2$ can be written as:</p>
+          $$
+          \begin{align}
+          |\xi|^2 &= \cos^2 (k\Delta x) + \left(\frac{v\Delta t}{\Delta x}\right)^2\sin^2 (k\Delta x) \\
+          &= 1 - \left(1 - \frac{v^2\Delta t^2}{\Delta x^2}\right)\sin^2 (k\Delta x)
+          \end{align}
+          $$
+          <p>When $v\Delta t = \Delta x$, there is no amplitude dissipation.
+          When $v\Delta t < \Delta x$, dissipation is strongest near $k \approx \pi/2\Delta x$. Long
+          wavelength modes ($k\Delta x \ll 1$) suffer much smaller dissipation.</p>
         </section>
 
         <section>
@@ -257,7 +263,7 @@
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Lax demo with $\Delta t = 0.5\Delta x$ with significant numerical dispersion:</p>
+          <p>Lax demo with $v\Delta t = 0.5\Delta x$ with significant numerical dispersion:</p>
           <video controls="" style="width: 50%;"><source src=
             "./lax3.mp4" type="video/mp4"></video>
         </section>
