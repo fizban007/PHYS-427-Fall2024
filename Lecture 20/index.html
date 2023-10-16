@@ -168,7 +168,7 @@
 
         <section>
           <h2>Stability Analysis</h2>
-          <p>FCTS Demo:</p>
+          <p>FTCS demo:</p>
           <video controls="" style="width: 50%;"><source src=
             "./ftcs.mp4" type="video/mp4"></video>
         </section>
@@ -200,14 +200,14 @@
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Lax Demo with $\Delta t = \Delta x$:</p>
+          <p>Lax demo with $\Delta t = \Delta x$:</p>
           <video controls="" style="width: 50%;"><source src=
             "./lax.mp4" type="video/mp4"></video>
         </section>
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Lax Demo with $\Delta t = 1.5\Delta x$:</p>
+          <p>Lax demo with $\Delta t = 1.5\Delta x$:</p>
           <video controls="" style="width: 50%;"><source src=
             "./lax2.mp4" type="video/mp4"></video>
         </section>
@@ -234,18 +234,32 @@
 
         <section>
           <h2>The Lax Scheme</h2>
-          <p>Lax Demo with $\Delta t = 0.5\Delta x$:</p>
-          <video controls="" style="width: 50%;"><source src=
-            "./lax3.mp4" type="video/mp4"></video>
-        </section>
-
-        <section>
-          <h2>The Lax Scheme</h2>
           <p>Adding numerical diffusion to stabilize the solution is a very
           common technique. It is often the smallest waves (close to grid scale)
           that tend to be the most unstable, therefore numerical dissipation
           helps tame these waves. We are often more interested in the behavior
           of the solution at larger length scales.</p>
+        </section>
+
+        <section>
+          <h2>The Lax Scheme</h2>
+          <p>In addition to numerical dissipation, finite difference can also
+          introduce <em>phase errors</em>:</p>
+          $$
+          \xi = e^{-ik\Delta x} + i\left( 1 - \frac{v\Delta t}{\Delta x}\right)\sin (k\Delta x)
+          $$
+          <div class="fragment">
+            <p>When $\Delta t$ is not exactly equal to $\Delta x$, the phase of
+            each wave component will be shifted. This will in general cause <em>numerical dispersion</em> of
+              the solution.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>The Lax Scheme</h2>
+          <p>Lax demo with $\Delta t = 0.5\Delta x$ with significant numerical dispersion:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./lax3.mp4" type="video/mp4"></video>
         </section>
 
       </div>
