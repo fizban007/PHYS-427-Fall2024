@@ -110,7 +110,7 @@ while (t < t_end) {
           <h2>Data Output</h2>
           <p>How do we output the data?</p>
           <div class="fragment">
-            <p>One way is to write the data to a file:</p>
+            <p>One way is to write the data to a text file:</p>
             <div style="width: 80%; margin: auto;">
               <pre><code class="language-c++" data-trim data-noescape>
 void output(int n) {
@@ -205,7 +205,8 @@ void output(int n) {
               <div class="fragment">
               <li>Row major: $n = j + i \times N_y$. The last index is contiguous in memory.</li>
               <p>C/C++ is often considered to be using row major when defining
-              multi-dimensional arrays using <code>A[i][j]</code>.</p>
+              multi-dimensional arrays using <code>A[i][j]</code>. Numpy also
+              uses row major by default.</p>
               </div>
               <div class="fragment">
               <li>Column major: $n = i + j \times N_x$. The first index is contiguous in memory.</li>
