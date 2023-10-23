@@ -197,7 +197,7 @@
             i \frac{\partial \psi}{\partial t} = -\frac{1}{2} \frac{\partial^2 \psi}{\partial x^2} + V(x) \psi
             $$
           </p>
-          <p class="fragment">We can use the implicit FTCS scheme:
+          <p class="fragment">Let's use the implicit FTCS scheme:
           $$
           i \frac{\psi_j^{n+1} - \psi_j^n}{\Delta t} = -\frac{1}{2} \frac{\psi_{i+1}^{n+1} - 2 \psi_j^{n+1} + \psi_{i-1}^{n+1}}{\Delta x^2} + V(x) \psi_j^{n+1}
           $$
@@ -240,7 +240,7 @@
             $$
             \psi^{n+1} = \left(1 + i\hat{H}\Delta t\right)^{-1} \psi^n
             $$
-            $(1 + i\hat{H}\Delta t)^{-1}$ is a non-unitary approximation to the time evolution operator $e^{i\hat{H}\Delta t}$.
+            $(1 + i\hat{H}\Delta t)^{-1}$ is a non-unitary approximation to the time evolution operator $e^{-i\hat{H}\Delta t}$.
           </p>
         </section>
 
@@ -248,7 +248,7 @@
           <h2>The Schrödinger Equation</h2>
           <p>The cure is to use the so-called "Cayley's form" for $e^{i\hat{H}\Delta t}$:
           $$
-            e^{i\hat{H}\Delta t} \approx \frac{\displaystyle 1 - \frac{1}{2}i\hat{H}\Delta t}{\displaystyle 1 + \frac{1}{2}i\hat{H}\Delta t}
+            e^{-i\hat{H}\Delta t} \approx \frac{\displaystyle 1 - \frac{1}{2}i\hat{H}\Delta t}{\displaystyle 1 + \frac{1}{2}i\hat{H}\Delta t}
           $$
           </p>
           <p class="fragment">
