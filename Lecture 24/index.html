@@ -171,14 +171,14 @@
           write the update as:</p>
           $$
           \begin{align}
-          \int_\mathrm{cell}Q^{n+1} \mathrm{d}V &= \int_\mathrm{cell}Q^n \mathrm{d}V - \int_\mathrm{cell} \nabla \cdot \mathbf{F} \mathrm{d}V \\
-          &= \int_\mathrm{cell}Q^n \mathrm{d}V - \int_\mathrm{boundary} \mathbf{F} \cdot \mathrm{d}\mathbf{S}
+          \int_\mathrm{cell}Q^{n+1} \mathrm{d}V &= \int_\mathrm{cell}Q^n \mathrm{d}V - \Delta t\int_\mathrm{cell} \nabla \cdot \mathbf{F} \mathrm{d}V \\
+          &= \int_\mathrm{cell}Q^n \mathrm{d}V - \Delta t\int_\mathrm{boundary} \mathbf{F} \cdot \mathrm{d}\mathbf{S}
           \end{align}
           $$
           <p class="fragment">
             Define $\bar{Q}$ as the average $Q$ in each cell, we can write:
             $$
-            \bar{Q}^{n+1}\Delta V = \bar{Q}^n \Delta V - \sum_\mathrm{faces} \mathbf{F} \cdot \mathbf{S}
+            \bar{Q}^{n+1}\Delta V = \bar{Q}^n \Delta V - \Delta t\sum_\mathrm{faces} \mathbf{F} \cdot \mathbf{S}
             $$
           </p>
         </section>
