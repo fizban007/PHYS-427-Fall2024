@@ -18,12 +18,26 @@
   max-height: 90vh;
 }
 
+
 .toc-list, .toc-list ol {
   list-style-type: none;
 }
 
+h1 {
+  font-size: 3.0em;
+}
+
 .toc-list {
   padding: 0;
+  font-size: 1.7em;
+}
+
+.toc-list .week {
+  line-height: 1.5;
+}
+
+.toc-list .toc-sub {
+  font-size: 0.8em;
 }
 
 .toc-list ol {
