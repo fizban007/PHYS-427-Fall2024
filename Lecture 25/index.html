@@ -37,7 +37,7 @@
             On a periodic domain, we can expand the unknown function $u$ in a Fourier
             series:
             $$
-            u(x,t) = \sum_{n=-\infty}^{\infty} \hat{u}_n(t) e^{ikx},\quad k = \frac{2\pi n}{L}
+            u(x,t) = \sum_{n=0}^{\infty} \hat{u}_n(t) e^{ikx},\quad k = \frac{2\pi n}{L}
             $$
           </p>
         </section>
@@ -46,7 +46,7 @@
           <h2>Spectral Methods</h2>
           <p>Plugging the Fourier series back into the original equation, we get:</p>
           $$
-          \sum_{n=-\infty}^{\infty} \left( \frac{d \hat{u}_n}{d t} + vik\hat{u}_n \right) e^{ikx} = 0
+          \sum_{n=0}^{\infty} \left( \frac{d \hat{u}_n}{d t} + vik\hat{u}_n \right) e^{ikx} = 0
           $$
           <p class="fragment">
             Since the Fourier basis functions are linearly independent, their coefficients
@@ -67,7 +67,7 @@
           <h2>Spectral Methods</h2>
           <p>The general procedure of solution is to first transform the initial condition into a Fourier series:</p>
           $$
-          u(x,0) = \sum_{n=-\infty}^{\infty} \hat{u}_n(0) e^{ikx}
+          u(x,0) = \sum_{n=0}^{\infty} \hat{u}_n(0) e^{ikx}
           $$
           <p class="fragment">
             Then, the Fourier coefficients are evolved in time:
@@ -78,7 +78,7 @@
           <p class="fragment">
             Finally, the solution is reconstructed from the Fourier coefficients:
             $$
-            u(x,t) = \sum_{n=-\infty}^{\infty} \hat{u}_n(t) e^{ikx}
+            u(x,t) = \sum_{n=0}^{\infty} \hat{u}_n(t) e^{ikx}
             $$
           </p>
         </section>
@@ -153,21 +153,21 @@
           $$
           \begin{align}
           \sum_n \left( i\hbar\frac{d c_n}{d t} - \frac{\hbar^2}{2m}k_n^2c_n \right) e^{ik_nx} &= \sum_n \sum_m c_n\hat{V}_m e^{ik_mx} e^{ik_nx} \\
-          &= \sum_n \sum_l c_l \hat{V}_{n-l} e^{ik_nx}
+          &= \sum_n \sum_l c_m \hat{V}_{n-m} e^{ik_nx}
           \end{align}
           $$
           <p class="fragment">
             The orthogonality of the Fourier basis functions now allows us to
             obtain a set of ODEs for the Fourier coefficients:
             $$
-            i\hbar\frac{d c_n}{d t} - \frac{\hbar^2}{2m}k_n^2c_n  =  \sum_l \hat{V}_{n-l} c_l
+            i\hbar\frac{d c_n}{d t} - \frac{\hbar^2}{2m}k_n^2c_n  =  \sum_m \hat{V}_{n-m} c_m
             $$
           </p>
         </section>
 
         <section>
           <h2>Pseudospectral Methods</h2>
-          <p>The $\sum \hat{V}_{n-l}c_l$ term is a matrix multiplying a vector,
+          <p>The $\sum \hat{V}_{n-m}c_m$ term is a matrix multiplying a vector,
           which is a $O(N^2)$ operation. If we use e.g. RK methods to solve the
           ODEs, it can get quite expensive for large $N$.</p>
           <p class="fragment">
@@ -233,7 +233,7 @@
         <section>
           <h2>Fast Fourier Transform</h2>
           <p>Let's transform this function on a grid of $N = 1000$ points:</p>
-          <img src="fft_orig.png" width="40%">
+          <img src="fft_orig.png" width="50%">
         </section>
 
         <section>
