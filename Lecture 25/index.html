@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 25</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>Spectral methods are a class of methods for numerical PDEs that
+          utilizes spectral expansions of the unknown function.</p>
+          <p class="fragment">
+            Consider the 1D advection equation again:
+            $$
+            \frac{\partial u}{\partial t} + v \frac{\partial u}{\partial x} = 0
+            $$
+          </p>
+          <p class="fragment">
+            On a periodic domain, we can expand the unknown function $u$ in a Fourier
+            series:
+            $$
+            u(x,t) = \sum_{n=-\infty}^{\infty} \hat{u}_n(t) e^{ikx},\quad k = \frac{2\pi n}{L}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>Plugging the Fourier series back into the original equation, we get:</p>
+          $$
+          \sum_{n=-\infty}^{\infty} \left( \frac{d \hat{u}_n}{d t} + vik\hat{u}_n \right) e^{ikx} = 0
+          $$
+          <p class="fragment">
+            Since the Fourier basis functions are linearly independent, their coefficients
+            must be identically zero. We obtain a set of ODEs for the Fourier coefficients:
+            $$
+            \frac{d \hat{u}_n}{d t} + vik\hat{u}_n = 0
+            $$
+          </p>
+          <p class="fragment">
+            In this simple case, we can even solve the ODEs analytically:
+            $$
+            \hat{u}_n(t) = \hat{u}_n(0) e^{-ivkt}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>The general procedure of solution is to first transform the initial condition into a Fourier series:</p>
+          $$
+          u(x,0) = \sum_{n=-\infty}^{\infty} \hat{u}_n(0) e^{ikx}
+          $$
+          <p class="fragment">
+            Then, the Fourier coefficients are evolved in time:
+            $$
+            \hat{u}_n(t) = \hat{u}_n(0) e^{-ivkt}
+            $$
+          </p>
+          <p class="fragment">
+            Finally, the solution is reconstructed from the Fourier coefficients:
+            $$
+            u(x,t) = \sum_{n=-\infty}^{\infty} \hat{u}_n(t) e^{ikx}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>In practice, the inifinite sum is often truncated after finite terms:</p>
+          $$
+          u(x, t) \approx \sum_{n=0}^{N} \hat{u}_n(t) e^{ikx}
+          $$
+          <p>The error associated to this approximation scales as $\varepsilon\sim O(e^{-N})$. We call this "exponential convergence".</p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>Let's see how the spectral method does on a grid of 30 points:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./spectral-advection.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>Spectral method on the tophat:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./spectral-square.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>For many linear equations with the right boundary conditions, spectral
+          methods can often yield solutions to machine precision. This is
+          because the linear equations can be solve exactly using the spectral
+          method, and we are simply evaluating the solution.</p>
+          <p class="fragment">For nonlinear equations and some linear equations
+          with potential terms, spectral method can be
+          cumbersome to use.</p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>For example, consider the Schrödinger equation again:</p>
+          $$
+          i\hbar \frac{\partial \psi}{\partial t} = -\frac{\hbar^2}{2m} \frac{\partial^2 \psi}{\partial x^2} + V(x)\psi
+          $$
+          <p class="fragment">
+            We expand the unknown function in Fourier series again:
+            $$
+            \psi(x, t) = \sum_n c_n(t)e^{ik_nx},\quad k_n = \frac{2\pi n}{L}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>Plugging the expansion into the original equation, we have:</p>
+          $$
+          \sum_n \left( i\hbar \frac{d c_n}{d t} - \frac{\hbar^2}{2m}k_n^2c_n \right) e^{ik_nx} = \sum_n V(x)c_n e^{ik_nx}
+          $$
+          <p class="fragment">
+            Due to the existence of the $V(x)$ term, we can't simply invoke the
+            orthogonality of the Fourier basis functions to obtain a set of ODEs. Instead,
+            we have to Fourier expand $V(x)$ as well:
+            $$
+            V(x) = \sum_m \hat{V}_m e^{i k_m x}, \quad k_m = \frac{2\pi m}{L}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Spectral Methods</h2>
+          <p>Including the $V(x)$ expansion, we get:</p>
+          $$
+          \begin{align}
+          \sum_n \left( i\hbar\frac{d c_n}{d t} - \frac{\hbar^2}{2m}k_n^2c_n \right) e^{ik_nx} &= \sum_n \sum_m c_n\hat{V}_m e^{ik_mx} e^{ik_nx} \\
+          &= \sum_n \sum_l c_l \hat{V}_{n-l} e^{ik_nx}
+          \end{align}
+          $$
+          <p class="fragment">
+            The orthogonality of the Fourier basis functions now allows us to
+            obtain a set of ODEs for the Fourier coefficients:
+            $$
+            i\hbar\frac{d c_n}{d t} - \frac{\hbar^2}{2m}k_n^2c_n  =  \sum_l \hat{V}_{n-l} c_l
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Pseudospectral Methods</h2>
+          <p>The $\sum \hat{V}_{n-l}c_l$ term is a matrix multiplying a vector,
+          which is a $O(N^2)$ operation. If we use e.g. RK methods to solve the
+          ODEs, it can get quite expensive for large $N$.</p>
+          <p class="fragment">
+            In practice, we often use a "pseudospectral" method, where we use
+            the Fast Fourier Transform (FFT) to compute inverse Fourier transform
+            of $c_n$, then multiply it by $V(x)$ on a grid, then finally use FFT
+            to compute the Fourier transform of the result.
+          </p>
+          <p class="fragment">
+            This is an improvement since FFT costs $O(N\log N)$, but it is still
+            more expensive than the $O(N)$ cost of finite difference methods.
+          </p>
+        </section>
+
+        <section>
+          <h2>Fast Fourier Transform</h2>
+          <p>The Fourier transform is the continuum limit of a Fourier series expansion:</p>
+          $$
+          \begin{align}
+          f(x) &= \int_{-\infty}^{\infty} \hat{f}(k) e^{-ikx} dk \\
+          \hat{f}(k) &= \frac{1}{2\pi} \int_{-\infty}^{\infty} f(x) e^{ikx} dx
+          \end{align}
+          $$
+          <p class="fragment">
+            On a finite grid, the Fourier transform is a discrete sum:
+            $$
+            \hat{f}_n = \frac{1}{N} \sum_{j=0}^{N-1} f_j e^{ik_nx_j},\quad k_n = \frac{2\pi n}{L},\quad x_j = \frac{jL}{N}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Fast Fourier Transform</h2>
+          <p>Computing the discrete Fourier transform is like a matrix
+          multiplying a vector, which costs $O(N^2)$ operations.</p>
+          <p class="fragment">
+            The FFT breaks the calculation of the discrete Fourier transform into
+            even and odd terms, and evaluate the subproblems recursively:
+            $$
+            \begin{align}
+            \hat{f}_n &= \frac{1}{N} \sum_{j=0}^{N-1} f_j e^{ik_nx_j} = \frac{1}{N} \sum_{j=0}^{N-1} f_j e^{2\pi i nj/N} \\
+            &= \frac{1}{N} \sum_{j=0}^{N/2-1} f_{2j} e^{2\pi in (2j)/N} + \frac{1}{N} \sum_{j=0}^{N/2-1} f_{2j+1} e^{2\pi in(2j+1)/N} \\
+            &= \frac{1}{N} \sum_{j=0}^{N/2-1} f_{2j} e^{2\pi inj/(N/2)} + e^{2\pi in/N} \frac{1}{N} \sum_{j=0}^{N/2-1} f_{2j+1} e^{2\pi inj/(N/2)} \\
+            \end{align}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Fast Fourier Transform</h2>
+          <p>Due to divide an conquer, the complexity of an FFT is only $O(N\log_2 N)$.</p>
+          <p class="fragment">
+            FFTW (Fastest Fourier Transform in the West) is one of the fastest
+            implementations of FFT. It is a C library that can be used in C++
+            and Fortran. It is also available in Python via the <code>pyfftw</code> package.
+          </p>
+          <p class="fragment">
+            <code>numpy.fft</code> provides its own FFT implementation. Often
+            times it is good enough for most applications.
+          </p>
+        </section>
+
+        <section>
+          <h2>Fast Fourier Transform</h2>
+          <p>Let's transform this function on a grid of $N = 1000$ points:</p>
+          <img src="fft_orig.png" width="40%">
+        </section>
+
+        <section>
+          <h2>Fast Fourier Transform</h2>
+          <p>Result from <code>numpy.fft.fft</code>:</p>
+          <img src="fft_full.png" width="40%">
+          <p>The $x$ axis is given by <code>numpy.fft.fftfreq(N)*N</code></p>
+        </section>
+
+        <section>
+          <h2>Fast Fourier Transform</h2>
+          <p>Result from <code>numpy.fft.fft</code>, zoomed in:</p>
+          <img src="fft_result.png" width="40%">
+        </section>
+
+        <section>
+          <h2>Non-periodic Boundary Conditions</h2>
+          <p>Fourier transform is great for problems with periodic boundary
+          conditions, since the basis functions $e^{ikx}$ is periodic.</p>
+          <p class="fragment">
+            For problems with non-periodic boundary conditions, we can use
+            Chebyshev polynomials as basis functions:
+            $$
+            T_n(x) = \cos(n \cos^{-1} x),\quad -1\leq x \leq 1
+            $$
+          </p>
+          <p class="fragment">
+            The Chebyshev expansion of an arbitrary function $f(x)$ is given by:
+            $$
+            f(x) = \sum_{n=0}^{\infty} \hat{f}_n T_n(x)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Non-periodic Boundary Conditions</h2>
+          <p>The expansion coefficients are computed using:</p>
+          $$
+          \hat{f}_n = \frac{2}{\pi} \int_{-1}^{1} \frac{f(x) T_n(x)}{\sqrt{1-x^2}} dx
+          $$
+          <p class="fragment">
+            Surprisingly, this integral can be computed using the FFT using a change
+            of variables:
+            $$
+            \begin{align}
+            \hat{f}_n &= \frac{2}{\pi} \int_{-1}^{1} \frac{f(x) T_n(x)}{\sqrt{1-x^2}} dx \\
+            &= \frac{2}{\pi} \int_{0}^{\pi} f(\cos\theta) T_n(\cos\theta) d\theta \\
+            &= \frac{1}{\pi} \int_{-\pi}^{\pi} f(\cos\theta) \cos(n\theta) d\theta \\
+            \end{align}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Non-periodic Boundary Conditions</h2>
+          <p>If we know the values of function $f$ at points $x_j = \cos j\pi/N$, then
+          the expansion coefficients are:</p>
+          $$
+          \hat{f}_n = \frac{1}{N} \sum_{j=0}^{N-1} f(\cos\theta_j) \cos(n\theta_j),\quad \theta_j = \frac{j\pi}{N}
+          $$
+          <p class="fragment">
+            This is the discrete Fourier transform of the function $F(\theta) = f(\cos\theta)$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Non-periodic Boundary Conditions</h2>
+          <p>Due to the unique relation between Chebyshev and Fourier
+          expansions, we often use an irregular grid when using Chebyshev
+          expansion for spectral method:</p>
+          <img src="Chebyshev-nodes.png" width="50%">
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
