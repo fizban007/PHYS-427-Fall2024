@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 26</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>Boundary Value Problems</h2>
+          <p>Elliptic PDEs are often posed as boundary value problems, such as
+          the Poisson equation in 2D:</p>
+          $$
+          \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = \rho(x,y)
+          $$
+          <div class="fragment">
+            <p>There are two main types of boundary conditions:
+              <ul>
+                <li>Dirichlet: $u = f$</li>
+                <li>Neumann: $\partial u/\partial n = v$</li>
+              </ul>
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Relaxation Methods</h2>
+          <p>A typical way to solve boundary value problems is the relaxation
+          method.</p>
+          <div class="fragment">
+            <p>It attempts to seek solutions to the <em>time-dependent</em> equation
+              $$
+              \frac{\partial u}{\partial t} = \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} - \rho(x,y)
+              $$
+              in the limit $t \to \infty$, with the given boundary conditions.
+            </p>
+          </div>
+          <p class="fragment">
+            Since this is a diffusion-type equation with $D = 1$, we can use the methods we have
+            introduced for diffusion to solv this problem.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>For example, consider the FTCS method with $\Delta x = \Delta y = \Delta$:</p>
+          $$
+          u_{i,j}^{n+1} = u_{i,j}^n + \frac{\Delta t}{\Delta^2} (u_{i+1,j}^n + u_{i-1,j}^n + u_{i,j+1}^n + u_{i,j-1}^n - 4 u_{i,j}^n) - \rho_{i,j}\Delta t
+          $$
+          <p class="fragment">
+            This method is only stable when $\Delta t \leq \frac{1}{4} \Delta^2$. If
+            we take the maximum time step size, the method becomes:
+            $$
+            u_{i,j}^{n+1} = \frac{1}{4} (u_{i+1,j}^n + u_{i-1,j}^n + u_{i,j+1}^n + u_{i,j-1}^n - \rho_{i,j}\Delta^2)
+            $$
+          </p>
+          <p class="fragment">
+            This is equivalent to simply averaging the 4 neighbouring points and
+            subtracting the source term.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>This method is called <em>Jacobi's method</em>, and it is related
+          a property of the Laplace equation. If $u$ is a solution to the Laplace equation:</p>
+          $$
+          \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0
+          $$
+          <p>Then the average of $u$ over a small sphere is equal to the value
+          of $u$ at the center of the sphere.</p>
+          <p class="fragment">Jacobi's method simply keeps setting $u$ to be the
+          average of its 4 neighbors plus a source term, until it converges.</p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>As we discussed in diffusion problems, the FTCS method at the
+          stability limit is very slow. Similarly, Jacobi's method is very slow
+          in converging to the desired solution.</p>
+          <p class="fragment">
+            To quantify the rate of convergence, let us introduce some mathematical language.
+            We write the Jacobi iteration as:
+            $$
+            \mathbf{u}^{n+1} = \mathbf{A} \mathbf{u}^n + \mathbf{b}
+            $$
+            where $\mathbf{A}$ is called the <em>iteration matrix</em>, and
+            $\mathbf{b}$ is a vector that represents the source term.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>In order to achieve convergence, the iteration matrix should have
+          all its eigenvalues less than 1. We call the absolute value of the
+          largest eigenvalue of $\mathbf{A}$ its "spectral radius" $\rho_s$.</p>
+          <p class="fragment">
+            For Jacobi's method on a $N\times N$ grid, the spectral radius is:
+            $$
+            \rho_s \approx 1 - \frac{\pi^2}{2N^2}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>After $n$ iterations, the overall error is reduced by $\rho_s^n$.
+          If our goal is to reduce the error by a factor of $10^{-p}$, then the
+          number of iterations required is:</p>
+          <div class="fragment">
+            $$
+            n \approx \frac{p \log 10}{-\log \rho_s}
+            $$
+          </div>
+          <p class="fragment">
+            Plugging in the spectral radius for Jacobi's method, we find that:
+            $$
+            n \approx \frac{2p N^2\log 10}{\pi^2} \approx \frac{1}{2} p N^2
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>A small improvemennt over Jacobi's method is the Gauss-Seidel method</p>
+          $$
+          u_{i,j}^{n+1} = \frac{1}{4} (u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \rho_{i,j}\Delta^2)
+          $$
+          <p class="fragment">
+            Although the right hand side makes use of $u^{n+1}$, it does not
+            require solving a set of linear equations. Instead, we can simply
+            update the grid points in a sweep from left to right, top to bottom.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>For example, the following code implements the Gauss-Seidel method:</p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+for (int j = 1; j < Ny - 1; j++) {
+  for (int i = 1; i < Nx - 1; i++) {
+    int n = i + j * Nx;
+    u[n] = 0.25 * (u[n + 1] + u[n - 1]
+                 + u[n + Nx] + u[n - Nx]
+                 - rho[n] * delta * delta);
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>
+            The Gauss-Seidel method is faster than Jacobi's method, but it is
+            still very slow. The spectral radius is the square of Jacobi's:
+            $$
+            \rho_s \approx 1 - \frac{\pi^2}{N^2}
+            $$
+          </p>
+          <p class="fragment">The number of iterations required to reduce error
+          by a factor of $10^{-p}$ is:
+            $$
+            n \approx \frac{p N^2\log 10}{\pi^2} \approx \frac{1}{4} p N^2
+            $$
+            It's about a factor of 2 faster than Jacobi's method.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Successive overrelaxation (SOR) is a method that converges
+          significantly faster than Gauss-Seidel or Jacobi's method.</p>
+          <p class="fragment">
+            The idea is to add a fraction $\omega$ of the difference between the
+            new and old values to the new value:
+            $$
+            u_{i,j}^{n+1} = (1 - \omega) u_{i,j}^n + \frac{\omega}{4} (u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \rho_{i,j}\Delta^2)
+            $$
+          </p>
+          <p class="fragment">
+            When $\omega = 1$, this is the Gauss-Seidel method. When $1 < \omega < 2$, the method
+            converges faster than Gauss-Seidel.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>The key of SOR lies in choosing $\omega$.</p>
+          <p class="fragment">It turns out that the
+          optimal choice of $\omega$ is given by:
+          $$
+          \omega_\mathrm{optimal} = \frac{2}{1 + \sqrt{1 - \rho_\mathrm{Jacobi}^2}}
+          $$
+          where $\rho_\mathrm{Jacobi}$ is the spectral radius of Jacobi's method.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Under the optimal choice, the spectral radius of SOR is:
+            $$
+            \rho_\mathrm{SOR} = \left(\frac{\rho_\mathrm{Jacobi}}{1 + \sqrt{1 - \rho_\mathrm{Jacobi}^2}}\right)^2 \approx 1 - \frac{2\pi}{N}
+            $$
+          </p>
+          <p class="fragment">
+            The number of iterations required to reduce error by a factor of $10^{-p}$ is now:
+            $$
+            n \approx \frac{p N\log 10}{\pi} \approx \frac{1}{3} p N
+            $$
+            This is significantly faster than Gauss-Seidel!
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>The remaining problem is to determine $\rho_\mathrm{Jacobi}$, which
+          is nontrivial. For the Poisson equation in 2D, this spectral radius is given by:</p>
+          $$
+          \rho_\mathrm{Jacobi} = \frac{\cos(\pi/N_x) + \left(\frac{\Delta x}{\Delta y}\right)^2\cos(\pi/N_y)}{1 + \left(\frac{\Delta x}{\Delta y}\right)^2}
+          $$
+          <p class="fragment">
+            The above expression works for homogeneous Dirichlet or Neumann
+            boundary conditions, $u = 0$ or $\partial u/\partial n = 0$. For
+            periodic boundary conditions, replace $\pi$ with $2\pi$.
+          </p>
+          <p class="fragment">
+            For more complex problems, the above is an approximation, and you
+            may need some trial and error to find the best $\rho_\mathrm{Jacobi}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Some practical details for implementing SOR:</p>
+          <p class="fragment">
+            First, one can write the iteration formula as:
+            $$
+            u_{i,j}^{n+1} = u_{i,j}^n + \frac{\omega}{4} (u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \rho_{i,j}\Delta^2 - 4 u_{i,j}^n)
+            $$
+          </p>
+          <p class="fragment">
+            The terms in the parentheses can be thought of as a residue. For
+            convergence, one can require that the maximum of the residue on the
+            grid is less than some tolerance $\varepsilon$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Secondly, in the iteration formula:</p>
+            $$
+            u_{i,j}^{n+1} = u_{i,j}^n + \frac{\omega}{4} (u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \rho_{i,j}\Delta^2 - 4 u_{i,j}^n)
+            $$
+          <p>
+            The grid can be divided into "even" and "odd" points. One can
+            iterate over the grid in 2 half-sweeps. The first half-sweeps
+            updates all the "even" points, and the second half-sweeps use the
+            updated even points to update the "odd" points.
+          </p>
+          <div style="width: 100%; margin: auto;" class="fragment">
+            <pre><code class="language-c++" data-trim data-noescape>
+for (int j = 1; j < Ny - 1; j++) {
+  for (int i = j % 2; i < Nx - 1; i+=2) {
+    int n = i + j * Nx;
+    u[n] += 0.25 * omega * (u[n+1] + u[n-1] + u[n+Nx] + u[n-Nx]
+                            + rho[n] * delta * delta - 4.0 * u[n]);
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Finally, often it is recommended to not immediately use the optimal
+          $\omega$ from the first step. Instead, we update $\omega$ at each half-sweep:</p>
+          <p class="fragment">
+          $$
+            \begin{align}
+            \omega^{(0)} &= 1 \\
+            \omega^{(1/2)} &= 1 / (1 - \rho_\mathrm{Jacobi}^2/2) \\
+            \omega^{(k + 1/2)} &= 1 / (1 - \rho_\mathrm{Jacobi}^2 \omega^{(k)}/4) \\
+            \ldots \\
+            \omega^{(\infty)} &\to \omega_\mathrm{optimal}
+            \end{align}
+          $$
+          </p>
+          <p class="fragment">
+            $k$ goes like $1/2, 1, 3/2, 2, \dots$ and each $1/2$ corresponds to
+            a half-sweep defined earlier. This is called <em>Chebyshev acceleration</em>.
+          </p>
+        </section>
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
