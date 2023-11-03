@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 28</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Solving Large Linear Systems</h2>
+        </section>
+
+        <section>
+          <h2>Solving Large Linear Systems</h2>
+          <p>Earlier this week, we were talking about Boundary Value Problems
+          for PDEs. These problems typically can be transformed into a matrix
+          equation of the form $\mathbf{A}\mathbf{x} = \mathbf{b}$.</p>
+          <p class="fragment">
+            For example, the Poisson equation $\nabla^2u = -\rho$ can be written
+            as a matrix equation using central difference:
+            $$
+            \frac{u_{i+1, j} - 2u_{i,j} + u_{i-1, j}}{\Delta x^2} + \frac{u_{i, j+1} - 2u_{i,j} + u_{i, j-1}}{\Delta y^2} = -\rho_{i, j}
+            $$
+          </p>
+          <p class="fragment">
+            The Finite Element Method typically results in a matrix equation:
+            $$
+            \sum_i u_i \int_R \nabla\phi_i \cdot \nabla \phi_j\,dxdy = \rho_j
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Solving Large Linear Systems</h2>
+          <p>Solving a boundary value PDE is numerically equivalent solving a
+          system of linear equations. Therefore, the numerical methods we
+          discussed earlier are essentially methods for solvinig $\mathbf{A}\mathbf{x} = \mathbf{b}$</p>
+          <div class="fragment">
+            <ul>
+              <li>Jacobi iteration</li>
+              <li>Gauss-Seidel method</li>
+              <li>Successive Overrelaxation</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Jacobi Iteration</h2>
+          <p>Let's take a look at Jacobi's method again:</p>
+          <p class="fragment">
+            $$
+            u_{i,j}^{n+1} = \frac{1}{4}\left(u_{i+1,j}^n + u_{i-1,j}^n + u_{i,j+1}^n + u_{i,j-1}^n - \Delta^2\rho_{i,j}\right)
+            $$
+          </p>
+          <p class="fragment">
+            Notice that the right hand side does not depend on $u_{i,j}^{n}$. If
+            I write the iteration in matrix form:
+            $$
+            \mathbf{u}^{n+1} = \mathbf{B}\mathbf{u}^n + \mathbf{b}
+            $$
+            then $\mathbf{B}$ has no diagonal elements.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi Iteration</h2>
+          <p>In general, for an arbitrary matrix equation $\mathbf{A}\mathbf{x}
+          = \mathbf{b}$, we can decompose the matrix $\mathbf{A}$ into 3 parts:</p>
+          <p class="fragment">
+            $$
+            \mathbf{A} = \mathbf{D} + \mathbf{L} + \mathbf{U}
+            $$
+          </p>
+          <p class="fragment">
+            $\mathbf{D}$ is the diagonal part, $\mathbf{L}$ is the lower
+            triangular part, and $\mathbf{U}$ is the upper triangular part.
+        </section>
+
+        <section>
+          <h2>Jacobi Iteration</h2>
+          <p>Jacobi iteration for the matrix equation $\mathbf{A}\mathbf{x} =
+          \mathbf{b}$ can then be written as:</p>
+          $$
+          \mathbf{x}^{n+1} = -\mathbf{D}^{-1}(\mathbf{L} +
+          \mathbf{U})\mathbf{x}^n + \mathbf{D}^{-1}\mathbf{b}
+          $$
+          <p>The matrix $\mathbf{B} = -\mathbf{D}^{-1}(\mathbf{L} +
+          \mathbf{U})$ is the iteration matrix. Let's denote $\mathbf{z} =
+          \mathbf{D}^{-1}\mathbf{b}$. The iteration looks like:</p>
+          <p class="fragment">
+            $$
+            \mathbf{x}^{n+1} = \mathbf{B}\mathbf{x}^n + \mathbf{z}
+            $$
+          </p>
+          <p class="fragment">
+            We have arrived at a solution when $\mathbf{x}^{n+1} = \mathbf{x}^n$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi Iteration</h2>
+          <p>Let $\mathbf{x}$ be the true solution to the matrix equation
+          $\mathbf{A}\mathbf{x} = \mathbf{b}$, and write $\mathbf{x}^n = \mathbf{x} +
+          \mathbf{e}^n$, where $\mathbf{e}^n$ is the error vector at nth iteration.</p>
+          <p class="fragment">
+            Our iteration equation becomes:
+            $$
+            \begin{align}
+            \mathbf{x}^{n+1} &= \mathbf{B}(\mathbf{x} + \mathbf{e}^n) + \mathbf{b} \\
+            &= \mathbf{B}\mathbf{x} + \mathbf{B}\mathbf{e}^n + \mathbf{b} \\
+            &= \mathbf{x} + \mathbf{B}\mathbf{e}^n
+            \end{align}
+            $$
+          </p>
+          <p class="fragment">
+            Therefore, the error at the next iteration is $\mathbf{e}^{n+1} = \mathbf{B}\mathbf{e}^n$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi Iteration</h2>
+          <p>If the matrix $\mathbf{B}$ is diagonalizable, then we can decompose
+          the error in terms of eigenvectors of $\mathbf{B}$:</p>
+          <p class="fragment">
+            $$
+            \mathbf{e}^n = \sum_i c_i \mathbf{v}_i
+            $$
+          </p>
+          <p class="fragment">
+            Then, the error for the next iteration becomes:
+            $$
+            \mathbf{e}^{n+1} = \mathbf{B}\mathbf{e}^n = \sum_i \lambda_i c_i \mathbf{v}_i
+            $$
+          </p>
+          <p class="fragment">
+            The largest eigenvalue of $\mathbf{B}$ determines the convergence rate
+            of this iteration. Therefore, we call the largest $|\lambda_i|$ the
+            spectral radius of $\mathbf{B}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>The Gauss-Seidel method was introduced as:
+            $$
+            u_{i,j}^{n+1} = \frac{1}{4}\left(u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \Delta^2\rho_{i,j}\right)
+            $$
+          </p>
+          <p class="fragment">
+            If we write this in matrix form:
+            $$
+            (\mathbf{L} + \mathbf{D})\mathbf{u}^{n+1} = -\mathbf{U}\mathbf{u}^n + \mathbf{b}
+            $$
+          </p>
+          <p class="fragment">The iteration matrix is now $\mathbf{B} = -(\mathbf{L} + \mathbf{D})^{-1}\mathbf{U}$.</p>
+        </section>
+
+        <section>
+          <h2>Minimization Problem</h2>
+          <p>We can formulate the matrix equation $\mathbf{A}\mathbf{x} =
+          \mathbf{b}$ in an alternative way. Define the quadratic form:</p>
+          <p class="fragment">
+            $$
+            f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T\mathbf{A}\mathbf{x} - \mathbf{b}^T\mathbf{x}
+            $$
+          </p>
+          <p class="fragment">
+            The gradient of $f$ is:
+            $$
+            \nabla f(\mathbf{x}) = \frac{1}{2}\left(\mathbf{A} + \mathbf{A}^T\right)\mathbf{x} - \mathbf{b}
+            $$
+            If $\mathbf{A}$ is symmetric, then $\nabla f = \mathbf{A}\mathbf{x} - \mathbf{b}$. The matrix
+            from finite difference or from FEM is usually symmetric.
+          </p>
+        </section>
+
+        <section>
+          <h2>Minimization Problem</h2>
+          <p>The solution of $\mathbf{A}\mathbf{x} = \mathbf{b}$ is where $\nabla f = 0$.</p>
+          <p class="fragment">
+            It turns out that this is not just an extrema of $f$, but a <em>global minimum</em>. Therefore,
+            solving $\mathbf{A}\mathbf{x} = \mathbf{b}$ is equivalent to finding the global minimum of $f$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Minimization Problem</h2>
+          <p>How to find the global minimum of the quadratic form $f$? Isn't it
+          a more difficult problem than solving the original linear system?</p>
+          <div class="fragment">
+            <p>Some typical methods to solve this global minimization problem are:</p>
+            <ul>
+              <li>Steepest descent</li>
+              <li>Conjugate gradient</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Method of Steepest Descent</h2>
+          <p>Just like Jacobi iteration, we start at an initial point
+          $\mathbf{x}^0$, and take a series of steps $\mathbf{x}^1$, $\mathbf{x}^2$, $\dots$
+          until we are close enough to the solution.</p>
+          <p class="fragment">
+            The method of steepest descent is to take a step in the direction
+            where $f$ decreases the fastest:
+            $$
+            \mathbf{x}^{n+1} = \mathbf{x}^n - \alpha \nabla f(\mathbf{x}^n)
+            $$
+          </p>
+          <p class="fragment">But how far should we go in that direction? How to
+          determine $\alpha$?</p>
+        </section>
+
+        <section>
+          <h2>Method of Steepest Descent</h2>
+          <p>How far along the direction of steepest descent of $f$? We would
+          like to find $\alpha$ such that $f(\mathbf{x}^{n+1})$ is minimum, or in other words,
+          $df(\mathbf{x}^{n+1})/d\alpha = 0$.</p>
+          <p class="fragment">
+            $$
+            \frac{df(\mathbf{x}^{n+1})}{d\alpha} = -\nabla f(\mathbf{x}^n)\cdot \nabla f(\mathbf{x}^{n+1}) = 0
+            $$
+          </p>
+          <p class="fragment">
+            You go along the direction of $-\nabla f$ until the gradient becomes
+            perpendicular to the original direction.
+          </p>
+        </section>
+
+        <section>
+          <h2>Method of Steepest Descent</h2>
+          <p>Notice that $\nabla f(\mathbf{x}^n) = \mathbf{A}\mathbf{x}^n -
+          \mathbf{b} = \mathbf{r}^n$. The condition for best $\alpha$ is
+          $\mathbf{r}^{n+1}\cdot\mathbf{r}^n = 0$.</p>
+          <div class="fragment">
+          $$
+            \begin{align}
+            (\mathbf{A}\mathbf{x}^{n+1} - \mathbf{b})\cdot \mathbf{r}^n &= 0 \\
+            (\mathbf{A}(\mathbf{x}^n - \alpha \mathbf{r}^n) - \mathbf{b})\cdot \mathbf{r}^n &= 0 \\
+            (\mathbf{A}\mathbf{x}^{n} - \mathbf{b})\cdot \mathbf{r}^n - \alpha (\mathbf{A}\mathbf{r}^n)\cdot\mathbf{r}^n &= 0 \\
+            \end{align}
+          $$
+          </div>
+          <div class="fragment">
+            $$
+            \alpha = \frac{\mathbf{r}^n\cdot \mathbf{r}^n}{(\mathbf{A}\mathbf{r}^n)\cdot \mathbf{r}^n}
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Method of Steepest Descent</h2>
+          <p>Therefore, the iterative procedure to minimize the function $f$, or
+          to solve $\mathbf{A}\mathbf{x} = \mathbf{b}$ is the following:</p>
+          <p class="fragment">
+            $$
+            \mathbf{r}^n = \mathbf{A}\mathbf{x}^n - \mathbf{b}
+            $$
+          </p>
+          <p class="fragment">
+            $$
+            \alpha = \frac{\mathbf{r}^n\cdot \mathbf{r}^n}{(\mathbf{A}\mathbf{r}^n)\cdot \mathbf{r}^n}
+            $$
+          </p>
+          <p class="fragment">
+            $$
+            \mathbf{x}^{n+1} = \mathbf{x}^n - \alpha \mathbf{r}^n
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Method of Steepest Descent</h2>
+          <img src="steepest-descent.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Conjugate Gradient</h2>
+          <p>We won't have time to go through the method of conjugate gradient.
+          But it is a more powerful method than steepest descent optimizes the
+          search direction. Conjugate gradient always arrives at the exact
+          solution after $n$ steps, for a $n\times n$ matrix $\mathbf{A}$.</p>
+          <p class="fragment">A good introduction to the CG method I found is <a href="https://www.cs.cmu.edu/~quake-papers/painless-conjugate-gradient.pdf">here</a>.</p>
+          <p class="fragment">CG is widely used in solving very large linear
+          systems numerically. It is also sometimes used in machine learning
+          too.</p>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
