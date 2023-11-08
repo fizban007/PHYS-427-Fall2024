@@ -61,10 +61,24 @@
         </section>
 
         <section>
+          <h2>Stochastic Processes</h2>
+          <p>A continuous-time stochastic process is a process where the index
+          variable is continuous instead of discrete, e.g. $X_t$.</p>
+          <p class="fragment">
+            The probability distribution function may evolve with time, e.g. $p(X, t)$.
+          </p>
+          <p class="fragment">
+            Examples of continuous-time stochastic processes include Brownian
+            motion, radioactive decay, scattering, etc.
+          </p>
+        </section>
+
+
+        <section>
           <h2>Brownian Motion</h2>
           <p>Brownian motion is a stereotypical stochastic process that arises
           naturally in physics.</p>
-          <p class="fragment">It is the random motion of particles suspended in
+          <p class="fragment">It describes the random motion of particles suspended in
           a fluid, constantly subject to the bombardment of fluid molecules
           pushing it in random directions.</p>
           <img class="fragment" src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Brownian_motion_large.gif" width="30%">
@@ -72,7 +86,7 @@
 
         <section>
           <h2>Brownian Motion</h2>
-          <p>One of Einstein's 1905 papers is on Brownian motion, and he
+          <p>One of Einstein's 1905 classic papers is on Brownian motion, and he
           discovered the correspondence between Brownian motion and a diffusion process.</p>
           <p class="fragment">
             The density of Brownian particles $\rho(x, t)$ satisfies the diffusion equation:
@@ -200,7 +214,7 @@
         <section>
           <h2>Stochastic Differential Equations</h2>
           <p>To simulate Brownian motion starting at $x_0$, with drift $\mu$ and
-          , we simply iterate:</p>
+          diffusion $\sigma$, we simply iterate:</p>
           $$
           x_{n + 1} = x_n + \mu \Delta t + \sigma \sqrt{\Delta t}\,\mathcal{N}(0, 1)
           $$
