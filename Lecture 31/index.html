@@ -145,8 +145,8 @@
           <p class="fragment">
             For many body systems, e.g. $N$ electrons/nucleons, the collective
             wavefunction $\psi(\mathbf{x}, t)$ is a function of $3N$ spatial
-            coordinates. Monte Carlo methods become the one of the most viable ways to solve
-            the Schrödinger equation.
+            coordinates. Monte Carlo methods become the one of the most viable
+            ways to directly solve the Schrödinger equation.
         </section>
 
         <section>
@@ -168,8 +168,8 @@
             a given amount of time.</li>
             <li class="fragment">The number of decays of a radioactive substance
             in a given amount of time.</li>
-            <li class="fragment">The number of scatterings of an electron moving
-            through a background photon field over a certain distance.</li>
+            <li class="fragment">The number of scatterings of a high-energy electron moving
+            through a given distance in a population of low-energy electrons and ions.</li>
         </section>
 
         <section>
@@ -277,10 +277,10 @@
           sum of waiting times by a product of uniformly distributed variables:</p>
           <div class="fragment">
             <ol>
-              <li>Compute $e^{-\lambda}$.</li>
+              <li>Compute $e^{-\lambda t}$.</li>
               <li>Set $n = 0$ and $p = 1$.</li>
               <li>Generate a uniform random number $u$ in $[0, 1]$.</li>
-              <li>If $u > e^{-\lambda}$ then return $n$.</li>
+              <li>If $u > e^{-\lambda t}$ then return $n$.</li>
               <li>Otherwise, multiply $p$ by $u$, increase $n$ by $1$, and go to step 2.</li>
             </ol>
           </div>
