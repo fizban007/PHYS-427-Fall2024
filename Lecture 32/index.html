@@ -182,9 +182,9 @@
             $$
             \mathrm{Var}(f) = \sigma^2 = \frac{1}{N}\sum_{i=1}^N (f(\mathbf{x}_i) - \langle f\rangle)^2
             $$
-            Therefore, the expected error on the integral is simply:
+            Therefore, the expected error on the integral is given by:
             $$
-            \langle \epsilon\rangle = \frac{\sigma}{\sqrt{N}}\mathrm{Vol}(S)
+            \langle \epsilon\rangle = \frac{\sqrt{N\times \mathrm{Var}(f)}}{N}\mathrm{Vol}(S) \sim \frac{1}{\sqrt{N}}\mathrm{Vol}(S)
             $$
           </p>
         </section>
@@ -271,7 +271,7 @@
           <h2>Importance Sampling</h2>
           <p>The statistical error associated with this method can be estimated as:
           $$
-          \langle \epsilon\rangle = \frac{\mathrm{Var}(f/w)}{\sqrt{N}}\int_S w(\mathbf{x}) d\mathbf{x}
+          \langle \varepsilon\rangle = \frac{\sqrt{N\times \mathrm{Var}(f/w)}}{N}\int_S w(\mathbf{x}) d\mathbf{x}
           $$</p>
           <p class="fragment">
             For appropriately chosen weight function $w(\mathbf{x})$, the variance
