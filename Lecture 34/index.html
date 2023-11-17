@@ -61,15 +61,15 @@
             H = -J \sum_{\langle i, j \rangle} s_i s_j
           $$</p>
           <p class="fragment">
-            $H$ is the Hamiltonian of the system, which gives the total energy.
-            $J$ is the coupling constant, which determines the strength of the
-            interaction between neighboring spins. $s_i$ is the spin of the
-            $i$th electron which may be $+1$ or $-1$, and the sum is over all
-            neighboring pairs of electrons.
+            $H$ is the Hamiltonian of the system. $J$ is the coupling constant,
+            which determines the strength of the interaction between neighboring
+            spins. $s_i$ is the spin of the $i$th electron which may be $+1$ or
+            $-1$, and the sum $\langle i,j\rangle$ is over all neighboring pairs
+            of electrons.
           </p>
           <p class="fragment">
-            The Ising model is a simple model of ferromagnetism, where the spins
-            tend to align with each other to minimize magnetic energy.
+            The Ising model is a simple model of ferromagnetism, where the spin alignment
+            leads to lower overall energy.
           </p>
         </section>
 
@@ -137,7 +137,8 @@
             P_a = \begin{cases} 1 & \text{if }E_i > E_j \\
             e^{-(E_j - E_i)/k_B T} & \text{if }E_i < E_j \end{cases}
             $$</p>
-          <p class="fragment">If the move is rejected, then the system stays at state $i$.</p>
+          <p class="fragment">If the move is rejected, then the system stays at state $i$. This ensures
+          that $\sum_j T_{ij} = 1$.</p>
         </section>
 
         <section>
@@ -172,11 +173,11 @@
           <p>The Metropolis-Hastings MCMC algorithm can be summarized as the following:</p>
           <ul>
             <li class="fragment">Choose a random initial state</li>
-            <li class="fragment">Propose a move to a new state at random</li>
+            <li class="fragment">Select a new state to move to according to a proposal distribution</li>
             <li class="fragment">Compute the probability $P_a$ of accepting this move</li>
             <li class="fragment">Draw a uniform random variable $u$ between $0$
-            and $1$, accept the move if $u < P_a$. Otherwise stay at the current state and do nothing</li>
-            <li class="fragment">Go to the second step</li>
+            and $1$, accept the move if $u < P_a$. Otherwise stay at the current state</li>
+            <li class="fragment">Go to the second step and repeat this procedure</li>
           </ul>
         </section>
 
