@@ -59,6 +59,13 @@
         -->
         <section>
           <h2>Bayesian Inference</h2>
+          <p>Assuming we took this set of data data $\{H_i, W_i\}$:</p>
+          <img src="weight_vs_height_random.png" width="45%">
+          <p class="fragment">The goal is to infer the parameters $\alpha$, $\beta$, and $\sigma$.</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
           <p>Let's assume that the prior distributions are:
           $$
             \begin{align}
@@ -144,12 +151,6 @@
                 \text{Gamma}(k, \theta) = \frac{1}{\Gamma(k)\theta^k}x^{k-1}e^{-x/\theta}
               $$
           </p>
-        </section>
-
-        <section>
-          <h2>Gibbs Sampling</h2>
-          <p>I generated 10,000 random pairs of data $\{H_i, W_i\}$:</p>
-          <img src="weight_vs_height_random.png" width="55%">
         </section>
 
         <section>
