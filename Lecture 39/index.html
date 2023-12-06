@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 39</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Parallel Programming</h2>
+        </section>
+
+        <section>
+          <h2>Parallel Programming</h2>
+          <p>Modern CPUs have multiple cores. How to make use of them?</p>
+          <img src="multi-core.webp" width="60%">
+        </section>
+
+        <section>
+          <h2>Parallel Programming</h2>
+          <p>There are different levels of parallelization:</p>
+          <ul>
+            <li class="fragment">Same operations on a set of different data on the same CPU core.
+            This is called "vectorization".</li>
+            <li class="fragment">Multiple CPU cores on the same machine. All
+            cores share access to the same system memory.</li>
+            <li class="fragment">Multiple machines on the same network. Each machine has their
+              own exclusive memory.
+          </ul>
+        </section>
+
+        <section>
+          <h2>Vectorization</h2>
+          <p>Vectorization used to be called "SIMD" (Same Instruction Multiple Data).
+          Depending on the CPU instruction set, it can work on a set of floating
+          point numbers at the same time. For example, the Intel AVX-512 instruction set
+            has the following intrinsic functions:</p>
+          <div class="fragment">
+            <code>__m512d _mm512_load_pd (void const* mem_addr)</code>
+          </div>
+          <div class="fragment">
+            <code>__m512d _mm512_add_pd (__m512d a, __m512d b)</code>
+          </div>
+          <div class="fragment">
+            <code>void _mm512_store_pd (void* mem_addr, __m512d a)</code>
+          </div>
+          <p class="fragment">You can find the official guide <a href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html">here</a>.</p>
+        </section>
+
+        <section>
+          <h2>Vectorization</h2>
+          <p>Vectorization is now often done automatically by the compiler. Simple <code>for</code>
+            loops often can be automatically be vectorized. This is partly what
+            makes code compiled with the <code>-O3</code> flag significantly faster.</p>
+          <p class="fragment">
+            For very specific applications, you may need to write the intrinsics
+            directly. Such level of fine-tuning can be very challenging.
+          </p>
+        </section>
+
+        <section>
+          <h2>Shared Memory Parallelization</h2>
+          <p>For parallelization over multiple CPU cores on the same machine, a
+          model using "threads" is often used.</p>
+          <p class="fragment">
+            Each thread executes its instructions sequentially. Everything you have written in
+            this course has been single-threaded.
+          </p>
+          <p class="fragment">
+            With Hyperthreading, each modern CPU core can technically execute up to 2
+            threads simultaneously. However, when the workload of each thread is high,
+            each physical core will be saturated by one thread.
+          </p>
+        </section>
+
+        <section>
+          <h2>Shared Memory Parallelization</h2>
+          <p>I will introduce 2 main ways to achieve multi-threading in C++:</p>
+          <ul>
+            <li class="fragment">
+              <a href="https://en.cppreference.com/w/cpp/thread/thread">std::thread</a> is a
+              built-in C++ library for multi-threading. This is a "low-level" way to
+              do multi-threading.
+            </li>
+            <li class="fragment">
+              <a href="https://www.openmp.org/">OpenMP</a> is a set of compiler directives
+              that can parallelize code automatically. This is a "high-level" way to
+              do multi-threading.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Threads</h2>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+#include &lt;thread&gt;
+#include &lt;iostream&gt;
+#include &lt;chrono&gt;
+
+int main() {
+  auto f = [](int N) {
+    for (int i = 0; i < N; i++) {
+      std::cout << i << std::endl;
+    }
+  };
+  std::thread t1(f, 10);
+  std::this_thread::sleep_for(std::chrono::microseconds(1));
+  std::cout << "main thread" << std::endl;
+  t1.join();
+  return 0;
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Threads</h2>
+          <p>An output of the above program is:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-bash" data-trim data-noescape>
+0
+1
+2
+3
+4
+main thread5
+6
+
+7
+8
+9
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Threads</h2>
+          <ul>
+            <li>
+              <code>std::thread</code> is a class. You create an instance of it
+              by passing a function and its arguments. It will execute the function
+              immediately on a parallel thread. The main thread will continue to
+              execute the code after the <code>std::thread</code> constructor.
+            </li>
+            <li class="fragment">
+              <code>std::thread::join()</code> is a function that waits for the thread
+              to finish. If you don't call <code>join()</code>, the program may
+              terminate prematurely before the thread finishes, causing a crash.
+            </li>
+            <li class="fragment">
+              Different threads can change the content of the same array. This
+              may lead to "race conditions" where the result depends on the
+              unpredictable order of execution of the threads.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>OpenMP is a set of compiler directives that can parallelize code automatically.</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+#include &lt;iostream&gt;
+#include &lt;omp.h&gt;
+
+int main() {
+#pragma omp parallel for
+  for (int i = 0; i < 10; i++) {
+    std::cout << i << std::endl;
+  }
+  return 0;
+}
+            </code></pre>
+          </div>
+          <p class="fragment">This needs to be compiled with the <code>-fopenmp</code> flag.</p>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>An output of the above program is:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-bash" data-trim data-noescape>
+4
+0
+3
+1
+9
+2
+6
+5
+7
+8
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>By default, OpenMP often utilizes all available cores on the system by launching
+          the same number of threads. You can control the number of threads used with an environment
+          variable:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-bash" data-trim data-noescape>
+OMP_NUM_THREADS=4 ./a.out
+            </code></pre>
+          </div>
+          <p class="fragment">If you set <code>OMP_NUM_THREADS=1</code> then it will carry out
+          the loop serially in one single thread, without any parallelization.</p>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>OpenMP is often the go-to way to parallelize scientific programs in
+          a shared-memory setting (e.g. a multi-core computer). Scientific programs often
+            rely heavily on predictable <code>for</code> loops, which is where OpenMP
+          excels.</p>
+          <p class="fragment">Low level threading works the best with parallel tasks that may not be
+            as simple as a <code>for</code> loop. For exampling, loading a large
+            file in the background.</p>
+        </section>
+
+        <section>
+          <h2>GPUs</h2>
+          <p>Graphics Processing Units (GPUs) are extreme examples of shared-memory parallel
+          machines. A GPU consists of a number of "streaming multiprocessors" each
+          containing many cores.</p>
+          <p class="fragment">For example, the Nvidia RTX 4090 has 126 streaming
+          multiprocessors, which gives a total of 16,128 CUDA cores.</p>
+          <p class="fragment">Saturating the computational capabilities of such
+          a GPU will typically require launching $\gtrsim 100,000$ threads at
+          the same time.</p>
+        </section>
+
+        <section>
+          <h2>Parallel Algorithms</h2>
+          <p>Not all algrithms can be easily parallelized. Which of the following is more
+          parallelizable?</p>
+          <ul>
+            <li class="fragment">Matrix multiplication.</li>
+            <li class="fragment">Solving an ODE with RK4.</li>
+            <li class="fragment">Solving a PDE with finite difference method.</li>
+            <li class="fragment">Updating an MCMC chain.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Amdahl's Law</h2>
+          <p>In parallel computing, Amdahl's law gives the theoretical speedup
+          for the execution of a task when more and more processors.</p>
+          <p class="fragment">
+            Suppose $0\leq p\leq 1$ is the portion of the program that is parallelizable. The
+            total speedup when using $n$ parallel processors can be estimated as:
+            $$
+            S = \frac{1}{(1 - p) + p / n}
+            $$
+          </p>
+          <p class="fragment">
+            Even in the limit of $n\to \infty$, the maximum speedup that can be achieved is
+            still $S \approx 1/(1 - p)$. If $p = 0.9$, $S$ is at most 10.
+          </p>
+        </section>
+
+        <section>
+          <h2>Amdahl's Law</h2>
+          <p>Amdahl's law assumes breaking down a fixed-size problem into
+          smaller and smaller parallel pieces. This process is called "strong
+          scaling".</p>
+          <p class="fragment">
+            It is often difficult to find perfect scaling in this limit, as any
+            finite-size problem may have a fixed portion that is not parallelizable, which
+            limit the parallel speedup.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gustafson's Law</h2>
+          <p>Gustafson's law gives the theoretical speedup of a problem using
+            parallel computing when the problem size also increases with the
+            number of processors.
+          </p>
+          <p class="fragment">
+            Again suppose that $0 \leq p \leq 1$ is the portion of the program
+            that is parallelizable. The total speedup when using $n$ parallel
+            processors compared to using only one processor is:
+            $$
+            S = (1 - p) + p\times n
+            $$
+          </p>
+          <p class="fragment">
+            In other words, the non-parallel portion of the program does not
+            change much with the increasing number of processors.
+            Solve a bigger problem using more processors will make the non-parallel part
+            less important.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gustafson's Law</h2>
+          <p>Gustafson's law describes "weak scaling", where the problem size scales with the
+          number of parallel processors, while the workload on each processor stays the same.
+          This is the more typical way to take advantage of larger amounts of computational
+          resources.</p>
+          <p class="fragment">However, certain algorithms may not scale linearly with problem
+          size (e.g. matrix multiplication). In that case, weak scaling does not work as well
+          as the ideal Gustafson's law.</p>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
