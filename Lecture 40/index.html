@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 40</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Parallel Programming</h2>
+        </section>
+
+        <section>
+          <h2>Parallel Programming</h2>
+          <p>Last time we discussed parallelization over multiple cores within a
+          single shared-memory system. Launching threads is the canonical way of
+          parallelization.</p>
+          <p class="fragment">
+            OpenMP manages a thread pool automatically, which makes parallelizing sections
+            of code much easier.
+          </p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>Parallelization over different machines on a network is often called "distributed computing".</p>
+          <p class="fragment">An extreme example is the SETI@Home project, which provides a desktop application
+          that people can download and run on their own computers. The application uses your idle CPU to do computation
+          and report to the server, in order to help find aliens.</p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>A more common setting is a computational cluster that is connected to the same local network.</p>
+          <img src="frontier.jpg" width="50%">
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>A cluster consists of individual "nodes", each of which is
+          basically a multi-core computer.</p>
+          <p class="fragment">
+            For example, each node on Frontier has 64 CPU cores, 512 GB of DDR4
+            RAM, and effectively 8 separate GPUs. These nodes are connected with a 800
+            Gbps network connection. Frontier has 9,408 nodes in total. The system can achieve
+            a sustained performance of 1.2 ExaFLOP/s.
+          </p>
+          <div class="fragment">
+            <a href="https://www.top500.org/lists/top500/2023/11/">TOP500 List</a>
+          </div>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>How to program for supercomputers?</p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>The standard protocol for communication between computing nodes is
+          the Message-Passing Interface (MPI). MPI provides a collection of
+          functions to send and receive serialized data between nodes.</p>
+          <div class="fragment">
+            <code>int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)</code>
+          </div>
+          <div class="fragment">
+            <code>int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
+             MPI_Comm comm, MPI_Status *status)</code>
+          </div>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>To parallelize a simulation (e.g. fluid simulation or other PDE solver), the
+          computational domain is often decomposed into chunks that are assigned to different
+          MPI ranks:</p>
+          <img src="Domain-decomposition.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>Each subdomain is surrounded by ghost cells, which hold the information from
+          the neighboring subdomain. After each update, the content of the ghost cells are
+          updated to reflect the new values from the neighbors.</p>
+          <p class="fragment">The way we implemented periodic boundary conditions in Project 2
+          is an example of such communication, except that we were communicating with ourselves.</p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>Challenges to distributed computing:</p>
+          <ul>
+            <li class="fragment">
+              Designing algorithms that can parallelize well.
+            </li>
+            <li class="fragment">
+              Balancing the load among computational nodes.
+            </li>
+            <li class="fragment">
+              Parallelized data output and large-scale data visualization.
+            </li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
