@@ -24,17 +24,17 @@
         <p>Dr. Alex Chen</p>
         <p>Department of Physics</p>
         <p>Washington University in St. Louis</p>
-        <p>Fall 2023</p>
+        <p>Fall 2024</p>
       </section>
       <section>
         <h2>Course Information</h2><br>
-        <p><a href="https://fizban007.github.io/PHYS-427/">Course
+        <p><a href="https://fizban007.github.io/PHYS-427-Fall2024/">Course
           Website</a></p>
         <p><a href=
-             "https://wustl.instructure.com/courses/115854">Course
+             "https://wustl.instructure.com/courses/137714">Course
           Canvas</a></p>
         <p><a href=
-             "https://wustl.instructure.com/courses/115854/modules/items/1877999">
+             "https://wustl.instructure.com/courses/137714/modules/items/2400519" >
           Syllabus</a></p>
         <aside class="notes">
           Discuss the syllabus with the students. Outline the
@@ -42,16 +42,6 @@
         </aside>
       </section>
 
-      <!-- <section>
-           <h2>Git</h2>
-           <p>We will use <code>GitHub Classroom</code> to distribute and collect
-           assignments.</p>
-           <br>
-           <p><code>Git</code> is a version control system that allows you to
-           track changes to your code. <code>GitHub</code> is an online service
-           that hosts <code>git</code> repositories.</p>
-           </section>
-      -->
       <section>
         <h2>What is Computational Physics?</h2>
         <p>Using computers to solve physics problems that are often too complex or intractable
@@ -62,7 +52,9 @@
           style="display: inline-block; width: 30%;">
         <img data-src="figures/cosmicvoid.jpg"
           style="display: inline-block; width: 30%;">
-        <p></p>
+        <p class="fragment">Not only useful in physics, but the methods apply to
+        many branches of engineering, as well as finance, AI, and game
+        development.</p>
 
         <aside class="notes">
           Start a discussion about what computational physics is. Although
@@ -74,28 +66,55 @@
         </aside>
       </section>
 
-      <section>
-        <h2>Computer Architecture</h2>
-        <p>Modern computers are built on the Von Neumann architecture</p>
-        <img data-src="figures/Von_Neumann_Architecture.svg"
-          style="display: inline-block; width: 40%;">
+      <!-- <section>
+           <h2>What this Course Is</h2>
+           <br>
+           <ul>
+           <li>A course on how to use computer programming to solve physics problems.</li>
+           <br>
+           <li class="fragment">A course on numerical methods and how they are implemented.</li>
+           <br>
+           <li class="fragment">A challenging course with several complex projects.</li>
+           </ul>
+           </section>
 
-        <aside class="notes">
-          Discuss the Von Neumann architecture. The Von Neumann architecture
-          is a model for how computers are built. It is named after John von
-          Neumann, who was a Hungarian-American mathematician, physicist,
-          computer scientist, and polymath. The Von Neumann architecture
-          describes how a computer is built from a central processing unit
-          (CPU), memory, and input/output devices. The CPU is the "brain" of
-          the computer, and it is where all the calculations are performed.
-          Memory is where the computer stores data and instructions. Input
-          devices are how the computer receives information from the outside
-          world, and output devices are how the computer sends information to
-          the outside world. The Von Neumann architecture is the basis for all
-          modern computers.
-        </aside>
-      </section>
+           <section>
+           <h2>What this Course Is Not</h2>
+           <ul>
+           <li class="fragment">An algorithm course in the CS sense. We won't teach sorting,
+           breadth first search, or dynamic programming.</li>
+           <br>
+           <li class="fragment">A traditional physics course. We will use concepts from all
+           branches of physics, but will not teach them in detail.</li>
+           <br>
+           <li class="fragment">Preparing you for a career in software development. However, what
+           we cover will be quite important if you want to work in
+           science/engineering.</li>
+           </ul>
+           </section>
+      -->
+      <!-- <section>
+           <h2>Computer Architecture</h2>
+           <p>Modern computers are built on the Von Neumann architecture</p>
+           <img data-src="figures/Von_Neumann_Architecture.svg"
+           style="display: inline-block; width: 40%;">
 
+           <aside class="notes">
+           Discuss the Von Neumann architecture. The Von Neumann architecture
+           is a model for how computers are built. It is named after John von
+           Neumann, who was a Hungarian-American mathematician, physicist,
+           computer scientist, and polymath. The Von Neumann architecture
+           describes how a computer is built from a central processing unit
+           (CPU), memory, and input/output devices. The CPU is the "brain" of
+           the computer, and it is where all the calculations are performed.
+           Memory is where the computer stores data and instructions. Input
+           devices are how the computer receives information from the outside
+           world, and output devices are how the computer sends information to
+           the outside world. The Von Neumann architecture is the basis for all
+           modern computers.
+           </aside>
+           </section>
+      -->
       <section>
         <h2>Computer Architecture</h2>
         <p>A modern motherboard</p>
@@ -200,7 +219,6 @@
         <img data-src="figures/memory-hierarchy.png"
           style="display: inline-block; width: 60%;">
       </section>
-
 
       <section>
         <h2>Computers Talk in Binary</h2>
@@ -457,10 +475,12 @@ v = np.zeros(10000)
         <ul>
           <li>C++ is widely used in scientific computing, as well as in the
             industry wherever performance is critical</li>
-          <li>Over the past several decades, C++ has evolved to become a
+          <li class="fragment">Over the past several decades, C++ has evolved to become a
             modern and expressive language. Many large-scale projects are written in C++</li>
-          <li>We will restrict ourselves to a subset of C++ that is more
+          <li class="fragment">We will restrict ourselves to a subset of C++ that is more
             manageable, and will make extensive use of "modern C++"</li>
+          <li class="fragment">In particular, we will not be using the infamous
+            C-style pointers. Instead we will use references and <code>std::vector</code></li>
         </ul>
       </section>
 
@@ -566,7 +586,7 @@ if (std::abs(c - 2.468) < EPSILON) {
           <li>If you write <code>1</code>, it is interpreted as an integer.
             Operations between two integers give an integer result. Therefore <code>1/2</code> will yield <code>0</code>.</li>
           <br>
-          <li>Write numbers with a decimal point to avoid confusion!</li>
+          <li>Write numbers with a decimal point to avoid potential bugs!</li>
         </ul>
       </section>
 
