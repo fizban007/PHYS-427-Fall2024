@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 3</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- Demonstration of VS Code -->
+        <!-- Some clarification for homework-related issues -->
+
+        <!-- <section> -->
+          <!-- <h2>Some Demonstration of VS Code</h2> -->
+          <!-- <div style="width: 70%; margin: auto;">
+               <pre><code class="language-c++" data-trim data-noescape>
+               #include &lt;iostream&gt;
+               int main() {
+               std::cout << "Hello World" << std::endl;
+               return 0;
+               }
+               </code></pre>
+               </div> -->
+          <!-- </section> -->
+        <section>
+          <h2>Floating Point Numbers Continued</h2>
+        </section>
+
+        <section>
+          <h2>NaN</h2>
+          <p>Floating point numbers can have a special value: NaN (Not a Number).</p>
+          <p>It's most common to have NaNs from a few operations: zero divided by zero, or
+          taking the square root or logarithm of a negative number</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+double x = 0.0;
+double y = 0.0;
+std::cout << "x/y = " << x/y << std::endl;
+            </code></pre>
+          </div>
+          <p>Output:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-sh" data-trim data-noescape>
+x/y = -nan
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>NaN</h2>
+          <p>NaNs are contagious. Any operation involving a NaN will result in a NaN.</p>
+          <p>NaN is the only number that is not equal to itself. You can
+          therefore test NaN using the following:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+if (x != x) {
+  // x is NaN
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Algorithms</h2>
+          <p>Algorithms are step-by-step procedures for solving a problem.</p>
+          <p>In the context of this course, these will include numerical algorithms that
+            solve mathematical problems that are relevant to physics.</p>
+        </section>
+
+        <section>
+          <h2>Root Finding</h2>
+          <p>Given a function $f(x)$, find $x$ such that $f(x) = 0$.</p>
+          <p>Example: $f(x) = x^2 - 3x + 1$ admits two solutions:</p>
+          $$
+          x_{1,2} = \frac{3 \pm \sqrt{5}}{2}
+          $$
+          <p>This is a simple task since quadratic formula exists.</p>
+        </section>
+
+        <section>
+          <h2>Quadratic Formula</h2>
+          <p>For a standard quadratic equation $ax^2 + bx + c = 0$, the solutions are:</p>
+          $$
+          x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+          $$
+          <p>The equation has only one solution when $b^2 - 4ac = 0$, and no
+          real solution when $b^2 - 4ac < 0$.</p>
+          <p>However, this formula is not good when $b^2 \gg 4ac$. In that case,
+            one of the numerators will evaluate to zero due to machine
+            precision. This is called <em>catastrophic cancellation</em>.</p>
+        </section>
+
+        <section>
+          <h2>Quadratic Formula</h2>
+          <p>A more stable formula is as follows:</p>
+$$
+    \displaystyle x_{1} = \frac{q}{a},\quad x_{2} = \frac{c}{q}
+$$
+          <p>where</p>
+$$
+    \displaystyle q = -\frac{1}{2}\left(b + \mathrm{sgn}(b)\sqrt{b^2 - 4ac}\right)
+$$
+          <p>Here, $\mathrm{sgn}(b)$ is the sign of $b$.</p>
+          <p>Note that there is still a problem with this formula when $a = 0$.</p>
+        </section>
+
+        <section>
+          <h2>General Nonlinear Equations</h2>
+          <p>Most equations of the form $f(x) = 0$ do not have a nice, closed
+          analytic solution.</p>
+          $$
+          x = 2 - e^{-x}
+          $$
+          <p>Numerical methods are the only way to obtain an approximate solution.</p>
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+          <p>Given $f(x) = 0$, we can rewrite it as $x = g(x)$, where $g(x) = x - f(x)$.</p>
+          <p>Then, we can find the solution by iterating:</p>
+          $$
+          x_{n+1} = g(x_n)
+          $$
+          <p>until $x_{n+1} - x_n$ is small enough.</p>
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+          $$
+          x = 2 - e^{-x}
+          $$
+          <p>Let's try $x_0 = 1$.</p>
+          <p>$x_1 = 2 - e^{-x_0} = 2 - e^{-1} \approx 1.632$</p>
+          <p>$x_2 = 2 - e^{-x_1} = 2 - e^{-1.632} \approx 1.804$</p>
+          <p>$x_3 = 2 - e^{-x_2} = 2 - e^{-1.804} \approx 1.835$</p>
+          <p>$x_4 = 2 - e^{-x_3} = 2 - e^{-1.835} \approx 1.840$</p>
+          <p>$x_5 = 2 - e^{-x_4} = 2 - e^{-1.840} \approx 1.841$</p>
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+          <p>Why does this method work?</p>
+          <div class="fragment">
+            <p>Let $x_*$ be the solution. We can expand $x_{n+1} = g(x_n)$ around $x_*$:</p>
+            $$
+            x_{n+1} = g(x_*) + g'(x_*)(x_n - x_*) + \cdots
+            $$
+            <p>Since $x_*$ is a solution, $g(x_*) = x_*$, so</p>
+            $$
+            x_{n+1} - x_* = g'(x_*)(x_n - x_*) + \cdots
+            $$
+            <p>The distance to the solution shrinks if $\left|g'(x)\right|<1$</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+          <p>Typically, if you start with an $x$ close enough to $x_*$, and $\left|g'(x)\right|<1$,
+          then fixed point iteration will converge</p>
+          <p>The convergence is "linear":</p>
+          $$
+          \left|x_{n} - x_*\right| \approx \left|g'(x_*)\right|^n\left|x_0 - x_*\right|
+          $$
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+          <p>What if $\left|g'(x)\right|>1$?</p>
+          <div class="fragment">
+            <p>Note that if $x_* = g(x_*)$, then $g^{-1}(x_*) = x_*$ too.</p>
+            <p>Let $y = g^{-1}(x)$,</p>
+            $$
+            \frac{dy}{dx} = \frac{1}{g'(y)}; \quad \left|\frac{dy}{dx}\right| = \frac{1}{\left|g'(y)\right|} < 1
+            $$
+            <p>You can solve the alternative equation using fixed point iteration</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Fixed Point Iteration</h2>
+          <p>Fixed point iteration does not work when</p>
+          <ul>
+            <li>Convergence requirement is not met, and $f^{-1}(x)$ is not feasible to find</li>
+            <li>Multiple solutions exist, and you start too far away from the desired fixed point</li>
+            <li>$|g'(x_*)|$ is close to 1, in which case convergence will be very slow</li>
+          </ul>
+        </section>
+        <!-- <section>
+             <h2>Fixed Point Iteration</h2>
+             <p style="text-align: center;">Pros:</p>
+             <ul>
+             <li>Easy to implement</li>
+             <li>Converges for a wide range of functions</li>
+             </ul>
+             <p style="text-align: center;">Cons:</p>
+             <ul>
+             <li>Convergence can be slow</li>
+             <li>Convergence is not guaranteed</li>
+             </ul>
+             </section>
+        -->
+        <section>
+          <h2>Bisection Method</h2>
+        </section>
+
+        <section>
+          <h2>Bisection Method</h2>
+          <p>Given $f(x) = 0$, we can find the solution by finding an interval
+          $[a, b]$ such that $f(a)f(b) < 0$.</p>
+          <p>Then, we can find the solution by iterating:</p>
+          $$
+          x_{n+1} = \frac{a_n + b_n}{2}, \quad
+          \begin{cases}
+          b_{n+1} = x_{n+1}\ \mathrm{if}\ f(a_n)f(x_{n+1}) < 0 \\
+          a_{n+1} = x_{n+1}\ \mathrm{if}\ f(x_{n+1})f(b_n) < 0 \\
+          \end{cases}
+          $$
+          <p>until $b_n - a_n$ is small enough.</p>
+        </section>
+
+        <section>
+          <h2>Bisection Method</h2>
+          <p>This method converges very predictably:</p>
+          $$
+          \left|x_{n} - x_*\right| \approx \left(\frac{1}{2}\right)^n\left|x_0 - x_*\right|
+          $$
+          <p>Convergence is also "linear".</p>
+        </section>
+
+        <section>
+          <h2>Bisection Method</h2>
+          <p>If $f(a)f(b) < 0$ and $f(x)$ is continuous, then a solution is
+          guaranteed to exist in $[a, b]$. Bisection method will always converge
+          to a solution.</p>
+          <p>Pathological example: $f(x) = 1/x$</p>
+        </section>
+
+        <section>
+          <h2>Bisection Method</h2>
+          <p>Bisection method does not work when:</p>
+          <ul>
+            <li>$f(x)$ only touches the $x$ axis and does not change sign</li>
+            <li>If $f(x)$ has multiple roots within $[a, b]$, the method will only converge to a single root</li>
+            <li>$f(x)$ is not continuous</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Bisection Method</h2>
+          <p>Real life example from research</p>
+          $$
+          x = 600\frac{x^2b}{\ell_B E_1\left[(8x^2b)^{-1}\right]},\quad E_1(z) = \int_z^\infty t^{-1}e^{-t}\,dt
+          $$
+          <p>Mathematica has trouble finding the solution, however a simple
+          bisection program works well</p>
+        </section>
+
+        <section>
+          <h2>Newton's Method (Newton-Raphson Method)</h2>
+        </section>
+
+        <section>
+          <h2>Newton's Method</h2>
+          <p>From an initial guess solution to the equation $f(x) = 0$, we iterate like this:</p>
+          $$
+          x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}
+          $$
+          <p>You can think of this as a fixed point iteration with the equation $x = x - f(x)/f'(x)$.</p>
+        </section>
+
+        <section>
+          <h2>Newton's Method</h2>
+          <p>Why does it work?</p>
+          <div class="fragment">
+            <p>Let $x_*$ be the solution. We can expand $x_{n+1} = x_n - f(x_n)/f'(x_n)$ around $x_*$:</p>
+            $$
+            x_{n+1} = x_* - \frac{f(x_*)}{f'(x_*)} + \frac{f''(x_*)}{2f'(x_*)}(x_n - x_*)^2 + \cdots
+            $$
+            <p>Since $x_*$ is a solution, $f(x_*) = 0$, so</p>
+            $$
+            x_{n+1} - x_* = \frac{f''(x_*)}{2f'(x_*)}(x_n - x_*)^2 + \cdots
+            $$
+            <p>The distance to the solution shrinks quadratically. Convergence is much faster than the previous two methods.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Newton's Method</h2>
+          <p>What is the condition for convergence?</p>
+          <div class="fragment">
+            <p>If we set $g(x) = x - f(x)/f'(x)$, then</p>
+            $$
+            g'(x) = \frac{f(x)f''(x)}{\left[f'(x)\right]^2},\quad g'(x_*) = 0
+            $$
+            <p>This is why the method converges quadratically. The condition for rapid convergence now
+            becomes that $\left|f''(x_*)/2f'(x_*)\right|$ is small enough.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Newton's Method</h2>
+          <p>Newton's method does not work when:</p>
+          <ul>
+            <li>$f'(x)$ is not easy to evaluate</li>
+            <li>$f'(x)$ goes to zero near the solution</li>
+            <li>$f''(x)$ is large, or $f'(x)$ varies rapidly near the solution</li>
+            <li>$f(x)$ is not continuous</li>
+          </ul>
+          <p>Similar to fixed point method, start with a guess solution
+          sufficiently close to desired $x_*$ to guarantee convergence.</p>
+        </section>
+
+        <!-- <section>
+             <h2>Algorithm Complexity</h2>
+             <p>Complexity reflects how the number of steps required to solve a
+             problem scales with the size of the problem.</p>
+             <p>We use the "Big O" notation to talk about complexity. For example,
+             for a function $f(N) = N^2 + 5N + 3$, its value is dominated by the
+             $N^2$ term when $N\to\infty$. We say:</p>
+             $$
+             f(N) = O(N^2)
+             $$
+             </section>
+
+             <section>
+             <h2>Algorithm Complexity</h2>
+             <p>Complexity of common operations</p>
+             <ul>
+             <li>Adding two numbers: $O(1)$</li>
+             <li>Adding two $N$-element arrays by element: $O(N)$</li>
+             <li>Multiplying an $N\times N$ matrix with a vector of length $N$: ?</li>
+             <li>Multiplying two $N\times N$ matrices: ?</li>
+             </ul>
+             </section>
+
+             <section>
+             <h2>Algorithm Complexity</h2>
+             <p>Complexity of common operations</p>
+             <ul>
+             <li>Adding two numbers: $O(1)$</li>
+             <li>Adding two $N$-element arrays by element: $O(N)$</li>
+             <li>Multiplying an $N\times N$ matrix with a vector of length $N$: $O(N^2)$</li>
+             <li>Multiplying two $N\times N$ matrices: $O(N^3)$</li>
+             </ul>
+             </section>
+
+             <section>
+             <h2>Algorithm Complexity</h2>
+             <p>There can be many different algorithms for solving the same
+             problem. For example, sorting:</p>
+             <ul>
+             <li>Insertion sort: $O(N^2)$</li>
+             <li>Merge sort: $O(N\log N)$</li>
+             <li>Quick sort: $O(N\log N)$</li>
+             <li>Bucket sort: $O(N + k)$</li>
+             </section>
+
+             <section>
+             <h2>Numerical Algorithms</h2>
+             </section>
+
+             <section>
+             <h2></h2>
+             </section>
+        -->
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
