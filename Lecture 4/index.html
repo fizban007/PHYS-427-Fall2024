@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 4</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Implementing Root Finding</h2>
+        </section>
+
+        <section>
+          <h2>Root Finding Algorithms</h2>
+          <p>We discussed 3 root-finding algorithms to solve the equation $f(x) = 0$ in
+          the previous lecture:</p>
+          <ul>
+            <li>Fixed Point Iteration</li>
+            <li>Bisection</li>
+            <li>Newton's Method</li>
+          </ul>
+          <p>All of them involve some iteration procedure.</p>
+        </section>
+
+        <section>
+          <h2>When to terminate?</h2>
+          <p>How do we know when to stop iterating?</p>
+          <div class="fragment">
+            <ul>
+              <li>Stop when the function value is close enough to 0</li>
+              <li>Stop when the change in $x$ is small enough</li>
+              <li>Stop when the interval is small enough</li>
+            </ul>
+            <p>How small is "small enough"?</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Tolerance</h2>
+          <p>Typically, we need to supply a given tolerance to the algorithm,
+          letting it know that this the precision we would like to achieve.</p>
+          <div class="fragment">
+            <p>Which one of the following makes more sense for root finding?</p>
+            <ul>
+              <li class="fragment">Given $\epsilon$, stop when $|f(x_n)| < \epsilon$.</li>
+              <li class="fragment">Given $\epsilon$, stop when $|x_n - x_{n-1}| < \epsilon$.</li>
+              <li class="fragment">Given $\epsilon$, stop when $|1 - x_n/x_{n-1}| < \epsilon$.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- <section>
+             <h2>Tolerance</h2>
+             <p>Typically, we need to supply a given tolerance to the algorithm,
+             letting it know that this the precision we would like to achieve.</p>
+             <p>There are two types of tolerance: <em>absolute</em> and <em>relative</em>.</p>
+             <p>For example, we can stop when $|f(x_n)| < 10^{-8}$, or when $|x_n -
+             x_{n-1}| < 10^{-8}$. Both are given in absolute tolerance.</p>
+             <p>We can also choose to stop when $|1 - x_n/x_{n-1}| < 10^{-8}$. This
+             is an example of relative tolerance.</p>
+             </section>
+
+             <section>
+             <h2>Tolerance</h2>
+             <p>Which tolerance should we use?</p>
+             <div class="fragment">
+             <p>It depends on the problem:</p>
+             <ul>
+             <li>If the target value is close or equal to zero, then it makes
+             sense to use absolute tolerance. Our $f(x) = 0$ problem falls into
+             this category.</li>
+             <li>If there are multiple values to compare, and they are each
+             very different in magnitude, then relative tolerance provides a
+             universal test. This can be useful e.g. when iterating towards the
+             solution set of multiple coupled equations.</li>
+             </ul>
+             <p>Sometimes both are used together: $|x_n - y_n| < \epsilon_a + |y_n|\epsilon_r$.</p>
+             </div>
+             </section>
+        -->
+        <section>
+          <h2>Implementing Root Finding in C++</h2>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>You can use "templates" to write functions that accept a parameter
+          of generic type, such as another function:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+template &lt;typename F&gt;
+double evaluate(const F& f, double x) {
+  return f(x);
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>Then you can pass in any function that takes a double and returns
+            a double:</p>
+          <div style="width: 70%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+double square(double x) {
+  return x * x;
+}
+
+evaluate(square, 3.0); // returns 9.0
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Generic Functions</h2>
+          <p>Function templates can be used to implement generic root-finding
+          functions:</p>
+          <div style="width: 60%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+template &lt;typename F&gt;
+double bisection(const F& f,
+                 double a, double b,
+                 double tolerance) {
+  // ...
+}
+            </code></pre>
+          </div>
+          <p>This function can apply the bisection algorithm on an arbitrary function <code>f</code> on
+          an initial interval $[a, b]$, until the interval shrinks down to
+          within a given tolerence.</p>
+        </section>
+
+        <section>
+          <h2>Lambda Functions</h2>
+          <p>Another way to define a function is to use a lambda function:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+auto square = [] (double x) {
+    return x * x;
+};
+            </code></pre>
+          </div>
+          <p>The structure <code>[] (double x) { return x * x; }</code> is
+          called a lambda function. It is essentially an anonymous function that
+          can be defined inline. You can assign it to a named variable.</p>
+          <p class="fragment">You can pass external variables to the lambda function in the <code>[]</code>.
+            Anything inside will be "captured" within the function. You can use <code>[&]</code> to
+            capture everything by reference.</p>
+        </section>
+
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
