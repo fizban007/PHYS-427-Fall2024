@@ -62,6 +62,18 @@
           </div>
         </section>
 
+        <section>
+          <h2>Tolerance</h2>
+          <p>If you adopt a termination criterion like $|1 - x_n/x_{n-1}| < \epsilon$,
+          then it could run into trouble when the solution is very close to zero.</p>
+          <p class="fragment">
+            My recommendation is to combine two criteria: $|x_n - x_{n-1}| < \epsilon (1 + |x_{n-1}|)$
+          </p>
+          <p class="fragment">
+            The first part is called <em>absolute tolerance</em>, and the second part is called <em>relative tolerance</em>.
+          </p>
+        </section>
+
         <!-- <section>
              <h2>Tolerance</h2>
              <p>Typically, we need to supply a given tolerance to the algorithm,
