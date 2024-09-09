@@ -1,0 +1,99 @@
+\documentclass{article}
+
+\usepackage{tikz}
+
+\begin{document}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \draw[-stealth,thick] (-0.5,0) -- (7,0) node[below] {$x$};
+        \draw[-stealth,thick] (0,-0.5) -- (0,4) node[left] {$f(x)$};
+
+        % \draw[blue] (3.5, 2.0) .. controls (4.5, 1.0) and (5.0, 2.0) .. (6.5, 2.0);
+
+        % \draw[thin] (1.0, 0.0) node[below] {$x_{0}$} -- (1.0, 2.0);
+        \draw[thin] (1.5, 0.0) node[below] {$a = x_{0}$} -- (1.5, 2.6) node[inner sep=0, minimum size=0] (a);
+        % \draw[thin] (2.0, 0.0) node[below] {$x_{1}$} -- (2.0, 2.76);
+        \draw[thin] (2.5, 0.0) node[below] {$x_{1}$} -- (2.5, 2.67) node[inner sep=0, minimum size=0] (b);
+        \draw (a) -- (b);
+        % \draw[thin] (3.0, 0.0) -- (3.0, 2.42);
+        \draw[thin] (3.5, 0.0) node[below] {$x_{2}$} -- (3.5, 2.0) node[inner sep=0, minimum size=0] (c);
+        \draw (b) -- (c);
+        \fill[cyan] (b) -- (c) -- (3.5, 0.0) -- (2.5, 0.0) -- (b);
+        % \draw[thin] (4.0, 0.0) -- (4.0, 1.63);
+        \draw[thin] (4.5, 0.0) -- (4.5, 1.55) node[inner sep=0, minimum size=0] (d);
+        \draw (c) -- (d);
+        % \draw[thin] (5.0, 0.0) node[below] {$x_{N-1}$} -- (5.0, 1.67);
+        \draw[thin] (5.5, 0.0) node[below] {$b$} -- (5.5, 1.84) node[inner sep=0, minimum size=0] (e);
+        \draw (d) -- (e);
+        \draw[blue, name path=f] (1.0, 2.0) .. controls (1.5, 3.0) and (2.5, 3.0) .. (3.5, 2.0) .. controls (4.5, 1.0) and (5.0, 2.0) .. (6.5, 2.0);
+    \end{tikzpicture}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \draw[-stealth,thick] (-0.5,0) -- (7,0) node[below] {$x$};
+        \draw[-stealth,thick] (0,-0.5) -- (0,4) node[left] {$f(x)$};
+
+        % \draw[blue] (3.5, 2.0) .. controls (4.5, 1.0) and (5.0, 2.0) .. (6.5, 2.0);
+
+        % \draw[thin] (1.0, 0.0) node[below] {$x_{0}$} -- (1.0, 2.0);
+        \draw[thin] (1.5, 0.0) node[below] {$a = x_{0}$} -- (1.5, 2.6) node[inner sep=0, minimum size=0] (a);
+        % \draw[thin] (2.0, 0.0) node[below] {$x_{1}$} -- (2.0, 2.76);
+        \draw[thin] (2.5, 0.0) node[below] {$x_{1}$} -- (2.5, 2.67) node[inner sep=0, minimum size=0] (b);
+        \draw (a) -- +(1.0, 0.0);
+        % \draw[thin] (3.0, 0.0) -- (3.0, 2.42);
+        \draw[thin] (3.5, 0.0) node[below] {$x_{2}$} -- (3.5, 2.67) node[inner sep=0, minimum size=0] (c);
+        \draw (b) -- +(1.0, 0.0);
+        \fill[cyan] (b) -- (c) -- (3.5, 0.0) -- (2.5, 0.0) -- (b);
+        % \draw[thin] (4.0, 0.0) -- (4.0, 1.63);
+        \draw[thin] (4.5, 0.0) -- (4.5, 2.0) node[inner sep=0, minimum size=0] (d);
+        \draw (3.5, 2.0) -- +(1.0, 0.0);
+        % \draw[thin] (5.0, 0.0) node[below] {$x_{N-1}$} -- (5.0, 1.67);
+        \draw[thin] (5.5, 0.0) node[below] {$b$} -- (5.5, 1.84) node[inner sep=0, minimum size=0] (e);
+        \draw (4.5, 1.55) -- +(1.0, 0.0);
+        \draw[blue, name path=f] (1.0, 2.0) .. controls (1.5, 3.0) and (2.5, 3.0) .. (3.5, 2.0) .. controls (4.5, 1.0) and (5.0, 2.0) .. (6.5, 2.0);
+    \end{tikzpicture}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \draw[-stealth,thick] (-0.5,0) -- (7,0) node[below] {$x$};
+        \draw[-stealth,thick] (0,-0.5) -- (0,4) node[left] {$f(x)$};
+
+        % \draw[blue] (3.5, 2.0) .. controls (4.5, 1.0) and (5.0, 2.0) .. (6.5, 2.0);
+
+        % \draw[thin] (1.0, 0.0) node[below] {$x_{0}$} -- (1.0, 2.0);
+        \draw[thin] (1.5, 0.0) node[below] {$a = x_{0}$} -- (1.5, 2.6) node[inner sep=0, minimum size=0] (a);
+        % \draw[thin] (2.0, 0.0) node[below] {$x_{1}$} -- (2.0, 2.76);
+        \draw[thin] (2.5, 0.0) node[below] {$x_{1}$} -- (2.5, 2.67) node[inner sep=0, minimum size=0] (b);
+        \draw (a) .. controls (2.0, 2.8) and (2.0, 2.8) .. (b);
+        \fill[cyan] (a) .. controls (2.0, 2.8) and (2.0, 2.8) .. (b) -- (2.5, 0.0) -- (1.5, 0.0) -- (a);
+        \draw[cyan] (a) -- (b);
+        \draw[thin] (2.5, 0.0) node[below] {$x_{1}$} -- (2.5, 2.67) node[inner sep=0, minimum size=0] (b);
+        % \draw[thin] (3.0, 0.0) -- (3.0, 2.42);
+        \draw[thin] (3.5, 0.0) node[below] {$x_{2}$} -- (3.5, 2.0) node[inner sep=0, minimum size=0] (c);
+        % \draw (b) -- (c);
+        \draw (b) .. controls (3.0, 2.4) and (3.0, 2.4) .. (c);
+        \fill[cyan] (b) .. controls (3.0, 2.4) and (3.0, 2.4) .. (c) -- (3.5, 0.0) -- (2.5, 0.0) -- (b);
+        \draw[cyan] (b) -- (c);
+        % \draw[thin] (4.0, 0.0) -- (4.0, 1.63);
+        \draw[thin] (4.5, 0.0) -- (4.5, 1.55) node[inner sep=0, minimum size=0] (d);
+        \draw (c) .. controls (4.0, 1.6) and (4.0, 1.6) .. (d);
+        % \draw[thin] (5.0, 0.0) node[below] {$x_{N-1}$} -- (5.0, 1.67);
+        \draw[thin] (5.5, 0.0) node[below] {$b$} -- (5.5, 1.84) node[inner sep=0, minimum size=0] (e);
+        \draw (d) .. controls (5.0, 1.7) and (5.0, 1.7) .. (e);
+        \draw[blue, name path=f] (1.0, 2.0) .. controls (1.5, 3.0) and (2.5, 3.0) .. (3.5, 2.0) .. controls (4.5, 1.0) and (5.0, 2.0) .. (6.5, 2.0);
+    \end{tikzpicture}
+\end{figure}
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
