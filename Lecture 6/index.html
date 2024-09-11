@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 7</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Review</h2>
+        </section>
+
+        <section>
+          <h2>Numerical Integration</h2>
+        </section>
+
+        <section>
+          <h2>Numerical Integration</h2>
+          <p>In practice, it's often not obvious how many subdivisions of an interval $[a,b]$
+          you need. Therefore, it is advantageous to recursively subdivide the
+          interval and apply integration rules, until a target precision is achieved.</p>
+          <p>For example:</p>
+          $$
+          \begin{align}
+          S_1 &= \frac{1}{2}\left[f(a) + f(b)\right](b - a) \\
+          S_2 &= \left[\frac{1}{2}f(a) + f\left(\frac{a+b}{2}\right) + \frac{1}{2}f(b)\right]\frac{b - a}{2} \\
+          S_3 &= \left[\frac{1}{2}f(a) + f(x_1) + f(x_2) + f(x_3) + \frac{1}{2}f(b)\right]\frac{b - a}{4} \\
+          \dots
+          \end{align}
+          $$
+        </section>
+
+        <section>
+          <h2>Numerical Integration</h2>
+          <p>This process can be somewhat optimized by reusing earlier results:</p>
+          <div class="fragment">
+          $$
+          \begin{align*}
+          S_1 &= \frac{1}{2}\left[f(a) + f(b)\right]h_1, & h_1 = b - a \\
+          S_2 &= \frac{1}{2}S_1 + f\left(\frac{a+b}{2}\right)h_2, & h_2 = \frac{b - a}{2} \\
+          S_3 &= \frac{1}{2}S_2 + \left[f\left(a + \frac{1}{4}(b-a)\right) + f\left(a + \frac{3}{4}(b-a)\right) \right]h_3, & h_3 = \frac{b - a}{4} \\
+          \dots
+          \end{align*}
+          $$
+          </div>
+          <p class="fragment">This way you will never need to re-evaluate the value of $f(x)$,
+          which is useful when $f$ is very complicated.</p>
+        </section>
+
+        <section>
+          <h2>Adaptive Integration</h2>
+          <p>How does the error evolve? Remember the error of trapezoidal rule is:</p>
+          $$
+          \varepsilon = \frac{1}{12}h^2\left[f'(a) - f'(b)\right] + O(h^4)
+          $$
+          <p>Both $f'(a)$ and $f'(b)$ do not change when we refine the interval.
+          Therefore the error decreases by a factor of $1/4$ every time we half $h$.</p>
+          <p class="fragment">Knowing this, we can estimate the error at any refinement level using $\varepsilon_n
+          \approx \frac{1}{3}|S_n - S_{n-1}|$.</p>
+        </section>
+
+        <section>
+          <h2>Adaptive Integration</h2>
+          <p>Since we know that error on the $n$th refinement level is $1/4$ of
+          the previous level, can we simply form a linear combination between
+          two consecutive levels and cancel this error?</p>
+          $$
+          S'_n = \frac{4}{3}S_n - \frac{1}{3}S_{n-1}
+          $$
+          <div class="fragment">
+            <p>Yes, this is called the Simpson's rule!</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Adaptive Integration</h2>
+          <p>In fact, forming $S'_n$ is the preferred way to adaptively apply
+          the Simpson's rule, since otherwise you will need to re-evaluate the
+          function values at previous points.</p>
+          <div class="fragment">
+          <p>The error estimate for adaptive Simpson's rule is:</p>
+          $$
+          \varepsilon_n = \frac{1}{15}(S'_n - S'_{n - 1})
+          $$
+          </div>
+          <p class="fragment">General strategy: perform the adaptive trapezoidal rule evaluation as before: $S_1, S_2, S_3, \dots$.
+          Then form $S'_n$ at each refinement level and use it to estimate the error. Stop
+          when the error reaches some tolerance.</p>
+        </section>
+
+        <section>
+          <h2>Adaptive Integration</h2>
+          <p>I will ask you to implement the adaptive Simpson's rule in the homework:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+template &lt;typename F&gt;
+double adaptive_simpson(const F& f, double a, double b,
+                        double tolerance) {
+  // TODO: implement Simpson's rule based on repeated
+  // application of the trapezoidal rule
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>So far, we have restricted our integral estimates on evenly
+            spaced $\{x_i\}$. This set of integration rules are collectively called <em>Newton-Cotes</em> formulae.</p>
+          <p>If we are allowed to play with the spacing between points $x_i$
+          where the functions is evaluated, we can potentially achieve much
+            faster convergence. The points $x_i$ are called <em>abscissas</em>.</p>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Given a set of abscissas $x_i$ and weights $w_i$, the integral can
+          be approximated as:</p>
+          $$
+          \int_a^b f(x)\,dx \approx \sum_{i=0}^{n-1} w_i f(x_i)
+          $$
+          <p>The nontrivial problem is to locate $x_i$ and calculate $w_i$.</p>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>The classical Gauss-Legendre case uses roots of the $n$th Legendre
+          polynomial $P_n(x)$ for the abscissas $x_i$.</p>
+          $$
+          \int_{-1}^1 f(x)\,dx \approx \sum_{i=0}^{n-1} w_i f(x_i)
+          $$
+          <p>where $x_i$ are the $n$ solutions of $P_n(x) = 0$.</p>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <img src="legendre-polynomials.png" alt="integral" width="70%">
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>The Gauss-Legendre weights are defined to be:</p>
+          $$
+          w_i = \frac{2}{(1 - x_i^2)[P'_n(x_i)]^2}
+          $$
+          <p>where $P'_n(x_i)$ is the first derivative of $P_n(x)$ evaluated at
+          the abscissas $x_i$.</p>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Weights and abscissas for $N=10$ Gauss-Legendre quadrature:</p>
+          <img src="legendre-weights.png" alt="integral" width="50%">
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Weights and abscissas for $N=10$ Gauss-Legendre quadrature:</p>
+          <ul>
+            <li>$x_0 = -0.9739065285171717, \quad w_0 = 0.0666713443086881$</li>
+            <li>$x_1 = -0.8650633666889845, \quad w_1 = 0.1494513491505806$</li>
+            <li>$x_2 = -0.6794095682990244, \quad w_2 = 0.2190863625159821$</li>
+            <li>$x_3 = -0.4333953941292472, \quad w_3 = 0.2692667193099963$</li>
+            <li>$x_4 = -0.1488743389816312, \quad w_4 = 0.2955242247147529$</li>
+            <li>$x_5 = -x_4, \quad w_5 = w_4$</li>
+            <li>$x_6 = -x_3, \quad w_6 = w_3$</li>
+            <li>$x_7 = -x_2, \quad w_7 = w_2$</li>
+            <li>$x_8 = -x_1, \quad w_8 = w_1$</li>
+            <li>$x_9 = -x_0, \quad w_9 = w_0$</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Note that Gauss-Legendre quadrature formula works on the interval
+          $[-1, 1]$. For an arbitrary interval $[a, b]$, you will need to map
+          $x$ to $[-1, 1]$ using a change of variable:</p>
+          $$
+          x = \frac{1}{2}(b - a)x' + \frac{1}{2}(b + a), \quad x'\in[-1, 1]
+          $$
+          <p>So that:</p>
+          $$
+          \int_a^b f(x)\,dx = \frac{1}{2}(b - a)\int_{-1}^1 f\left(x(x')\right)\,dx'
+          \approx \frac{1}{2}(b - a)\sum_{i=0}^{n-1}w_i f\left(\frac{1}{2}(b-a)x'_i + \frac{1}{2}(b+a)\right)
+          $$
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Gauss quadrature works extremely well when the function to be
+          integrated is very smooth.</p>
+          <p>Integration using adaptive Simpson:</p>
+          <img src="convergence-simpson.png" alt="integral" width="80%">
+          <p>Integration using Gauss quadrature:</p>
+          <img src="convergence-gauss.png" alt="integral" width="80%">
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Why does Gauss quadrature work?</p>
+          <div class="fragment">
+            <p>In essence, Gauss quadrature is using a degree $2n - 1$
+            polynomial to approximate the function $f(x)$. For any $f(x)$ that
+            can be written as a polynomial of order $<2n - 1$, Gauss quadrature
+            gives the exact value.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>$x_i$ are chosen to be the roots of a series of orthogonal
+          polynomials $p_n(x)$. Orthogonal means $\int_a^b p_n(x)p_m(x) = 0$ if $n\neq m$. Legendre
+          polynomials are orthogonal.</p>
+          <p>We approximate our function $f(x)$ as an order $2n - 1$ polynomial:</p>
+          $$
+          f(x) \approx p_n(x)q(x) + r(x)
+          $$
+          <p>where $q(x)$ and $r(x)$ are polynomials of order $n - 1$. Since
+          $p_n(x)$ is orthogonal to all $p_m(x)$ where $m < n$, and $q(x)$ can
+          be written as combinations of $p_m(x)$, the integral:</p>
+          $$
+          \int_a^b f(x)\,dx \approx \int_a^b [p_n(x)q(x) + r(x)]\,dx = \int_a^b r(x)\,dx
+          $$
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Furthermore, if $x_i$ are roots of $p_n(x)$, then we have</p>
+          $$
+          f(x_i) \approx p_n(x_i)q(x_i) + r(x_i) = r(x_i)
+          $$
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Given $n$ and $\{x_i\}$, we can form the
+          so-called <em>Lagrange interpolation polynomials</em>:</p>
+          $$
+          \ell_i(x) = \prod_{\substack{m=0\dots n-1 \\ m\neq i}}\frac{(x - x_m)}{(x_i - x_m)}
+          $$
+          <p>These polynomial have order $n - 1$, and have the property that
+          $\ell_i(x_k) = \delta_{ik}$. We can write $r(x)$ as such an interpolation polynomial:</p>
+          $$
+          r(x) = \sum_{i=0}^{n-1}r(x_i)\ell_i(x),\quad r(x_k) = \sum_{i=0}^{n-1}r(x_i)\delta_{ik} = r(x_i)
+          $$
+          <p>This is a unique representation of $r(x)$.</p>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>Now we can write the Gauss quadrature as:</p>
+          $$
+          \int_a^b f(x)\,dx \approx \int_a^b [p_n(x)q(x) + r(x)]\,dx = \int_a^b \sum_{i=0}^{n-1}r(x_i)\ell_i(x)\,dx
+          $$
+          <p>Remember that $f(x_i) \approx r(x_i)$. Therefore we have:</p>
+          $$
+          \int_a^b f(x)\,dx \approx \sum_{i=0}^{n-1}f(x_i)\int_a^b\ell_i(x)\,dx = \sum_{i=0}^{n-1}w_if(x_i)
+          $$
+          <p>This approximation becomes exact if $f(x)$ is a polynomial of order $<2n - 1$.</p>
+        </section>
+
+        <section>
+          <h2>Gauss Quadrature</h2>
+          <p>When is Gauss Quadrature not good?</p>
+          <ul>
+            <li class="fragment">When the function to be integrated is not smooth, or has
+            singularities. Example: $f(x) = 1/x$.</li>
+            <li class="fragment">When the function is highly oscillatory in
+            certain regions. Example: $f(x) = \sin (1/x)$.</li>
+            <li class="fragment">When you need a precise error estimate. It's
+            somewhat difficult and inefficient to obtain an error estimate for
+            Gauss quadrature.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>Several possibilities:</p>
+          <ul>
+            <li>A singularity exists at either or both ends of the integration interval</li>
+            <li>One or both of the integration limits concern $\pm\infty$</li>
+            <li>There exists an integrable infinity somewhere within the interval, e.g.:</li>
+            $$
+            \int_{-1}^1\frac{dx}{x^{2/3}} = 6
+            $$
+          </ul>
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>When integration limits go to infinity, the most common trick is to
+          use change of variables to eliminate the infinity. For example:</p>
+          $$
+          \int_a^bf(x)\,dx = \int_{1/b}^{1/a}\frac{1}{t^2}f\left(\frac{1}{t}\right)\,dt, \quad ab > 0
+          $$
+          <p>This can work when $a>0$ and $b\to\infty$, or $a\to-\infty$ and $b<0$. If
+          the interval goes through 0, break it apart first.</p>
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>If the integrand goes to infinity at end points as $1/\sqrt{x}$, we
+          can do the following change of variable if singularity happens at $a$:</p>
+          $$
+          \int_a^b f(x)\,dx = \int_0^\sqrt{b-a}2tf(a + t^2)\,dt,
+          $$
+          <p>If singularity is at $b$, then:</p>
+          $$
+          \int_a^b f(x)\,dx = \int_0^\sqrt{b-a}2tf(b - t^2)\,dt,
+          $$
+        </section>
+
+        <section>
+          <h2>Improper Integrals</h2>
+          <p>In general, if the integrand diverges as $(x - a)^{-\gamma}$ with $0\leq\gamma
+          < 1$:</p>
+          $$
+          \int_a^bf(x)\,dx = \frac{1}{1-\gamma}\int_0^{(b-a)^{1-\gamma}}t^{\frac{\gamma}{1-\gamma}}f(t^{\frac{1}{1-\gamma}} + a)\,dt
+          $$
+          <p>If the singularity as at the upper limit $b$, then:</p>
+          $$
+          \int_a^bf(x)\,dx = \frac{1}{1-\gamma}\int_0^{(b-a)^{1-\gamma}}t^{\frac{\gamma}{1-\gamma}}f(b - t^{\frac{1}{1-\gamma}})\,dt
+          $$
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
