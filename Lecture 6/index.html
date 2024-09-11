@@ -205,11 +205,16 @@ double adaptive_simpson(const F& f, double a, double b,
         <section>
           <h2>Gauss Quadrature</h2>
           <p>Gauss quadrature works extremely well when the function to be
-          integrated is very smooth.</p>
+          integrated is very smooth. For example:</p>
+          $$
+          \int_0^2 x^4\log(x + \sqrt{x^2 + 1})\,dx
+          $$
+          <div class="fragment">
           <p>Integration using adaptive Simpson:</p>
           <img src="convergence-simpson.png" alt="integral" width="80%">
-          <p>Integration using Gauss quadrature:</p>
+          <p>Integration using 10-point Gauss quadrature:</p>
           <img src="convergence-gauss.png" alt="integral" width="80%">
+          </div>
         </section>
 
         <section>
