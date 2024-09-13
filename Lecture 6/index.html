@@ -345,6 +345,48 @@ double adaptive_simpson(const F& f, double a, double b,
           $$
         </section>
 
+        <section>
+          <h2>Multi-Dimensional Integrals</h2>
+          <p>How to carry out multi-dimensional integrals?</p>
+          $$
+          I = \int_{a_1}^{b_1}\int_{a_2}^{b_2} f(x, y)\,dx\,dy
+          $$
+          <div class="fragment">
+          <p>If the integration region is a rectangle, we can use Gauss-Legendre
+          quadrature on both directions.</p>
+          $$
+          I \approx \sum_{i=0}^{n-1}\sum_{j=0}^{m-1}w_i w_j f(x_i, y_j)
+          $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Multi-Dimensional Integrals</h2>
+          <p>How about when the integration region is irregular?</p>
+          $$
+          I = \int_{x_1}^{x_2}\,dx\,\int_{y_1(x)}^{y_2(x)}\,dy\,f(x, y)
+          $$
+          <p>We can still use repeated 1D integral. Define:</p>
+          $$
+          g(x) = \int_{y_1(x)}^{y_2(x)}\,dy\,f(x, y)
+          $$
+        </section>
+
+        <section>
+          <h2>Multi-Dimensional Integrals</h2>
+          <img src="multi-dimensional-integral.png" alt="multi-D" width="60%">
+        </section>
+
+        <section>
+          <h2>Multi-Dimensional Integrals</h2>
+          <p>If each 1D integral takes $N$ function evaluations, now we need a
+          total of $N^2$ evaluations.</p>
+          <p class="fragment">For a 3D integral, we need $N^3$ evaluations. Curse of dimensionality!</p>
+          <p class="fragment">For high dimensional integrals, Monte Carlo integration
+          becomes more useful. We will talk about Monte Carlo methods in the
+          later half of the semester.</p>
+        </section>
+
       </div>
     </div>
     <!-- <script src="js/head.min.js"></script> -->
