@@ -135,7 +135,7 @@
           $$
           y(x + h) = y(x) + h y'(x + h/2) + O(h^3)
           $$
-          <p>The midpoint method is accurate to $h^2$.</p>
+          <p>The midpoint method is accurate to $h^2$, with error on the order of $h^3$.</p>
         </section>
 
         <section>
@@ -183,144 +183,54 @@
         </section>
 
         <section>
-          <h3>Implementation</h3>
-          <p>We will be using <code>class</code> in C++ to implement
-            integration algorithms. Class is a way to organize a bunch of
-            related functions and data together.</p>
-          <p class="fragment">
-            For example, <code>vector&lt;double&gt;</code> is a class that
-            contains an array of <code>double</code> numbers. It has functions
-            to add, remove, and access elements in the array.
-          </p>
+          <h2>Quantifying Convergence</h2>
+          <p>How do we know if our numerical solution is converging to the correct
+            answer?</p>
+          <p class="fragment">One way is to compare the solution obtained at
+          different step sizes.</p>
         </section>
 
         <section>
-          <h3>Implementation</h3>
-          <p>Let's implement Euler's method in C++.</p>
-          <div style="width: 100%; margin: auto;">
-            <pre><code class="language-cpp" data-trim data-noescape>
-class euler_method {
- public:
-  template &lt;typename F, typename StopCondition&gt;
-  std::vector&lt;double&gt; integrate(const F& f,
-                                const StopCondition& stop,
-                                double h, double x0,
-                                const std::vector&lt;double&gt;& y0) {
-    double x = x0;
-    std::vector&lt;double&gt; y = y0;
-    while(stop(x, y) == false) {
-      xs.push_back(x);
-      result.push_back(y);
-      for (int i = 0; i < y.size(); i++) {
-        y[i] += h * f(x, y)[i];
-      }
-      x += h;
-    }
-    return y;
-  }
-
-  std::vector&lt;double&gt; xs;
-  std::vector&lt;std::vector&lt;double&gt;&gt; result;
-};
-            </code></pre>
-          </div>
+          <h2>Convergence</h2>
+          <p>Consider the simple ODE:</p>
+          $$
+          \frac{dy}{dx} = \cos(x)
+          $$
+          <p>with the initial condition $y(0) = 0$. The exact solution is:</p>
+          $$
+          y(x) = \sin(x)
+          $$
         </section>
 
         <section>
-          <h2>Implementation</h2>
-          <p>Using this class for a toy problem, solve $dy/dx = \cos(x)$:</p>
-          <div style="width: 90%; margin: auto;">
-            <pre><code class="language-cpp" data-trim data-noescape>
-auto dydx = [](double x, const std::vector&lt;double&gt;& y) {
-  return std::vector{std::cos(x)};
-};
-
-auto stop = [](double x, const std::vector&lt;double&gt;& y) {
-  return x &gt; 10;
-};
-
-euler_method solver;
-auto y = solver.integrate(dydx, stop, 0.01, 0.0, {0.0});
-            </code></pre>
-          </div>
-        </section>
-
-        <section>
-          <h2>Implementation</h2>
+          <h2>Convergence</h2>
           Euler method $h = 0.1$<br>
           <img src="sin-h0.1.png" alt="h0.1" width="60%">
         </section>
 
         <section>
-          <h2>Implementation</h2>
+          <h2>Convergence</h2>
           Euler method $h = 0.01$<br>
           <img src="sin-h0.01.png" alt="h0.01" width="60%">
         </section>
 
         <section>
-          <h2>Output and Plotting</h2>
-          <p>We can directly write to a text file using <code>ofstream</code>.
-          Include the header <code>&lt;fstream&gt;</code>.</p>
-          <div style="width: 100%; margin: auto;">
-            <pre><code class="language-cpp" data-trim data-noescape>
-std::ofstream output_file("output.csv");
-for (int i = 0; i &lt; solver.xs.size(); i++) {
-  output_file << solver.xs[i] << "," << solver.result[i][0] << std::endl;
-}
-            </code></pre>
+          <h2>Convergence</h2>
+          <img src="convergence-euler.png" width="50%">
+          <div class="fragment">
+            <p>Does the cumulative error scale with $h^2$ or $h$?</p>
           </div>
         </section>
 
         <section>
-          <h2>Output and Plotting</h2>
-          <p>Then we can plot the result using Python:</p>
-          <div style="width: 100%; margin: auto;">
-            <pre><code class="language-python" data-trim data-noescape>
-import numpy as np
-import matplotlib.pyplot as plt
-
-data = np.loadtxt("output.csv", delimiter=",")
-plt.plot(data[:, 0], data[:, 1])
-plt.show()
-            </code></pre>
-          </div>
+          <h2>Convergence</h2>
+          <img src="convergence.png" width="60%">
         </section>
 
         <section>
-          <h2>Implementation</h2>
-          <p>We will be implementing RK4 in the homework using C++.</p>
-          <div style="width: 90%; margin: auto;">
-            <pre><code class="language-cpp" data-trim data-noescape>
-class runge_kutta_4 {
- public:
-  runge_kutta_4(int num_equations);
-
-  template &lt;typename F, typename StopCondition&gt;
-  std::vector&lt;double&gt; integrate(const F& f,
-                                const StopCondition& stop,
-                                double x0,
-                                const std::vector&lt;double&gt;& y0,
-                                double h);
-
-  int n_eq;
-  std::vector&lt;double&gt; k1, k2, k3, k4, y_tmp;
-  std::vector&lt;double&gt; xs;
-  std::vector&lt;std::vector&lt;double&gt;&gt; result;
-};
-            </code></pre>
-          </div>
-        </section>
-
-        <section>
-          <h2>RK4 vs Euler</h2>
-          Euler with $h = 1.0$<br>
-          <img src="sin-h1-euler.png" alt="euler-h1.0" width="60%">
-        </section>
-
-        <section>
-          <h2>RK4 vs Euler</h2>
-          RK4 with $h = 1.0$<br>
-          <img src="sin-h1-rk4.png" alt="rk4-h1.0" width="60%">
+          <h2>Convergence</h2>
+          <p>In most use cases, we do not have a reference solution to compare
+          to. How to estimate error then?</p>
         </section>
 
         <section>
@@ -334,6 +244,162 @@ class runge_kutta_4 {
           </ul>
         </section>
 
+        <!-- <section>
+             <h3>Implementation</h3>
+             <p>We will be using <code>class</code> in C++ to implement
+             integration algorithms. Class is a way to organize a bunch of
+             related functions and data together.</p>
+             <p class="fragment">
+             For example, <code>vector&lt;double&gt;</code> is a class that
+             contains an array of <code>double</code> numbers. It has functions
+             to add, remove, and access elements in the array.
+             </p>
+             </section>
+
+             <section>
+             <h3>Classes</h3>
+             </section>
+
+             <section>
+             <h3>Implementation</h3>
+             <p>Let's implement Euler's method in C++.</p>
+             <div style="width: 100%; margin: auto;">
+             <pre><code class="language-cpp" data-trim data-noescape>
+             class euler_method {
+             public:
+             template &lt;typename F, typename StopCondition&gt;
+             std::vector&lt;double&gt; integrate(const F& f,
+             const StopCondition& stop,
+             double h, double x0,
+             const std::vector&lt;double&gt;& y0) {
+             double x = x0;
+             std::vector&lt;double&gt; y = y0;
+             while(stop(x, y) == false) {
+             xs.push_back(x);
+             result.push_back(y);
+             for (int i = 0; i < y.size(); i++) {
+             y[i] += h * f(x, y)[i];
+             }
+             x += h;
+             }
+             return y;
+             }
+
+             std::vector&lt;double&gt; xs;
+             std::vector&lt;std::vector&lt;double&gt;&gt; result;
+             };
+             </code></pre>
+             </div>
+             </section>
+
+             <section>
+             <h2>Implementation</h2>
+             <p>Using this class for a toy problem, solve $dy/dx = \cos(x)$:</p>
+             <div style="width: 90%; margin: auto;">
+             <pre><code class="language-cpp" data-trim data-noescape>
+             auto dydx = [](double x, const std::vector&lt;double&gt;& y) {
+             return std::vector{std::cos(x)};
+             };
+
+             auto stop = [](double x, const std::vector&lt;double&gt;& y) {
+             return x &gt; 10;
+             };
+
+             euler_method solver;
+             auto y = solver.integrate(dydx, stop, 0.01, 0.0, {0.0});
+             </code></pre>
+             </div>
+             </section>
+
+             <section>
+             <h2>Implementation</h2>
+             Euler method $h = 0.1$<br>
+             <img src="sin-h0.1.png" alt="h0.1" width="60%">
+             </section>
+
+             <section>
+             <h2>Implementation</h2>
+             Euler method $h = 0.01$<br>
+             <img src="sin-h0.01.png" alt="h0.01" width="60%">
+             </section>
+
+             <section>
+             <h2>Output and Plotting</h2>
+             <p>We can directly write to a text file using <code>ofstream</code>.
+             Include the header <code>&lt;fstream&gt;</code>.</p>
+             <div style="width: 100%; margin: auto;">
+             <pre><code class="language-cpp" data-trim data-noescape>
+             std::ofstream output_file("output.csv");
+             for (int i = 0; i &lt; solver.xs.size(); i++) {
+             output_file << solver.xs[i] << "," << solver.result[i][0] << std::endl;
+             }
+             </code></pre>
+             </div>
+             </section>
+
+             <section>
+             <h2>Output and Plotting</h2>
+             <p>Then we can plot the result using Python:</p>
+             <div style="width: 100%; margin: auto;">
+             <pre><code class="language-python" data-trim data-noescape>
+             import numpy as np
+             import matplotlib.pyplot as plt
+
+             data = np.loadtxt("output.csv", delimiter=",")
+             plt.plot(data[:, 0], data[:, 1])
+             plt.show()
+             </code></pre>
+             </div>
+             </section>
+
+             <section>
+             <h2>Implementation</h2>
+             <p>We will be implementing RK4 in the homework using C++.</p>
+             <div style="width: 90%; margin: auto;">
+             <pre><code class="language-cpp" data-trim data-noescape>
+             class runge_kutta_4 {
+             public:
+             runge_kutta_4(int num_equations);
+
+             template &lt;typename F, typename StopCondition&gt;
+             std::vector&lt;double&gt; integrate(const F& f,
+             const StopCondition& stop,
+             double x0,
+             const std::vector&lt;double&gt;& y0,
+             double h);
+
+             int n_eq;
+             std::vector&lt;double&gt; k1, k2, k3, k4, y_tmp;
+             std::vector&lt;double&gt; xs;
+             std::vector&lt;std::vector&lt;double&gt;&gt; result;
+             };
+             </code></pre>
+             </div>
+             </section>
+
+             <section>
+             <h2>RK4 vs Euler</h2>
+             Euler with $h = 1.0$<br>
+             <img src="sin-h1-euler.png" alt="euler-h1.0" width="60%">
+             </section>
+
+             <section>
+             <h2>RK4 vs Euler</h2>
+             RK4 with $h = 1.0$<br>
+             <img src="sin-h1-rk4.png" alt="rk4-h1.0" width="60%">
+             </section>
+
+             <section>
+             <h2>What's Next?</h2>
+             <p>We will go further than RK4 in the next lectures:</p>
+             <ul>
+             <li>Stability</li>
+             <li>Error estimate and adaptive step size control</li>
+             <li>Higher order methods</li>
+             <li>Use ODE solver for a real project!</li>
+             </ul>
+             </section>
+        -->
       </div>
     </div>
     <!-- <script src="js/head.min.js"></script> -->
