@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 9</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h3>ODE Solver Implementation</h3>
+        </section>
+
+        <section>
+          <h3>Implementation</h3>
+          <p>We will be using <code>class</code> in C++ to implement
+            integration algorithms. Class is a way to organize a bunch of
+            related functions and data together.</p>
+          <p class="fragment">
+            For example, <code>vector&lt;double&gt;</code> is a class that
+            contains an array of <code>double</code> numbers. It has functions
+            to add, remove, and access elements in the array.
+          </p>
+        </section>
+
+        <section>
+          <h3>Classes</h3>
+          <p>A <code>class</code> consists of "methods" and "attributes":</p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+class student {
+public:
+  student(std::string name, int year) : name(name), year(year) {}
+
+  void assign_grade(std::string grade) {
+    this->grade = grade;
+  }
+
+  void print() {
+    std::cout << "Name: " << name << ", Grade: " << grade << std::endl;
+  }
+
+  std::string name;
+  int year;
+  std::string grade;
+};
+            </code></pre>
+          </div>
+          <p class="fragment">The "constructor" is a special method with the
+            same name as the class itself, and has no return type. It typically initializes the
+            data within the class.</p>
+        </section>
+
+        <section>
+          <h3>Implementation</h3>
+          <p>Let's implement Euler's method in C++.</p>
+          <div style="width: 100%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+             class euler_method {
+              public:
+               template &lt;typename F&gt;
+               std::vector&lt;double&gt; integrate(const F& f, double h,
+                                             double x0, double x_end,
+                                             const std::vector&lt;double&gt;& y0) {
+                 double x = x0;
+                 std::vector&lt;double&gt; y = y0;
+                 while(x < x_end) {
+                   xs.push_back(x);
+                   result.push_back(y);
+                   for (int i = 0; i < y.size(); i++) {
+                     y[i] += h * f(x, y)[i];
+                   }
+                   x += h;
+                 }
+                 return y;
+               }
+
+               std::vector&lt;double&gt; xs;
+               std::vector&lt;std::vector&lt;double&gt;&gt; result;
+             };
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          <p>Using this class for a toy problem, solve $dy/dx = \cos(x)$:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+             auto dydx = [](double x, const std::vector&lt;double&gt;& y) {
+               return std::vector{std::cos(x)};
+             };
+
+             euler_method solver;
+             auto y = solver.integrate(dydx, 0.01, 0.0, 10.0, {0.0});
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Output and Plotting</h2>
+          <p>We can directly write to a text file using <code>ofstream</code>.
+            Include the header <code>&lt;fstream&gt;</code>.</p>
+          <div style="width: 100%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+        std::ofstream output_file("output.csv");
+        for (int i = 0; i &lt; solver.xs.size(); i++) {
+          output_file << solver.xs[i] << "," << solver.result[i][0] << std::endl;
+        }
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Output and Plotting</h2>
+          <p>Then we can plot the result using Python:</p>
+          <div style="width: 100%; margin: auto;">
+            <pre><code class="language-python" data-trim data-noescape>
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        data = np.loadtxt("output.csv", delimiter=",")
+        plt.plot(data[:, 0], data[:, 1])
+        plt.show()
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Implementation</h2>
+          <p>We will be implementing RK4 in the homework using C++.</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-cpp" data-trim data-noescape>
+class runge_kutta_4 {
+public:
+  runge_kutta_4(int num_equations);
+
+  template &lt;typename F&gt;
+  std::vector&lt;double&gt; integrate(const F &f, double h,
+                                double x0, double x_end,
+                                const std::vector&lt;double&gt; &y0);
+
+  template &lt;typename F&gt;
+  std::vector&lt;double&gt; step(const F& f, double h, double x,
+                           const std::vector&lt;double&gt; &y);
+
+  int n_eq;
+  std::vector&lt;double&gt; k1, k2, k3, k4, y_tmp;
+  std::vector&lt;double&gt; xs;
+  std::vector&lt;std::vector&lt;double&gt;&gt; result;
+};
+            </code></pre>
+          </div>
+        </section>
+
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
