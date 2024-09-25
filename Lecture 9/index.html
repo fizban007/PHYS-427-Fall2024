@@ -212,8 +212,8 @@
             $$
           </div>
           <div class="fragment">
-            <p>But I have $y^{(1)}$ and $y^{(2)}$, which one should I use? You can use either one, or $\mathrm{max}(y^{(1)}, y^{(2)})$
-            in case one of them is zero.</p>
+            <p>But I have $y^{(1)}$ and $y^{(2)}$, which one should I use? It's
+            a choice that you can make, e.g. always choose $y^{(1)}$.</p>
           </div>
         </section>
 
@@ -225,7 +225,7 @@
           <div class="fragment">
             <p>We define a norm of the error vector to obtain a scalar error:</p>
             $$
-            \mathrm{err} = \sqrt{\frac{1}{N_\mathrm{eq}}\sum_{i=0}^{N_\mathrm{eq} - 1} \left(\frac{\varepsilon_i}{\varepsilon_\mathrm{target}}\right)^2}
+            \mathrm{err} = \sqrt{\frac{1}{N_\mathrm{eq}}\sum_{i=0}^{N_\mathrm{eq} - 1} \left(\frac{\varepsilon_i}{\varepsilon_\mathrm{target,i}}\right)^2}
             $$
             <p>We aim to have $\mathrm{err} \lesssim 1$.</p>
           </div>
@@ -238,25 +238,26 @@
           h' = S h \left(\frac{1}{\mathrm{err}}\right)^{1/5}
           $$
           <p>We have inserted a "safety factor" $S$ here. $S < 1$ since we don't want to
-          overshoot the error. In practice $S = 0.9$ should work well.</p>
+          overshoot the error. In practice $S = 0.9$ works quite well.</p>
         </section>
 
         <section>
           <h2>General Strategy</h2>
           <ol>
             <li class="fragment">Compute $y^{(1)}$ and $y^{(2)}$ using a single RK4 step of $h$
-            and two RK4 steps of $h/2$. Remember $y$ might be a vector.</li>
-            <li class="fragment">Compute the error estimate $\varepsilon_i = |y_i^{(1)} - y_i^{(2)}|$.</li>
+            and two RK4 steps of $h/2$. Remember $y$ might be a vector, especially when we solve multiple coupled equations at once.</li>
+            <li class="fragment">Compute the error estimate $\varepsilon_i = |y_i^{(1)} - y_i^{(2)}|$ and target error $\varepsilon_\mathrm{target,i} = \epsilon_\mathrm{abs} + \epsilon_\mathrm{rel} |y_i|$.</li>
             <div class="fragment">
             <li>Compute the rescaled scalar error:</li>
             $$
-            \mathrm{err} = \sqrt{\frac{1}{N_\mathrm{eq}}\sum_{i=0}^{N_\mathrm{eq} - 1} \left(\frac{\varepsilon_i}{\varepsilon_\mathrm{target}}\right)^2}
+            \mathrm{err} = \sqrt{\frac{1}{N_\mathrm{eq}}\sum_{i=0}^{N_\mathrm{eq} - 1} \left(\frac{\varepsilon_i}{\varepsilon_\mathrm{target,i}}\right)^2}
             $$
             </div>
             <li class="fragment">
               If $\mathrm{err} < 1$, accept the step and move forward by
               advancing $x\to x+h$. Otherwise, reject the step and try again.
-              Either way, we can set $h' = Sh/(\mathrm{err})^{1/5}$.
+              Either way, we can set $h' = Sh/(\mathrm{err})^{1/5}$. If $\mathrm{err}
+              < 1$, this step will increase the step size at next step.
             </li>
           </ol>
         </section>
@@ -265,13 +266,15 @@
           <h2>General Strategy</h2>
           <p>A few possible practical improvements to the strategy:</p>
           <ul>
-            <li>When the previous step size was rejected, do not increase the
+            <li class="fragment">When the previous step size was rejected, do not increase the
             step size immediately afterwards.</li>
-            <li>An empirically more stable way to update the step size:</li>
+            <li class="fragment">An empirically more stable way to update the step size:
             $$
             h' = S h(\mathrm{err})^{-0.7/5}(\mathrm{err}_\mathrm{prev})^{0.4/5}
             $$
-            <li>Use interpolation so that we have a uniform set of output points (dense output).</li>
+            </li>
+            <li class="fragment">Use an "embedded" method to reduce the number of function evaluations at each step.</li>
+            <li class="fragment">Use interpolation so that we have a uniform set of output points (dense output).</li>
           </ul>
         </section>
 
