@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 10.5</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Parallel Programming</h2>
+        </section>
+
+        <section>
+          <h2>Parallel Programming</h2>
+          <p>Modern CPUs have multiple cores. How to make use of them?</p>
+          <img src="multi-core.webp" width="60%">
+        </section>
+
+        <section>
+          <h2>Parallel Programming</h2>
+          <p>There are different levels of parallelization:</p>
+          <ul>
+            <li class="fragment">Same operations on a set of different data on the same CPU core.
+            This is called "vectorization".</li>
+            <li class="fragment">Multiple CPU cores on the same machine. All
+            cores share access to the same system memory.</li>
+            <li class="fragment">Multiple machines on the same network. Each machine has their
+              own exclusive memory.
+          </ul>
+        </section>
+
+        <section>
+          <h2>Vectorization</h2>
+          <p>Vectorization used to be called "SIMD" (Same Instruction Multiple Data).
+          Depending on the CPU instruction set, it can work on a set of floating
+          point numbers at the same time. For example, the Intel AVX-512 instruction set
+            has the following intrinsic functions:</p>
+          <div class="fragment">
+            <code>__m512d _mm512_load_pd (void const* mem_addr)</code>
+          </div>
+          <div class="fragment">
+            <code>__m512d _mm512_add_pd (__m512d a, __m512d b)</code>
+          </div>
+          <div class="fragment">
+            <code>void _mm512_store_pd (void* mem_addr, __m512d a)</code>
+          </div>
+          <p class="fragment">You can find the official guide <a href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html">here</a>.</p>
+        </section>
+
+        <section>
+          <h2>Vectorization</h2>
+          <p>Vectorization is now often done automatically by the compiler. Simple <code>for</code>
+            loops often can be automatically be vectorized. This is partly what
+            makes code compiled with the <code>-O3</code> flag significantly faster.</p>
+          <p class="fragment">
+            For very specific applications, you may need to write the intrinsics
+            directly. Such level of fine-tuning can be very challenging.
+          </p>
+        </section>
+
+        <section>
+          <h2>Shared Memory Parallelization</h2>
+          <p>For parallelization over multiple CPU cores on the same machine, a
+          model using "threads" is often used.</p>
+          <p class="fragment">
+            Each thread executes its instructions sequentially. Everything you have written in
+            this course has been single-threaded.
+          </p>
+          <p class="fragment">
+            With Hyperthreading, each modern CPU core can technically execute up to 2
+            threads simultaneously. However, when the workload of each thread is high,
+            each physical core will be saturated by one thread. It is better to use the
+            full capacity of each core by using one thread per core.
+          </p>
+        </section>
+
+        <section>
+          <h2>Shared Memory Parallelization</h2>
+          <p>There are 2 main ways to achieve multi-threading in C++:</p>
+          <ul>
+            <li class="fragment">
+              <a href="https://en.cppreference.com/w/cpp/thread/thread">std::thread</a>
+              is a built-in C++ library for multi-threading. Other threading
+              libraries exist too. This is a "low-level" way to do manual
+              multi-threading.
+            </li>
+            <li class="fragment">
+              <a href="https://www.openmp.org/">OpenMP</a> is a set of compiler directives
+              that can parallelize code automatically. This is a "high-level" way to
+              do multi-threading.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>OpenMP is a set of compiler directives that can parallelize code automatically.</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+#include &lt;iostream&gt;
+#include &lt;omp.h&gt;
+
+int main() {
+#pragma omp parallel for
+  for (int i = 0; i < 10; i++) {
+    std::cout << i << std::endl;
+  }
+  return 0;
+}
+            </code></pre>
+          </div>
+          <p class="fragment">This needs to be compiled with the <code>-fopenmp</code> flag.</p>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>An output of the above program is:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-bash" data-trim data-noescape>
+4
+0
+3
+1
+9
+2
+6
+5
+7
+8
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>By default, OpenMP often utilizes all available cores on the system by launching
+          the same number of threads. You can control the number of threads used with an environment
+          variable:</p>
+          <div style="width: 90%; margin: auto;">
+            <pre><code class="language-bash" data-trim data-noescape>
+OMP_NUM_THREADS=4 ./a.out
+            </code></pre>
+          </div>
+          <p class="fragment">If you set <code>OMP_NUM_THREADS=1</code> then it will carry out
+          the loop serially in one single thread, without any parallelization.</p>
+        </section>
+
+        <section>
+          <h2>OpenMP</h2>
+          <p>OpenMP is often the go-to way to parallelize scientific programs in
+          a shared-memory setting (e.g. a multi-core computer). Scientific programs often
+            rely heavily on predictable <code>for</code> loops, which is where OpenMP
+          excels.</p>
+          <p class="fragment">Low level threading works the best with parallel tasks that may not be
+            as simple as a <code>for</code> loop. For exampling, loading a large
+            file in the background.</p>
+        </section>
+
+        <section>
+          <h2>Race Conditions</h2>
+          <p>When multiple threads access the same memory location, there is no guarantee
+            which thread will access it first, making the outcome non-deterministic.</p>
+          <div>
+            <p>Ways to avoid race conditions include:</p>
+            <ul>
+              <li class="fragment">
+                Manually ensure that each thread only accesses its own memory. For example,
+                declaring an array of size <code>omp_get_num_threads()</code> and
+                using the thread ID to access the correct memory location.
+              </li>
+              <li class="fragment">
+                Use OpenMP's <code>critical</code> directive to ensure that only one thread
+                can access a block of code at a time:
+                <div style="width: 90%; margin: auto;">
+                  <pre><code class="language-c++" data-trim data-noescape>
+int n = 0;
+#pragma omp parallel for
+for (int i = 0; i < 10; i++) {
+#pragma omp critical
+  n += 1;
+}
+                  </code></pre>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>For the group project 1, you will be using <code>git</code> to
+          collaborate. The workflow for multiple collaborators is slightly
+          different from your usual single-person workflow.</p>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>Always <code>git pull</code> before <code>git push</code>.</p>
+          <div class="fragment">
+            <p>Someone else might have pushed to the GitHub online repository.
+            If that is true, you will not be allowed to push to it. You will
+            first need to incorporate their commits to your own repository.</p>
+            <p><code>VS Code</code> does this for you if you click on the
+            "Synchronize" button.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>The first time you pull and there are other people's commits, you
+            may see an error message from <code>git</code> not knowing how to
+            handle it. You need to run one of the two following commands:</p>
+          <ul>
+            <li><code>git config --global pull.rebase false</code></li>
+            <li><code>git config --global pull.rebase true</code></li>
+          </ul>
+          <div class="fragment">
+          <p>The first option is usually the default behavior. Under this
+          option, every time you pull someone else's commits while you have your
+          own commits, a "merge" commit will be generated.</p>
+          <p>The second option skips this merge commit, but conflict handling
+            can be a bit more annoying. See a guide <a href="https://sakhawat-ali.medium.com/git-resolving-conflict-while-git-rebase-33b70ddb528e">here</a></p>
+          </div>
+        </section>
+
+        <section>
+          <h2>A Few Tips on <code>git</code></h2>
+          <p>Try to work on different files, or different sections of the same file.</p>
+          <div class="fragment">
+            <p><code>git</code> is usually very good at figuring out who did
+            what and merging those changes together. The exception is when two
+              people changed the same line. Then <code>git</code> will have no
+              idea whose version to use, and you will need to resolve the conflict by hand.</p>
+            <p>Add the file after you solve the conflict, then commit it. It
+            will generate a merge commit.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Reach out if you have questions!</h2>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
