@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 11</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Ordinary Differential Equations</h2>
+        </section>
+
+        <section>
+          <h2>Beyond Runge-Kutta</h2>
+          <p>Runge-Kutta is a very powerful family of methods for solving ODEs,
+            but it is not the only one. There are many other methods that can be
+            used to solve ODEs, and some of them are more efficient than
+            Runge-Kutta for certain types of problems.</p>
+        </section>
+
+        <section>
+          <h2>Predictor-Corrector (Multistep) Methods</h2>
+        </section>
+
+        <section>
+          <h2>Single-step Methods</h2>
+          <p>Runge-Kutta methods use the values of $x$ and $y$ at step $n$ to
+          calculate the value of $y$ at step $n+1$. For example RK4:</p>
+          $$
+          y_{n+1} = y_n + \frac{1}{6}h(k_1 + 2k_2 + 2k_3 + k_4)
+          $$
+          <p>Although $k_1$ through $k_4$ makes estimates between $n$ and $n+1$,
+          they all use values starting at $x_n$ and $y_n$</p>
+        </section>
+
+        <section>
+          <h2>Multi-step Methods</h2>
+          <p>Multi-step methods use the values of $x$ and $y$ at step $n$ and
+            a few prior steps to calculate the value of $y$ at step $n+1$. For example:</p>
+          $$
+          y_{n+1} = y_n + h(\beta_0 y'_{n+1} + \beta_1 y'_n + \beta_2 y'_{n-1} + \beta_3 y'_{n-2} + \dots)
+          $$
+          <p class="fragment">$y'_{n} = f(x_n, y_n)$ is the derivative of $y$
+          evaluated at step $n$. The number of points kept in the bracket
+          determines the order of accuracy of the method.</p>
+          <p class="fragment">If $\beta_0$ is non-zero, this is an implicit method and needs to solve a
+          nonlinear equation each step.</p>
+        </section>
+
+        <section>
+          <h2>Multi-step Methods</h2>
+          <p>What if we don't want to solve a nonlinear equation every step?</p>
+          <p class="fragment">One popular strategy is to first use an explicit
+          formula ($\beta_0 = 0$) to "predict" a value of $y_{n+1}$, then use
+          the an implicit formula ($\beta_0 \neq 0$) with the predicted $y_{n+1}$.</p>
+          <p class="fragment">The first step is called a "predictor step", and the second is called a "corrector step". This
+            kind of method is called a <em>Predictor-Corrector Method</em>.</p>
+        </section>
+
+        <section>
+          <h2>Predictor-Corrector Method</h2>
+          <p>For example, this is the 3-step Adams-Bashforth predictor:</p>
+          $$
+          y_{n+1} = y_n + \frac{h}{12}(23 y'_n - 16 y'_{n-1} + 5 y'_{n-2}) + O(h^4)
+          $$
+          <div class="fragment">
+            <p>This is the accompanying Adams-Moulton corrector:</p>
+            $$
+            y_{n+1} = y_n + \frac{h}{12}(5 y'_{n+1} + 8 y'_n - y'_{n-1}) + O(h^4)
+            $$
+            <p class="fragment">
+              This is a 3rd order method, with error term $\varepsilon = O(h^4)$.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Predictor-Corrector Method</h2>
+          <p>The 4th-order version of the Adams-Bashforth-Moulton method is:</p>
+          $$
+          \begin{align}
+          y_{n+1} &= y_n + \frac{h}{24}(55 y'_n - 59 y'_{n-1} + 37 y'_{n-2} - 9 y'_{n-3}) + O(h^5) \\
+          y_{n+1} &= y_n + \frac{h}{24}(9 y'_{n+1} + 19 y'_n - 5 y'_{n-1} + y'_{n-2}) + O(h^5)
+          \end{align}
+          $$
+          <p class="fragment">Again, the first line is the "predictor", and second line is the "corrector".</p>
+        </section>
+
+        <section>
+          <h2>Predictor-Corrector Method</h2>
+          <p>In summary, a Predictor-Corrector method typically:</p>
+          <ol>
+            <li class="fragment">Use a predictor to guess the value of $y$ at step $n+1$. This step is denoted $P$.</li>
+            <li class="fragment">Evaluate $y'_{n+1} = f(x_{n+1}, y_{n+1})$ using the predictor result $y_{n+1}$. This step is denoted $E$.</li>
+            <li class="fragment">Use a corrector to improve the guess of $y$ at step $n+1$. This step is denoted $C$.</li>
+          </ol>
+          <p class="fragment">
+            The whole method can be denoted $PEC$. The corrector can be repeated multiple times for stiff problems, so we can do $P(EC)^m$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Predictor-Corrector Method</h2>
+          <p>Predictor-Corrector methods are very efficient and relatively
+          simple to implement. You just need to keep track of a few previous
+          values of $y'_n$. However, there are two problems:</p>
+          <ol>
+            <li class="fragment">The formula requires fixed step size. Changing step size is awkward.</li>
+            <li class="fragment">The first step may require a few prior steps that are not available in the beginning. A "start-up" method
+              to generate the first few points is often required (e.g. using Runge-Kutta but with tiny step sizes).</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Backward Differentiation Formula (BDF) Methods</h2>
+          <p>Instead of forming combinations of $y_{n-i}'$ on the right hand
+          side, one can form combinations of $y_{n+i}$ on the left hand side:</p>
+          $$
+          \alpha_0 y_n + \alpha_1 y_{n+1} + \dots + \alpha_s y_{n+s} = h \beta f(x_{n+s}, y_{n+s})
+          $$
+        </section>
+
+        <section>
+          <h2>BDF Methods</h2>
+          <p>For example, the 1-step BDF method is:</p>
+          $$
+          y_{n+1} - y_n = h f(x_{n+1}, y_{n+1})
+          $$
+          <p>This is essentially the implicit Euler method you implemented in the homework.</p>
+          <p class="fragment">
+            The 2-step BDF method (BDF2) is:
+            $$
+            y_{n+2} - \frac{4}{3}y_{n+1} + \frac{1}{3}y_n = \frac{2}{3}h f(x_{n+2}, y_{n+2})
+            $$
+          </p>
+          <p class="fragment">
+            The 3-step BDF method (BDF3) is:
+            $$
+            y_{n+3} - \frac{18}{11}y_{n+2} + \frac{9}{11}y_{n+1} - \frac{2}{11}y_n = \frac{6}{11}h f(x_{n+3}, y_{n+3})
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>BDF Methods</h2>
+          <p>BDF methods are typically implemented fully implicitly, which makes
+          them suitable for stiff ODEs. A series of 6 stable methods can be
+          defined, and one can use their differences to estimate error for variable
+          step size control.</p>
+          <p class="fragment">Again, similar to ordinary multistep methods, changing the step
+          size can be awkward. Typically an alternative formulation which allows variable
+          step sizes is used in production codes.</p>
+        </section>
+
+        <section>
+          <h2>Symplectic Methods</h2>
+        </section>
+
+        <section>
+          <h2>Midpoint Method</h2>
+          <p>Recall the midpoint method:</p>
+          $$
+          \begin{align}
+          k_1 &= f(x, y) \\
+          k_2 &= f(x + h/2, y + (h/2) k_1) \\
+          y(x + h) &\approx y(x) + h k_2
+          \end{align}
+          $$
+          <p>$k_2$ is an estimate of the derivative at the midpoint, both in $x$
+          and in $y$.</p>
+        </section>
+
+        <section>
+          <h2>Midpoint Method</h2>
+          <p>Let's rewrite the method in a slightly more suggestive way:</p>
+          $$
+          \begin{align}
+          y(x) &= y(x) \\
+          y(x + h/2) &= y(x) + (h/2) f(x, y) \\
+          y(x + h) &= y(x) + h f\left(x + h/2, y(x + h/2)\right) \\
+          \end{align}
+          $$
+          <p>What happens at the next step?</p>
+          <div class="fragment">
+            $$
+            \begin{align}
+            y(x + 3h/2) &= y(x + h) + (h/2) f(x + h, y(x + h)) \\
+            y(x + 2h) &= y(x + h) + h f\left(x + 3h/2, y(x + 3h/2)\right)
+            \end{align}
+            $$
+            <p>The update from $y(x + h/2)$ to $y(x + 3h/2)$ is notably
+              different from the update from $y(x)$ to $y(x + h)$.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Leapfrog Method</h2>
+          <p>Let's remedy the asymmetry by reusing the value of $y(x + h/2)$:</p>
+          $$
+          \begin{align}
+          y(x + h) &= y(x) + h f\left(x + h/2, y(x + h/2)\right) \\
+          y(x + 3h/2) &= y(x + h/2) + h f\left(x + h, y(x + h)\right) \\
+          \end{align}
+          $$
+          <p>This method "leapfrogs" over every half-step. What is the order of accuracy?</p>
+        </section>
+
+        <section>
+          <h2>Leapfrog Method</h2>
+          <img src="leapfrog.png" alt="leapfrog" width="60%">
+        </section>
+
+        <section>
+          <h2>Leapfrog Method</h2>
+          <p>Why bother with another method with the same order of accuracy?</p>
+          <div class="fragment">
+          <p>The leapfrog method has time-reversal symmetry:</p>
+          $$
+          \begin{align}
+          y(x - h) &= y(x) - h f\left(x - h/2, y(x - h/2)\right) \\
+          y(x - 3h/2) &= y(x - h/2) - h f\left(x - h, y(x - h)\right)
+          \end{align}
+          $$
+          <p>Setting $x \to x + 3h/2$, we get:</p>
+          $$
+          \begin{align}
+          y(x + h/2) &= y(x + 3h/2) - h f\left(x + h, y(x + h)\right) \\
+          y(x) &= y(x + h) - h f\left(x + h/2, y(x + h/2)\right)
+          \end{align}
+          $$
+          <p>These equations are just leapfrog method re-arranged.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Leapfrog Method</h2>
+          <p>Time-reversal symmetry typically means that the method conserves energy. This
+            method belongs to a larger family of <em>symplectic</em> methods.</p>
+          <img src="energy-rk2-vs-verlet.png" alt="energy" width="60%">
+        </section>
+
+        <section>
+          <h2>Verlet Integration</h2>
+          <p>The leapfrog method is also known as <em>Verlet integration</em>. Verlet
+          integraion typically refers to a special case for second-order
+          differential equations of the form:</p>
+          $$
+          \frac{d^2 x}{dt^2} = f(x)
+          $$
+          <p>If we perform the usual reduction of order, we have two first order equations:</p>
+          $$
+          \frac{dx}{dt} = v(t),\quad \frac{dv}{dt} = f(x)
+          $$
+        </section>
+
+        <section>
+          <h2>Verlet Integration</h2>
+          <p>Verlet integration is simply Leapfrog method applied to these two equations:</p>
+          $$
+          \begin{align}
+          x(t + h) &= x(t) + h v(t + h/2) \\
+          v(t + 3h/2) &= v(t + h/2) + h f(x(t + h))
+          \end{align}
+          $$
+          <p>Note that you will need to jump-start the first step similar to Leapfrog:</p>
+          $$
+          v(h/2) = v_0 + (h/2) f(x_0)
+          $$
+        </section>
+
+        <section>
+          <h2>Higher Order Symplectic Integrators</h2>
+          <p>Verlet integration is a second order method. We can construct
+            higher order integrators for general separable Hamiltonian systems:</p>
+          $$
+          H(p, q) = T(p) + V(q)
+          $$
+          <p>by taking $k$ substeps:</p>
+          $$
+          \begin{align}
+          q_{i+1} &= q_i + h c_i \frac{\partial T}{\partial p}(p_i) \\
+          p_{i+1} &= p_i - h d_i \frac{\partial V}{\partial q}(q_{i+1})
+          \end{align}
+          $$
+          <p>For a given order of accuracy, the coefficients $c_i$ and $d_i$
+          need to be solved for (e.g. Yoshida 1990).</p>
+        </section>
+
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
