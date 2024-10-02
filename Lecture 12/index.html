@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 12</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Real World Applications</h2>
+        </section>
+
+        <section>
+          <h2>Orbital Dynamics</h2>
+          <p>Orbital dynamics is a classic application of ODEs. The motion of
+          planets, moons, and satellites are well-described by Newton's laws.</p>
+          <p class="fragment">Many of today's technology depend on this, including
+            rocket launching, satellite orbits, etc.</p>
+          <img class="fragment" src="spacex-iss.webp" width="60%">
+        </section>
+        <!-- <section>
+             <h2>Modeling COVID 19 with ODEs</h2>
+             <p>The SEIR model describes the spread of an infectious disease. The name comes from </p>
+             </section>
+        -->
+        <section>
+          <h2>How Does NASA Calculate Satellite Trajectories?</h2>
+          <div class="fragment">
+            <p>In the <a href="https://ntrs.nasa.gov/citations/19630011221">NASA
+            space flight handbook volume 1 (1963)</a>, they examined
+          many ODE integration algorithms in Chapter IV.C.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>How Does NASA Calculate Satellite Trajectories?</h2>
+          <img src="ode-compare.png" width="50%">
+        </section>
+
+        <section>
+          <h2>How Does NASA Calculate Satellite Trajectories?</h2>
+          <p>Apparently an 8th order Gauss-Jackson integrator is used from the
+          1960s to this day. It has extraordinary error accumulation properties.
+          This picture is taken from a recent implementation on <a href="https://github.com/lorcan2440/Gauss-Jackson-Integrator">Github</a>.</p>
+          <img src="gj8.png" width="80%">
+        </section>
+
+        <section>
+          <h2>N-Body Simulations</h2>
+          <p>An important class of applications for ODE solvers is the N-body
+          problem, which shows up in astrophysics, molecular dynamics, and other fields.</p>
+          $$
+          m\frac{d^2\mathbf{x}_i}{dt^2} = \mathbf{F}_i = \sum_{j \neq i} G \frac{m_i m_j}{r_{ij}^2} \hat{r}_{ij}
+          $$
+          <p class="fragment">These codes are very expensive since calculation scales as $O(N^2)$.</p>
+          <p class="fragment">With tons of optimizations, it is possible to
+          simulate trillions ($>10^{12}$) of particles on a supercomputer. However, these optimizations
+          quickly become unrelated to the exact numerical algorithm that solves the ODEs.</p>
+        </section>
+
+        <section>
+          <h2>N-Body Simulations</h2>
+          <img src="massive-n-body.jpg" width="40%">
+        </section>
+
+        <section>
+          <h2>Smoothed Particle Hydrodynamics</h2>
+          <p>SPH is a method for simulating fluids. It is widely used in astrophysics
+          and computer graphics.</p>
+          <iframe width="1067" height="600" src="https://www.youtube.com/embed/WoAQSy4iGmk" title="Simulating the Sloshing Tank with Smoothed Particles Hydrodynamics Method" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <p>Plasma is a state of matter consisting of a gas of ions and free
+          electrons. It is very important in astrophysics, fusion research, and
+          semiconductor manufacturing.</p>
+          <div class="fragment">
+            <p>A widely used method to simulate plasma is called "Particle-in-Cell" (PIC).
+              It solves the motion of many charged particles under electromagnetic field:</p>
+            $$
+            \frac{d\mathbf{p}_i}{dt} = q(\mathbf{E} + \mathbf{v}_i\times \mathbf{B})
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <p>PIC simulations often need to follow the motion of electrons for a
+          very long time, hence energy conservation is a top priority. The standard
+          algorithm for solving the particle motion is the "Boris algorithm":</p>
+          $$
+          \begin{align}
+          \mathbf{v}^- &= \mathbf{v}_n + \frac{q\mathbf{E}}{m}\frac{\Delta t}{2} \\
+          \frac{\mathbf{v}^+ - \mathbf{v}^-}{\Delta t} &= \frac{q}{2m}\left(\mathbf{v}^+ + \mathbf{v}^-\right)\times \mathbf{B} \\
+          \mathbf{v}_{n+1} &= \mathbf{v}^+ + \frac{q\mathbf{E}}{m}\frac{\Delta t}{2}
+          \end{align}
+          $$
+          <p class="fragment">This method preserves phase space volume, therefore it
+          leads to bounded energy errors even for very long integration times.</p>
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <img src="boris.png" width="60%">
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <img src="rk4.png" width="60%">
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <img src="boris-vs-rk4.png" width="60%">
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <p>Here is a video of a PIC simulation of relativistic plasma turbulence:</p>
+          <iframe width="1244" height="700" src="https://www.youtube.com/embed/Gj9mwAww3TM" title="Relativistic kinetic turbulence simulations (sigma=10): density" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </section>
+
+        <section>
+          <h2>Plasma Simulations</h2>
+          <p>Here is a video of a PIC simulation of the plasma surrounding a black hole:</p>
+          <iframe width="1244" height="700" src="https://www.youtube.com/embed/0VgxrDxbcGA" title="PIC simulation of the plasma around a spinning black hole" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </section>
+
+        <section>
+          <h2>Black Hole Ray Tracing</h2>
+          <iframe width="987" height="580" src="https://www.youtube.com/embed/rQcKIN9vj3U" title="The Doubly Warped World of Binary Black Holes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
