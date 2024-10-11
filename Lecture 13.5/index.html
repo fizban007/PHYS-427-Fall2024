@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 13.5</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Boundary Value Problems for ODEs</h2>
+        </section>
+
+        <section>
+          <h2>Boundary Value Problems</h2>
+          <p>A boundary value problem (BVP) is an ODE with boundary conditions</p>
+          $$
+          \begin{align*}
+            \frac{d^2y}{dx^2} &= f(x,y,y') \\
+            y(a) &= \alpha \\
+            y(b) &= \beta
+          \end{align*}
+          $$
+        </section>
+
+        <section>
+          <h2>Relaxation Method</h2>
+          <p>
+            Discretizing the domain $[a,b]$ into $N + 1$ points $x_i$ with
+            $x_0 = a$ and $x_N = b$, we can in general rewrite the ODE as a
+            <em>Finite Difference Equation</em>:
+          </p>
+          $$
+          \frac{y_{i+1} - 2y_i + y_{i-1}}{h^2} = f(x_i,y_i,\frac{y_{i+1}-y_{i-1}}{2h})
+          $$
+          <p>
+            where $h = (b-a)/N$ is the step size. This is a system of $N-1$ equations
+            for the $N-1$ unknowns $y_1,\ldots,y_{N-1}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Relaxation Method</h2>
+          <p>In general, this is a set of nonlinear equations. It needs to be
+          solved iteratively using Newton's method.</p>
+          $$
+          F_i(\mathbf{y}) = \frac{y_{i+1} - 2y_i + y_{i-1}}{h^2} - f(x_i,y_i,\frac{y_{i+1}-y_{i-1}}{2h}) = 0
+          $$
+          <div class="fragment">
+            <p>An iteration with Newton's method looks like this:</p>
+            $$
+            \mathbf{y}_\mathrm{new} = \mathbf{y}_\mathrm{old} - \mathbf{J}^{-1}\mathbf{F}(\mathbf{y}_\mathrm{old})
+            $$
+            <p>How to write down the Jacobian $\mathbf{J}$?</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Relaxation Method</h2>
+          <p>Since we know the form of function $F_i(\mathbf{y})$, we can take
+          the partial derivatives directly:</p>
+          $$
+          \frac{\partial F_i}{\partial y_j} =
+          \begin{cases}
+          \frac{1}{h^2} - \frac{\partial f}{\partial y'}\frac{1}{h},\quad j = i + 1 \\
+          -\frac{2}{h^2} - \frac{\partial f}{\partial y},\quad j = i \\
+          \frac{1}{h^2} + \frac{\partial f}{\partial y'}\frac{1}{h},\quad j = i - 1
+          \end{cases}
+          $$
+          <p class="fragment">This is a <em>tri-diagonal matrix</em>, and its inverse can be
+            found relatively easily. </p>
+          <p class="fragment">Tri-diagonal matrices are <em>sparse</em>, meaning
+          that their elements are mostly zero.</p>
+        </section>
+
+        <section>
+          <h2>Relaxation Method</h2>
+          <p>When there are $M$ equations, this method remains viable, but
+          becomes much more complicated. This is because the Jacobian
+          $\mathbf{J}$ now has dimension $M(N-1)\times M(N-1)$.</p>
+          <div class="fragment">
+            <p>$\mathbf{J}$ is still a sparse matrix, with a special
+            block-diagonal structure. See Numerical Recipes (3rd Edition) Section
+            18.3 for more details.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Ordinary Differential Equations</h2>
+          <p>We have extensively discussed the numerical methods to solve the
+          following type of 1st order ODEs:
+            $$
+            \frac{d\mathbf{y}}{dx} = f(x, \mathbf{y})
+            $$
+          </p>
+          <p class="fragment">Two ways to pose the problem: IVP or BVP.</p>
+        </section>
+
+        <section>
+          <h2>Initial Value Problems</h2>
+          <p>We have discussed a variety of methods solving IVPs:</p>
+          <ul>
+            <li class="fragment">4th-order Runge-Kutta Method, aka RK4</li>
+            <li class="fragment">RK4 with adaptive stepsize control</li>
+            <li class="fragment">Higher order RK methods, with stepsize control</li>
+            <li class="fragment">Implicit methods</li>
+            <li class="fragment">Leapfrog integration, symplectic methods</li>
+            <li class="fragment">Predictor-Corrector methods</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Initial Value Problems</h2>
+          <p>IVPs for ODEs is a mature subject. Many methods exist, and many
+          readily available packages exist out there.</p>
+          <ul>
+            <li class="fragment">Python's <code>scipy.integrate</code></li>
+            <li class="fragment">Matlab's <code>ode</code> module</li>
+            <li class="fragment">Julia's <code>DifferentialEquations.jl</code></li>
+            <li class="fragment">Mathematica's <code>NDSolve</code></li>
+            <li class="fragment">Many others...</li>
+          </ul>
+          <p class="fragment">If your goal is simply to quickly get a solution to a given
+          equation, then by all means use one of the readily available software packages.</p>
+          <p class="fragment">If you need an ODE solver as part of a larger application, then
+          it is sometimes very beneficial to know how to implement it by hand.</p>
+        </section>
+
+        <section>
+          <h2>Boundary Value Problems</h2>
+          <p>BVPs can be solved using IVP solvers with the shooting method.</p>
+          <p class="fragment">It is also possible to solve BVPs directly by solving $N$ coupled
+          nonlinear algebraic equations.</p>
+        </section>
+
+        <section>
+          <h2>Project 1 FAQ</h2>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
