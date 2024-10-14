@@ -405,6 +405,142 @@
           </div>
         </section>
 
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>LU decompositon refers to decomposing a square matrix into the
+          product of a lower triangular matrix $\mathbf{L}$ and an upper triangular matrix $\mathbf{U}$.
+          $$
+            \mathbf{A} = \mathbf{L}\mathbf{U}
+          $$
+          </p>
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>Typically, it is possible to take the diagonal elements of the
+            lower-triangular matrix $\mathbf{L}$ to be all 1. In that case, we
+            can write all the elements of both $\mathbf{L}$ and $\mathbf{U}$ neatly in
+            a single matrix:</p>
+          $$
+          \begin{pmatrix}
+          u_{11} & u_{12} & u_{13} & \dots & u_{1n} \\
+          l_{21} & u_{22} & u_{23} & \dots & u_{2n} \\
+          l_{31} & l_{32} & u_{33} & \dots & u_{3n} \\
+          \vdots & \vdots & \vdots & \ddots & \vdots \\
+          l_{n1} & l_{n2} & l_{n3} & \dots & u_{nn}
+          \end{pmatrix}
+          $$
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>A simple algorithm exists to find all the coefficients systematically. It's called <em>Crout's algorithm</em>.
+          For each column with index $j$, we proceed from top to bottom:</p>
+          <div style="font-size: 80%">
+            $$
+            \begin{align}
+              u_{1j} &= a_{1j} \\
+              u_{ij} &= a_{ij} - \sum_{k=1}^{i-1}l_{ik}u_{kj} & \text{for } i = 2, \dots, j \\
+              l_{ij} &= \frac{1}{u_{jj}}\left(a_{ij} - \sum_{k=1}^{j-1}l_{ik}u_{kj}\right) & \text{for } i = j + 1, \dots, n
+            \end{align}
+            $$
+          </div>
+          <p class="fragment">Partial pivoting can be implemented by "promoting"
+          one of the $l_{ij}$ to the diagonal.</p>
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>It turns out we can always write a square matrix $\mathbf{A}$ as a
+          product of a lower-triangular matrix $\mathbf{L}$ and an
+          upper-triangular matrix $\mathbf{U}$ (potentially with some pivoting,
+          denoted by the matrix $\mathbf{P}$):</p>
+          $$
+            \mathbf{P}\mathbf{A} = \mathbf{L}\mathbf{U}
+          $$
+          <p>This is called LU decomposition with partial pivoting, or LUP. For
+          proof, see e.g. <a href="https://arxiv.org/abs/math/0506382">arXiv:math/0506382</a>.</p>
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>Without pivoting, it is not guaranteed that the LU decomposition of
+          matrix $\mathbf{A}$ exists. For example:</p>
+          $$
+          \begin{pmatrix}
+          0 & 1 \\
+          1 & 0
+          \end{pmatrix} \neq \mathbf{L}\mathbf{U}
+          $$
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>LU decomposition can be used for solving linear equations. The matrix equation:</p>
+          $$
+            \mathbf{A}\mathbf{x} = \mathbf{L}\mathbf{U}\mathbf{x} = \mathbf{b}
+          $$
+          <p>can be solved in two steps:</p>
+          $$
+            \mathbf{L}\mathbf{y} = \mathbf{b}
+          $$
+          $$
+            \mathbf{U}\mathbf{x} = \mathbf{y}
+          $$
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>We solve the first step using <em>forward substitution</em>:</p>
+          $$
+          \begin{align}
+            y_1 &= \frac{b_1}{l_{11}} \\
+            y_2 &= \frac{b_2 - l_{21}y_1}{l_{22}} \\
+            \dots \\
+            y_i &= \frac{1}{l_{ii}}\left(b_i - \sum_{j=1}^{i-1}l_{ij}y_j\right)
+          \end{align}
+          $$
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>Then we solve the second step using <em>backward substitution</em>:</p>
+          $$
+          \begin{align}
+            x_n &= \frac{y_n}{u_{nn}} \\
+            x_{n-1} &= \frac{y_{n-1} - u_{n-1,n}x_n}{u_{n-1,n-1}} \\
+            \dots \\
+            x_i &= \frac{1}{u_{ii}}\left(y_i - \sum_{j=i+1}^{n}u_{ij}x_j\right)
+          \end{align}
+          $$
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>Once we find the LU decomposition of matrix $\mathbf{A}$, we can
+            use it to solve equations with any right hand side $\mathbf{b}$.</p>
+          <div class="fragment">
+            <p>For example, we can successively solve $n$ matrix equations with
+            right hand side $\mathbf{b}_i$ from the identity matrix. This gives
+            us the inverse of $\mathbf{A}$.
+            </p>
+          </div>
+          <p class="fragment">However, it's rare that $\mathbf{A}^{-1}$ is
+            used directly. For the purpose of repeatedly solving a linear system, it
+          is often more advantageous to save the decomposition $\mathbf{L}\mathbf{U}$
+          instead of the inverse itself.</p>
+        </section>
+
+        <section>
+          <h2>LU Decomposition</h2>
+          <p>It is also straightforward to find the determinant of $\mathbf{A}$, which is simply:</p>
+          $$
+          \det \mathbf{A} = (-1)^p\prod_{i=1}^{N} u_{ii}
+          $$
+          <p>where $p$ is the number of row exchanges we carried out with partial pivoting.</p>
+        </section>
+
+
       </div>
     </div>
     <!-- <script src="js/head.min.js"></script> -->
