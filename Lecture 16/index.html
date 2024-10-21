@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 16</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical Linear Algebra</h2>
+        </section>
+
+        <section>
+          <h2>QR Decomposition</h2>
+          <p>Last week, we discussed QR decomposition:
+          $$
+            \mathbf{A} = \mathbf{Q}\mathbf{R}
+          $$</p>
+          <p>The matrix $\mathbf{Q}$ is an orthogonal matrix, and $\mathbf{R}$ is an upper
+            triangular matrix.</p>
+          <p class="fragment">This form of decomposition can be used to solve linear systems,
+          but can also be used to find eigenvalues of a matrix using iteration.</p>
+        </section>
+
+        <section>
+          <h2>Computing QR Decomposition</h2>
+          <p>How do we compute the QR decomposition of a given matrix?</p>
+          <div class="fragment">
+            <p>Think of the original matrix as a set of $n$ individual columns:</p>
+            $$
+            \mathbf{A} = \begin{pmatrix}
+            | & | & \dots & | \\
+            \mathbf{a}_1 & \mathbf{a}_2 & \dots & \mathbf{a}_n \\
+            | & | & \dots & |
+            \end{pmatrix}
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Computing QR Decomposition</h2>
+          <p>The essence of the algorithm is to find the orthogonal matrix $\mathbf{Q}$ by constructing
+          a set of orthonormal vectors $\{\mathbf{e}_i\}$.</p>
+          <p class="fragment">Let's first define a set of orthogonal vectors:
+          $$
+          \begin{array}{ll}
+          \mathbf{u}_1 = \mathbf{a}_1,& \mathbf{e}_1 = \mathbf{u}_1/|\mathbf{u}_1| \\
+          \mathbf{u}_2 = \mathbf{a}_2 - (\mathbf{e}_1\cdot\mathbf{a}_2)\mathbf{e}_1,& \mathbf{e}_2 = \mathbf{u}_2/|\mathbf{u}_2| \\
+          \mathbf{u}_3 = \mathbf{a}_3 - (\mathbf{e}_1\cdot\mathbf{a}_3)\mathbf{e}_1 - (\mathbf{e}_2\cdot\mathbf{a}_3)\mathbf{e}_2,& \mathbf{e}_3 = \mathbf{u}_3/|\mathbf{u}_3| \\
+          \ldots & \\
+          \mathbf{u}_i = \mathbf{a}_i - \sum_{j=1}^{i-1}(\mathbf{e}_j\cdot\mathbf{a}_i)\mathbf{e}_j,& \mathbf{e}_i = \mathbf{u}_i/|\mathbf{u}_i| \\
+          \end{array}
+          $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Computing QR Decomposition</h2>
+          <p>Rearranging the definition of these vectors, we can write the
+          original vectors of $\mathbf{A}$ as:</p>
+          $$
+          \begin{align}
+          \mathbf{a}_1 &= |\mathbf{u}_1|\mathbf{e}_1 \\
+          \mathbf{a}_2 &= |\mathbf{u}_2|\mathbf{e}_2 + (\mathbf{e}_1\cdot\mathbf{a}_2)\mathbf{e}_1 \\
+          \mathbf{a}_3 &= |\mathbf{u}_3|\mathbf{e}_3 + (\mathbf{e}_1\cdot\mathbf{a}_3)\mathbf{e}_1 + (\mathbf{e}_2\cdot\mathbf{a}_3)\mathbf{e}_2 \\
+          \ldots
+          \end{align}
+          $$
+          <p class="fragment">
+            This set of equations can be written in matrix form.
+          </p>
+        </section>
+
+        <section>
+          <h2>Computing QR Decomposition</h2>
+          $$
+          \begin{pmatrix}
+          | & | & \dots & | \\
+          \mathbf{a}_1 & \mathbf{a}_2 & \dots & \mathbf{a}_n \\
+          | & | & \dots & | \\
+          | & | & \dots & |
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+          | & | & \dots & | \\
+          \mathbf{e}_1 & \mathbf{e}_2 & \dots & \mathbf{e}_n \\
+          | & | & \dots & | \\
+          | & | & \dots & |
+          \end{pmatrix}
+          \begin{pmatrix}
+          |\mathbf{u}_1| & (\mathbf{e}_1\cdot\mathbf{a}_2) & \dots & (\mathbf{e}_1\cdot\mathbf{a}_n) \\
+          0 & |\mathbf{u}_2| & \dots & (\mathbf{e}_2\cdot\mathbf{a}_n) \\
+          \vdots & \vdots & \ddots & \vdots \\
+          0 & 0 & \dots & |\mathbf{u}_n|
+          \end{pmatrix}
+          $$
+          <p class="fragment">The matrices on the right hand side are precisely our
+          $\mathbf{Q}$ and $\mathbf{R}$. $\mathbf{Q}$ is an orthogonal matrix
+          because the set of vectors $\mathbf{e}_i$ is orthonormal,
+          $\mathbf{e}_i\cdot\mathbf{e}_j = \delta_{ij}$. Therefore $\mathbf{Q}\mathbf{Q}^T = \mathbf{1}$.</p>
+        </section>
+
+        <section>
+          <h2>Gram-Schmidt Process</h2>
+          <p>The algorithm I described is called the Gram-Schmidt process. Unfortunately
+          this process is numerically unstable, especially for large
+          matrices. The often implemented QR decomposition algorithm is instead
+          based on <em>Householder transformations</em>.</p>
+          <p class="fragment">The Gram-Schmidt process uses repeated projections
+            to get rid of undesired components of the matrix. Householder transformations use <em>reflections</em> instead.</p>
+        </section>
+
+        <section>
+          <h2>Householder Transformations</h2>
+          <p>Given an arbitrary matrix $\mathbf{A}$, the goal is to use orthogonal transformations
+          to make it an upper triangular matrix. We can start with a single vector $\mathbf{a}$
+          and attempt to construct a transformation that sets all its components to zero except the
+          first one:
+          $$
+            \mathbf{a} = \begin{pmatrix}
+            a_1 \\
+            a_2 \\
+            \vdots \\
+            a_n
+            \end{pmatrix},\quad
+            \mathbf{P}\mathbf{a} = \begin{pmatrix}
+            a \\
+            0 \\
+            \vdots \\
+            0
+            \end{pmatrix}
+          $$</p>
+          <p class="fragment">The matrix $\mathbf{P}$ should be an orthogonal matrix.</p>
+        </section>
+
+        <section>
+          <h2>Householder Transformations</h2>
+          <p>This is achieved using the Householder matrix:
+          $$
+          \mathbf{P} = \mathbf{I} - 2\mathbf{v}\mathbf{v}^T,\quad \mathbf{v} = \frac{\mathbf{u}}{|\mathbf{u}|},
+          \quad \mathbf{u} = \mathbf{a} - |\mathbf{a}|\mathbf{e}_1
+          $$
+          </p>
+          <div class="fragment">
+            <p>The matrix $\mathbf{P}$ is orthogonal, and is its own inverse.
+              $\mathbf{P} = \mathbf{P}^{-1} = \mathbf{P}^T$.</p>
+          </div>
+          <p class="fragment">
+            The geometric interpretation of the Householder matrix is that it
+            reflects the vector $\mathbf{a}$ across a plane perpendicular to
+            $\mathbf{v}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Householder Transformations</h2>
+          <p>To set all the lower elements of the first column $\mathbf{a}_1$ to
+          zero, we form our first
+          Householder matrix $\mathbf{P}_1$, then multiply it to $\mathbf{A}$.</p>
+          <div class="fragment">
+            <p>Then, to set the lower elements of the second column
+            $\mathbf{a}_2$ to zero, we take the $\mathbf{x}$ to be the lower
+            $n-1$ elements of $\mathbf{a}_2$ and form a $(n-1)\times(n-1)$
+            Householder matrix $\mathbf{P}_2$.</p>
+          </div>
+          <p class="fragment">
+            We can continue this process to get an upper triangular matrix. The
+            orthogonal matrix $\mathbf{Q}$ is the product of all the Householder
+            matrices, since $\mathbf{P}_i$ is its own inverse:
+            $$
+            \mathbf{P}_n\mathbf{P}_{n-1}\dots\mathbf{P}_2\mathbf{P}_1\mathbf{A} = \mathbf{R},\quad \mathbf{A} = (\mathbf{P}_1\mathbf{P}_2\dots\mathbf{P}_n)\mathbf{R} = \mathbf{Q}\mathbf{R}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Householder Transformations</h2>
+          <p>Householder transformation is the most widely implemented algorithm
+          for QR decomposition.</p>
+          <p class="fragment">For example, the <code>Eigen</code> C++ library contains the <a href="https://eigen.tuxfamily.org/dox/classEigen_1_1HouseholderQR.html"><code>HouseholderQR</code></a> module
+            that calculates the QR decomposition of a matrix using Householder
+            transformations. See <a href="https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html">this page</a> for
+            a comparison of various decompositions for solving linear equations.</p>
+          <p class="fragment">
+            The Python library <a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.qr.html"><code>numpy.linalg.qr</code></a> wraps
+            the LAPACK function <code>dgeqrf</code>. It is also based on the
+            Householder algorithm.
+          </p>
+        </section>
+
+        <section>
+          <h2>Householder Transformations</h2>
+          <p>One can also use a series of Householder transformations to bring a
+          symmetric matrix to tri-diagonal form, then use the
+          $\mathbf{R}\mathbf{Q}$ iteration method to find its eigenvalues.</p>
+          <p class="fragment">The idea is as follows: we can construct a
+          Householder transformation $\mathbf{P}$ to get rid of the lower $n -
+          2$ elements of the first
+          column. Then, multiplying the result by $\mathbf{P}^T$ on the right will
+          get rid of the lower $n - 2$ elements of the first row.</p>
+          <p class="fragment">Why not directly diagonalize the matrix?</p>
+        </section>
+
+        <section>
+          <h2>Householder Transformations</h2>
+          <p class="fragment">
+            Once the matrix is in tri-diagonal form, the QR iteration usually converges
+            quickly. This is a much more efficient way to compute the
+            eigenvalues of a matrix than brute-force iteration with QR
+            decomposition from the beginning.
+          </p>
+          <p class="fragment">
+            In practice, you can always use a reputable library when you want to
+            compute the eigenvalues and/or eigenvectors of a matrix. For
+            example, Python has <code>numpy.linalg.eig</code> for
+            a general $n\times n$ matrix, and <code>numpy.linalg.eigh</code> for
+            a real symmetric matrix or complex Hermitian matrix.
+          </p>
+        </section>
+
+        <section>
+          <h2>Singular Value Decomposition</h2>
+        </section>
+
+        <section>
+          <h2>Singular Value Decomposition</h2>
+          <p>SVD is an extremely powerful technique in linear algebra. It works
+          for any matrix, with no string attached.</p>
+          <div class="fragment">
+            <p>Given any real $m\times n$ matrix $\mathbf{A}$, it can be decomposed as:</p>
+            $$
+            \mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T
+            $$
+            <p>where $\mathbf{U}$ is a $m\times m$ orthogonal matrix, $\boldsymbol{\Sigma}$ is a
+              $m\times n$ diagonal matrix with non-negative real elements (the singular
+              values), and $\mathbf{V}$ is a $n\times n$ orthogonal matrix.</p>
+          </div>
+          <p class="fragment">In the case where $\mathbf{A}$ is a complex matrix,
+          both $\mathbf{U}$ and $\mathbf{V}$ are unitary. The singular values
+          are still real and non-negative!</p>
+        </section>
+
+        <section>
+          <h2>Singular Value Decomposition</h2>
+          <p>Let's look at an example:</p>
+          <div style="font-size: 80%">
+          $$
+          \mathbf{A} = \begin{pmatrix}
+            1 & 0 & 0 & 0 & 2 \\
+            0 & 0 & 3 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 \\
+            0 & 4 & 0 & 0 & 0
+          \end{pmatrix}
+          $$
+          </div>
+          <div class="fragment">
+          <p>Its SVD is:</p>
+          <div style="font-size: 80%">
+          $$
+          \mathbf{U} = \begin{pmatrix}
+            0 & 0 & -1 & 0 \\
+            0 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 1 \\
+            -1 & 0 & 0 & 0
+          \end{pmatrix},\quad
+          \boldsymbol{\Sigma} = \begin{pmatrix}
+            4 & 0 & 0 & 0 & 0 \\
+            0 & 3 & 0 & 0 & 0 \\
+            0 & 0 & \sqrt{5} & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0
+          \end{pmatrix},\quad
+          \mathbf{V} = \begin{pmatrix}
+ 0 & 0 & -\frac{1}{\sqrt{5}} & -\frac{2}{\sqrt{5}} & 0 \\
+ -1 & 0 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & -\frac{2}{\sqrt{5}} & \frac{1}{\sqrt{5}} & 0
+\end{pmatrix}
+          $$
+          </div>
+          </div>
+          <p class="fragment">
+            The singular values of $\mathbf{A}$ are $4$, $3$, $\sqrt{5}$, and $0$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Range and Nullspace</h2>
+          <p>Consider the equation $\mathbf{A}\mathbf{x} = \mathbf{b}$. If the
+          rank of $\mathbf{A}$ is less than $m$, then there are some
+            $\mathbf{b}$ that no $\mathbf{x}$ can satisfy this equation. The subspace of <em>reachable</em> $\mathbf{b}$
+            is called the <em>range</em> of $\mathbf{A}$. The dimension of the range is called the <em>rank</em> of $\mathbf{A}$.</p>
+          <p class="fragment">Consider the equation $\mathbf{A}\mathbf{x} = \mathbf{0}$. The subspace of
+            $\mathbf{x}$ that satisfies this equation is called the <em>nullspace</em> of $\mathbf{A}$. The
+            dimension of the nullspace plus the rank is equal to $n$.</p>
+          <p class="fragment">SVD reveals a lot about the structure of the $m\times n$ matrix $\mathbf{A}$. For example,
+          the rank of $\mathbf{A}$ is the number of non-zero singular values.</p>
+        </section>
+
+        <section>
+          <h2>Range and Nullspace</h2>
+          <p>The range of matrix $\mathbf{A}$ is spanned by the columns of
+          $\mathbf{U}$ corresponding to the nonzero singular values.</p>
+          <p class="fragment">
+            The nullspace of matrix $\mathbf{A}$ is spanned by the columns of
+            $\mathbf{V}$ corresponding to the zero singular values.
+          </p>
+        </section>
+
+        <section>
+          <h2>Range and Nullspace</h2>
+          <p>In our previous example, the columns of $\mathbf{U}$ corresponding to nonzero singular values
+          are columns $1$-$3$. Therefore, any $\mathbf{b}$ vector proportional to $(0,0,1,0)^T$
+          cannot be reached by $\mathbf{A}\mathbf{x}$.</p>
+          <p class="fragment">
+            The columns of $\mathbf{V}$ corresponding to zero singular values are columns $4$-$5$.
+            Therefore, the nullspace of $\mathbf{A}$ is spanned by $(-2,0,0,1,0)^T$ and $(0,0,0,1,0)^T$. Any
+            linear combinations $\mathbf{x}$ of these two vectors will satisfy $\mathbf{A}\mathbf{x} = \mathbf{0}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Invertibility</h2>
+          <p>For a square matrix $\mathbf{A}$, SVD can be used to detect whether it is invertible</p>
+          <div class="fragment">
+            <p>If any of its singular values is zero, then $\mathbf{A}$ is not invertible.</p>
+          </div>
+          <p class="fragment">If all singular values are non-zero, then
+          $\mathbf{A}$ is invertible. In this case, LU decomposition is the
+          preferred way to solve equations like $\mathbf{A}\mathbf{x} =
+          \mathbf{b}$.</p>
+        </section>
+
+        <section>
+          <h2>Invertibility</h2>
+          <p>If the matrix $\mathbf{A}$ is invertible, then its inverse is
+          trivial to find when we know its SVD:</p>
+          $$
+          \mathbf{A}^{-1} = \mathbf{V}\cdot \boldsymbol{\Sigma}^{-1}\cdot\mathbf{U}^{T}
+          $$
+          <div class="fragment">
+            <p>Since $\boldsymbol{\Sigma}$ is a diagonal matrix, its inverse is obtained by
+              inverting its diagonal elements.</p>
+            $$
+            \begin{pmatrix}
+            \sigma_1 & 0 & 0 & \dots \\
+            0 & \sigma_2 & 0 & \dots \\
+            0 & 0 & \sigma_3 & \dots \\
+            \vdots & \vdots & \vdots & \ddots
+            \end{pmatrix}^{-1} =
+            \begin{pmatrix}
+            1/\sigma_1 & 0 & 0 & \dots \\
+            0 & 1/\sigma_2 & 0 & \dots \\
+            0 & 0 & 1/\sigma_3 & \dots \\
+            \vdots & \vdots & \vdots & \ddots
+            \end{pmatrix}
+            $$
+            <p>We denote this inverse $\left[\mathrm{diag} (1/\sigma_i)\right]$.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Closest Solution</h2>
+          <p>
+            Even when the matrix $\mathbf{A}$ is not invertible, this construction is very useful
+          </p>
+          $$
+          \mathbf{A}^{-1} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / \sigma_i) \right] \cdot \mathbf{U}^T
+          $$
+          <p>This is called the <em>pseudoinverse</em> of matrix $\mathbf{A}$.</p>
+          <div class="fragment">
+          <p>When there is no solution to the equation $\mathbf{A}\mathbf{x} =
+            \mathbf{b}$, the following vector <em>minimizes</em> the difference
+            $|\mathbf{A}\mathbf{x} - \mathbf{b}|$:</p>
+          $$
+          \mathbf{x} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / \sigma_i) \right] \cdot (\mathbf{U}^T \mathbf{b})
+          $$
+          <p>If there are zero singular values $\sigma_i$, the diagonal entry $1/\sigma_i$ is also replaced by zero.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Closest Solution</h2>
+          <p>This property of SVD can be used to fit a model to data. Suppose
+          you have a collection of $n$ data points $\{(x_i, y_i)\}$. You construct a
+          polynomial model:</p>
+          $$
+          y(x) = a_0 + a_1 x + a_2 x^2 + \dots + a_{m-1} x^{m-1}
+          $$
+          <div class="fragment">
+            <p>The task is to find the coefficients $a_j$ to minimize the sum of
+            the square distances:</p>
+            $$
+            D = \sum_{i=0}^{n-1}\left[\sum_{j=0}^{m-1}a_j x_i^j - y_i\right]^2
+            $$
+          </div>
+          <p class="fragment">This is called "least squares fitting".</p>
+        </section>
+
+        <section>
+          <h2>Closest Solution</h2>
+          <p>If we treat $x_i^j$ as elements of a matrix, $A_{ij} = x_i^j$, then
+          the least squares term looks exactly like the square of the length of
+          a vector.</p>
+          $$
+          D = \sum_{i=0}^{n-1}\left[\sum_{j=0}^{m-1}a_j x_i^j - y_i\right]^2 = |\mathbf{A}\mathbf{a} - \mathbf{y}|^2
+          $$
+          <p class="fragment">
+            We can use SVD to find the vector $\mathbf{a}$ that minimizes this distance. This
+            technique works for any basis functions.
+          </p>
+        </section>
+
+        <section>
+          <h2>Matrix Approximations</h2>
+          <p>When forming the SVD of a matrix $\mathbf{A}$, its singular values
+          in the middle matrix $\boldsymbol{\Sigma}$ is ordered from largest to smallest
+          along the diagonal. You can think of these singular values as ranking
+          from the "most important" to the "least important".</p>
+          <p class="fragment">
+            You can truncate the diagonal and set any singular values below
+            certain threshold to zero. This will give you an approximate matrix:
+            $$
+            \tilde{\mathbf{A}} = \mathbf{U}\tilde{\boldsymbol{\Sigma}}\mathbf{V}^T
+            $$
+            that keeps "most" of the information about $\mathbf{A}$. This is
+            useful in model simplification or data compression.
+          </p>
+        </section>
+
+        <section>
+          <h2>Matrix Approximations</h2>
+          <p>This can be used for image compression. Given an image of $m\times n$ pixels,
+          one can treat it as a matrix and perform an SVD. If we truncate the
+          singular matrix $\boldsymbol{\Sigma}$ and keep some of the largest singular
+          values, we retain an approximate image.</p>
+
+          <a href="http://timbaumann.info/svd-image-compression-demo/">Demo</a>
+        </section>
+
+        <section>
+          <h2>Matrix Approximations</h2>
+          <p>SVD image compression is not the most efficient algorithm out
+          there, but it illustrates the power of SVD. In practice, any time you
+          have a model that can be described by a matrix, you can use SVD to
+          find an approximate model that only keeps the largest features.</p>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
