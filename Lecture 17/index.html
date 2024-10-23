@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 17</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Singular Value Decomposition</h2>
+        </section>
+
+        <section>
+          <h2>Singular Value Decomposition</h2>
+          <p>Last time, we discussed the Singular Value Decomposition. Given any
+          real $m\times n$ matrix $\mathbf{A}$, it can be decomposed as:
+            $$
+            \mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T
+            $$
+            where $\mathbf{U}$ is a $m\times m$ orthogonal matrix, $\boldsymbol{\Sigma}$ is a
+              $m\times n$ diagonal matrix with non-negative real elements (the singular
+              values), and $\mathbf{V}$ is a $n\times n$ orthogonal matrix.</p>
+        </section>
+
+        <section>
+          <h2>Range and Nullspace</h2>
+          <p>Consider the equation $\mathbf{A}\mathbf{x} = \mathbf{b}$. If the
+          rank of $\mathbf{A}$ is less than $m$, then there are some
+            $\mathbf{b}$ that no $\mathbf{x}$ can satisfy this equation. The subspace of <em>reachable</em> $\mathbf{b}$
+            is called the <em>range</em> of $\mathbf{A}$. The dimension of the range is called the <em>rank</em> of $\mathbf{A}$.</p>
+          <p class="fragment">Consider the equation $\mathbf{A}\mathbf{x} = \mathbf{0}$. The subspace of
+            $\mathbf{x}$ that satisfies this equation is called the <em>nullspace</em> of $\mathbf{A}$. The
+            dimension of the nullspace plus the rank is equal to $n$.</p>
+          <p class="fragment">SVD reveals a lot about the structure of the $m\times n$ matrix $\mathbf{A}$. For example,
+          the rank of $\mathbf{A}$ is the number of non-zero singular values.</p>
+        </section>
+
+        <section>
+          <h2>Range and Nullspace</h2>
+          <p>The range of matrix $\mathbf{A}$ is spanned by the columns of
+          $\mathbf{U}$ corresponding to the nonzero singular values.</p>
+          <p class="fragment">
+            The nullspace of matrix $\mathbf{A}$ is spanned by the columns of
+            $\mathbf{V}$ corresponding to the zero singular values.
+          </p>
+        </section>
+
+        <section>
+          <h2>Invertibility</h2>
+          <p>For a square matrix $\mathbf{A}$, SVD can be used to detect whether it is invertible</p>
+          <div class="fragment">
+            <p>If any of its singular values is zero, then $\mathbf{A}$ is not invertible.</p>
+          </div>
+          <p class="fragment">If all singular values are non-zero, then
+          $\mathbf{A}$ is invertible. In this case, LU decomposition is the
+          preferred way to solve equations like $\mathbf{A}\mathbf{x} =
+          \mathbf{b}$.</p>
+        </section>
+
+        <section>
+          <h2>Invertibility</h2>
+          <p>If the matrix $\mathbf{A}$ is invertible, then its inverse is
+          trivial to find when we know its SVD:</p>
+          $$
+          \mathbf{A}^{-1} = \mathbf{V}\cdot \boldsymbol{\Sigma}^{-1}\cdot\mathbf{U}^{T}
+          $$
+          <div class="fragment">
+            <p>Since $\boldsymbol{\Sigma}$ is a diagonal matrix, its inverse is obtained by
+              inverting its diagonal elements.</p>
+            $$
+            \begin{pmatrix}
+            \sigma_1 & 0 & 0 & \dots \\
+            0 & \sigma_2 & 0 & \dots \\
+            0 & 0 & \sigma_3 & \dots \\
+            \vdots & \vdots & \vdots & \ddots
+            \end{pmatrix}^{-1} =
+            \begin{pmatrix}
+            1/\sigma_1 & 0 & 0 & \dots \\
+            0 & 1/\sigma_2 & 0 & \dots \\
+            0 & 0 & 1/\sigma_3 & \dots \\
+            \vdots & \vdots & \vdots & \ddots
+            \end{pmatrix}
+            $$
+            <p>We denote this inverse $\left[\mathrm{diag} (1/\sigma_i)\right]$.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Closest Solution</h2>
+          <p>
+            Even when the matrix $\mathbf{A}$ is not invertible, this construction is very useful
+          </p>
+          $$
+          \mathbf{A}^{-1} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / \sigma_i) \right] \cdot \mathbf{U}^T
+          $$
+          <p>This is called the <em>pseudoinverse</em> of matrix $\mathbf{A}$.</p>
+          <div class="fragment">
+          <p>When there is no solution to the equation $\mathbf{A}\mathbf{x} =
+            \mathbf{b}$, the following vector <em>minimizes</em> the difference
+            $|\mathbf{A}\mathbf{x} - \mathbf{b}|$:</p>
+          $$
+          \mathbf{x} = \mathbf{V}\cdot \left[\mathrm{diag} (1 / \sigma_i) \right] \cdot (\mathbf{U}^T \mathbf{b})
+          $$
+          <p>If there are zero singular values $\sigma_i$, the diagonal entry $1/\sigma_i$ is also replaced by zero.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Closest Solution</h2>
+          <p>This property of SVD can be used to fit a model to data. Suppose
+          you have a collection of $n$ data points $\{(x_i, y_i)\}$. You construct a
+          polynomial model:</p>
+          $$
+          y(x) = a_0 + a_1 x + a_2 x^2 + \dots + a_{m-1} x^{m-1}
+          $$
+          <div class="fragment">
+            <p>The task is to find the coefficients $a_j$ to minimize the sum of
+            the square distances:</p>
+            $$
+            D = \sum_{i=0}^{n-1}\left[\sum_{j=0}^{m-1}a_j x_i^j - y_i\right]^2
+            $$
+          </div>
+          <p class="fragment">This is called "least squares fitting".</p>
+        </section>
+
+        <section>
+          <h2>Closest Solution</h2>
+          <p>If we treat $x_i^j$ as elements of a matrix, $A_{ij} = x_i^j$, then
+          the least squares term looks exactly like the square of the length of
+          a vector.</p>
+          $$
+          D = \sum_{i=0}^{n-1}\left[\sum_{j=0}^{m-1}a_j x_i^j - y_i\right]^2 = |\mathbf{A}\mathbf{a} - \mathbf{y}|^2
+          $$
+          <p class="fragment">
+            We can use SVD to find the vector $\mathbf{a}$ that minimizes this distance. This
+            technique works for any basis functions.
+          </p>
+        </section>
+
+        <section>
+          <h2>Matrix Approximations</h2>
+          <p>When forming the SVD of a matrix $\mathbf{A}$, its singular values
+          in the middle matrix $\boldsymbol{\Sigma}$ is ordered from largest to smallest
+          along the diagonal. You can think of these singular values as ranking
+          from the "most important" to the "least important".</p>
+          <p class="fragment">
+            You can truncate the diagonal and set any singular values below
+            certain threshold to zero. This will give you an approximate matrix:
+            $$
+            \tilde{\mathbf{A}} = \mathbf{U}\tilde{\boldsymbol{\Sigma}}\mathbf{V}^T
+            $$
+            that keeps "most" of the information about $\mathbf{A}$. This is
+            useful in model simplification or data compression.
+          </p>
+        </section>
+
+        <section>
+          <h2>Matrix Approximations</h2>
+          <p>This can be used for image compression. Given an image of $m\times n$ pixels,
+          one can treat it as a matrix and perform an SVD. If we truncate the
+          singular matrix $\boldsymbol{\Sigma}$ and keep some of the largest singular
+          values, we retain an approximate image.</p>
+
+          <a href="http://timbaumann.info/svd-image-compression-demo/">Demo</a>
+        </section>
+
+        <section>
+          <h2>Matrix Approximations</h2>
+          <p>SVD image compression is not the most efficient algorithm out
+          there, but it illustrates the power of SVD. In practice, any time you
+          have a model that can be described by a matrix, you can use SVD to
+          find an approximate model that only keeps the largest features.</p>
+        </section>
+
+        <section>
+          <h2>SVD vs Eigenvalues</h2>
+          <p>Eigen-decomposition requires the matrix $\mathbf{M}$ to be square
+          and symmetric (or Hermitian).</p>
+          <p class="fragment">
+            However, for any $m\times n$ matrix $\mathbf{A}$, we can form an
+            $n\times n$ symmetric matrix using:
+            $$
+            \mathbf{M} = \mathbf{A}^T\mathbf{A}
+            $$
+          </p>
+          <p class="fragment">
+            Lets use SVD to decompose the matrix $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T$:
+            $$
+            \mathbf{V}\boldsymbol{\Sigma}^T\mathbf{U}^T\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T = \mathbf{V}\boldsymbol{\Sigma}^T\boldsymbol{\Sigma}\mathbf{V}^T = \mathbf{M}
+            $$
+          </p>
+          <p class="fragment">
+            $\boldsymbol{\Sigma}^T\boldsymbol{\Sigma}$ is the diagonalized form of $\mathbf{M}$.
+            The eigenvalues $\lambda_i$ of $\mathbf{M}$ are squares of the singular values $\sigma_i^2$ of $\mathbf{A}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>SVD vs Eigenvalues</h2>
+          <p>When the matrix $\mathbf{A}$ is already square and symmetric, then
+          the singular values of the matrix coincide with the absolute values of
+          its eigenvalues. This is because if $\mathbf{A} = \mathbf{A}^T$, then
+          $\mathbf{A}^T\mathbf{A} = \mathbf{A}^2$.</p>
+          <p class="fragment">
+            The eigenvalues of $\mathbf{A}^2$ are squares of the eigenvalues of
+            $\mathbf{A}$, and the singular values of $\mathbf{A}$ are positive
+            square roots of the eigenvalues of $\mathbf{A}^2$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Principal Component Analysis</h2>
+          <p>PCA is often used to analyze large datasets to reduce the dimension
+          of the dataset.</p>
+          <p class="fragment">
+            Consider a data matrix $\mathbf{X}$ that has $n$ rows and $p$
+            columns. $n$ is the number of data points, and $p$ is the
+            dimensionality of the data.
+          </p>
+          <p class="fragment">
+            We can use the SVD of the data matrix to transform $\mathbf{X}$ into
+            "principal components":
+            $$
+            \mathbf{T} = \mathbf{U}\boldsymbol{\Sigma} = \mathbf{X}\mathbf{V}
+            $$
+          </p>
+          <p class="fragment">
+            We can then truncate $\mathbf{T}$ by only keeping the largest singular values,
+            reducing the effective dimensionality of the data.
+          </p>
+        </section>
+
+        <section>
+          <h2>Principal Component Analysis</h2>
+          <img src="pca-example.png" width="60%">
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
