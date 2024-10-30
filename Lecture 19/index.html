@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 19</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>The Advection Equation</h2>
+          <p>We have been focusing on the 1D advection equation:</p>
+          $$
+          \frac{\partial u}{\partial t} + v \frac{\partial u}{\partial x} = 0
+          $$
+          <p class="fragment">Its solution is simply a function propagating along $x$ at velocity
+          $v$ that keeps its shape. We discussed two stable methods to solve this
+          equation: the Lax-Friedrichs method and the Upwind method.</p>
+        </section>
+
+        <section>
+          <h2>2nd Order Accuracy in Time</h2>
+          <p>Both the Lax scheme and the Upwind scheme are 1st order in time. How
+          do we achieve higher order time accuracy?</p>
+        </section>
+
+        <section>
+          <h2>Staggered Leapfrog Method</h2>
+          <p>The <em>staggered leapfrog</em> method uses the following discretization:</p>
+          $$
+          \frac{u_j^{n+1} - u_j^{n-1}}{2\Delta t} = -v \frac{u_{j+1}^n - u_{j-1}^n}{2\Delta x}.
+          $$
+          <p>Both the time and space derivatives are centered difference with
+          2nd order accuracy.</p>
+        </section>
+
+        <section>
+          <h2>Staggered Leapfrog Method</h2>
+          <p>Let's do a stability analysis for the staggered leapfrog method:</p>
+          <div class="fragment">
+          $$
+          \xi^2 - 1 = -2i\xi \frac{v\Delta t}{\Delta x}\sin k\Delta x.
+          $$
+          </div>
+          <div class="fragment">
+            <p>The solutions to the above equation are:
+              $$
+              \xi = -i\frac{v\Delta t}{\Delta x}\sin k\Delta x \pm \sqrt{1 - \left(\frac{v\Delta t}{\Delta x}\sin k\Delta x\right)^2}.
+              $$
+            </p>
+            <p>$|\xi|^2 = 1$ as long as $v\Delta t < \Delta x$. There is no
+            amplitude dissipation if Courant condition is satisfied.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Staggered Leapfrog Method</h2>
+          <p>The only problem with Leapfrog method is that it requires the value
+          of $u^{n-1}$ in addition to $u^n$:
+          $$
+          \frac{u_j^{n+1} - u_j^{n-1}}{2\Delta t} = -v \frac{u_{j+1}^n - u_{j-1}^n}{2\Delta x}.
+          $$
+          </p>
+          <p class="fragment">
+            Typically you need to use one of the 1st order methods to jump start the solution,
+            and then use the leapfrog method to get higher order accuracy. For example, you can
+            use the Lax-Friedrichs method to get $u^{1}$ from $u^0$, and then
+            use the leapfrog method to get $u^{2}$ from $u^1$ and $u^0$.
+          </p>
+        </section>
+
+        <!-- <section>
+             <h2>Wave Equation</h2>
+             <p>The staggered leapfrog works extremely well for the wave equation,
+             since it preserves the amplitude of all waves.
+             $$
+             \frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2}
+             $$
+             </p>
+             <div class="fragment">
+             <p>The way to solve the standard wave equation is to break it into
+             two advection equations:</p>
+             $$
+             \displaystyle\frac{\partial r}{\partial t} = c \frac{\partial s}{\partial x}, \quad
+             \displaystyle\frac{\partial s}{\partial t} = c \frac{\partial r}{\partial x}.
+             $$
+             <p>where we have defined $r = v\partial u/\partial x$ and $s = \partial u/\partial t$ as
+             two auxiliary functions. These are the 1D analog of Maxwell equations.</p>
+             </div>
+             </section>
+
+             <section>
+             <h2>Staggered Leapfrog Method</h2>
+             <p>
+             It is natural to define the auxiliary functions $r$ and $s$ at staggered half-grid points:
+             $$
+             \begin{align}
+             r_{j+1/2}^n &= v\frac{\partial u}{\partial x} = v\frac{u_{j+1}^n - u_j^n}{\Delta x}, \\
+             s_j^{n+1/2} &= \frac{\partial u}{\partial t} = \frac{u_j^{n+1} - u_j^n}{\Delta t}.
+             \end{align}
+             $$
+             </p>
+             <div class="fragment">
+             <p>The staggered leapfrog scheme gives the following:</p>
+             $$
+             \begin{align}
+             s_j^{n+1/2} &= s_j^{n-1/2} + \frac{c\Delta t}{\Delta x}(r_{j+1/2}^n - r_{j-1/2}^n), \\
+             r_{j+1/2}^{n+1} &= r_{j+1/2}^n + \frac{c\Delta t}{\Delta x}(s_{j+1}^{n+1/2} - s_j^{n+1/2}), \\
+             \end{align}
+             $$
+             </div>
+             </section>
+        -->
+        <section>
+          <h2>Staggered Leapfrog Method</h2>
+          <p>Let's try to apply the staggered leapfrog method to the 1D advection equation.
+          Here we again chose $v\Delta t = \Delta x$.</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./leapfrog_gaussian.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Staggered Yee Lattice</h2>
+          <p>Simulating the time-dependent Maxwell equations is a very common task for
+          computational physics.
+            $$
+            \begin{align}
+            \frac{\partial \mathbf{E}}{\partial t} &= c\nabla \times \mathbf{B} - 4\pi\mathbf{j}, \\
+            \frac{\partial \mathbf{B}}{\partial t} &= -c\nabla \times \mathbf{E}.
+            \end{align}
+            $$
+          </p>
+          <p class="fragment">A common method for this application is
+          a variation of the staggered leapfrog method developed by Yee (1966).</p>
+        </section>
+
+        <section>
+          <h2>Staggered Yee Lattice</h2>
+          <p>Yee lattice is a staggered grid where the electric field components are
+          defined at half-integer time steps $n+1/2$, and the magnetic field components are
+          defined at integer time steps $n$.</p>
+          <p class="fragment">The electric field components are defined at the center of the
+          faces of the grid, while the magnetic field components are defined at the
+          center of the edges of the grid.
+          </p>
+          <img src="yee-lattice.png" width=40% class="fragment">
+        </section>
+
+        <section>
+          <h2>Staggered Yee Lattice</h2>
+          <p>The Yee lattice is the cheapest method to achieve 2nd order
+          accuracy in both space and time, and the nature of the method
+          preserves the amplitudes of all waves, making it ideal to study
+          the propagation of electromagnetic waves.</p>
+        </section>
+
+        <section>
+          <h2>Staggered Leapfrog Method</h2>
+          <p>Let's try to apply the staggered leapfrog method to the 1D advection equation using
+          a box initial condition. </p>
+          <video controls="" style="width: 50%;"><source src=
+            "./leapfrog_box.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Lax-Wendroff Method</h2>
+          <p>A 2nd order method that avoids spurious oscillations is the Lax-Wendroff method. It
+          performs the time update in two steps:</p>
+          <div class="fragment">
+            <p>First, we use the Lax scheme to form intermediate values $u_{j + 1/2}^{n+1/2}$:</p>
+            $$
+            u_{j+1/2}^{n+1/2} = \frac{1}{2}(u_j^n + u_{j+1}^n) - v\frac{u_{j+1}^n - u_j^n}{\Delta x}\frac{\Delta t}{2}.
+            $$
+          </div>
+          <div class="fragment">
+            <p>Then we use the leapfrog scheme to compute $u_j^{n+1}$:</p>
+            $$
+            u_j^{n+1} = u_j^n - \frac{v\Delta t}{\Delta x}(u_{j+1/2}^{n+1/2} - u_{j-1/2}^{n+1/2}).
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Lax-Wendroff Method</h2>
+          <p>If we carry out the stability analysis for Lax-Wendroff, we can get:</p>
+          $$
+          \xi = 1 - i\alpha \sin k\Delta x - \alpha^2(1 - \cos k\Delta x).
+          $$
+          <p>where $\alpha = v\Delta t/\Delta x$.</p>
+          <div class="fragment">
+            <p>The amplitude square $|\xi|^2$ is:</p>
+            $$
+            |\xi|^2 = 1 - \alpha^2(1 - \alpha^2)(1 - \cos k\Delta x)^2.
+            $$
+            <p>The stability condition again is $\alpha \leq 1$.</p>
+          </div>
+          <p class="fragment">
+            For $\alpha = 1$ there is no amplitude dissipation. For other
+            $\alpha$, the dissipation is minimal when $k\Delta x \ll 1$. Only
+            grid scale waves ($k\Delta x\sim 1$) get dissipated.
+          </p>
+        </section>
+
+        <section>
+          <h2>Lax-Wendroff Method</h2>
+          <p>Let's see how it performs on our sample advection problem. Again, $v\Delta t = \Delta x$.</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./lax_wendroff_gaussian.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Lax-Wendroff Method</h2>
+          <p>How about the box initial condition?</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./lax_wendroff_box.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Finite Difference Methods</h2>
+          <p>In general, finite difference methods are not very good at handling
+          very large gradients or discontinuities. There are better methods out
+          there, e.g. the finite volume method with explicit shock-capturing schemes.</p>
+          <p class="fragment">In Project 2, we will implement a finite volume
+          method in 2D, and use it to simulate some fluid dynamics.</p>
+        </section>
+
+        <section>
+          <h2>Extending to Higher Dimensions</h2>
+          <p>How do we extend the finite difference method to higher
+          dimensions?</p>
+          <p class="fragment">Consider the 2D advection equation:
+          $$
+          \frac{\partial u}{\partial t} + \mathbf{v}\cdot\nabla u = 0
+          $$
+          </p>
+          <p class="fragment">
+            This operator $\mathbf{v}\cdot\nabla$ means $v_x\partial_x + v_y\partial_y$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Extending to Higher Dimensions</h2>
+          <p>Now we have a 2D grid:</p>
+          $$
+          x = x_0 + j\Delta x, \quad y = y_0 + k\Delta y
+          $$
+          <div class="fragment">
+            <p>The Lax scheme now looks like:</p>
+            $$
+            \begin{align}
+            u_{j,k}^{n+1} &= \frac{1}{4}(u_{j+1,k}^n + u_{j-1,k}^n + u_{j,k+1}^n + u_{j,k-1}^n) \\
+            &- v_x \frac{u_{j+1,k}^n - u_{j-1,k}^n}{2\Delta x} \Delta t \\
+            &- v_y \frac{u_{j,k+1}^n - u_{j,k-1}^n}{2\Delta y} \Delta t
+            \end{align}
+            $$
+          </div>
+        </section>
+
+        <section>
+          <h2>Stability Analysis</h2>
+          <p>Stability analysis in 2D assumes a mode in the following form:</p>
+          $$
+          u^n_{j,k} = \exp\left(ik_x j\Delta x + ik_y k\Delta y\right)
+          $$
+          <p class="fragment">We then plug this into the numerical scheme to
+          find $\xi$ such that $u^{n+1}_{j,k} = \xi u^n_{j, k}$.</p>
+          <p class="fragment">
+            For the 2D Lax scheme, we have:
+            $$
+            \xi = \frac{1}{2}\left(\cos (k_x\Delta x) + \cos (k_y\Delta y)\right) - i\frac{v_x\Delta t}{\Delta x}\sin(k_x\Delta x) - i\frac{v_y\Delta t}{\Delta y}\sin(k_y\Delta y)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Stability Analysis</h2>
+          <p>The condition for the 2D Lax scheme to be stable, or $|\xi|^2 \leq 1$ is:</p>
+          $$
+          \Delta t \leq \frac{1}{\sqrt{2}\sqrt{\left(v_x/\Delta x\right)^2 + \left(v_y/\Delta y\right)^2}}
+          $$
+          <p class="fragment">
+            If $\Delta x = \Delta y = \Delta$, then:
+            $$
+            \Delta t \leq \frac{\Delta}{\sqrt{2}\sqrt{v_x^2 + v_y^2}}
+            $$
+            This is the CFL condition in 2D. Comparing with 1D where $\Delta t
+            \leq \Delta x/v$, there is an extra factor of $\sqrt{2}$, making
+            the condition more stringent.
+          </p>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
