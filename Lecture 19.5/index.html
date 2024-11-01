@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 19.5</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>Implementing Finite Difference</h2>
+          <p>Consider the Lax scheme:</p>
+          $$
+          u_j^{n+1} = \frac{1}{2}(u_{j+1}^n + u_{j-1}^n) - v \frac{\Delta t}{2\Delta x} (u_{j+1}^n - u_{j-1}^n)
+          $$
+          <p>How do we implement it in C++?</p>
+        </section>
+
+        <section>
+          <h2>Implementing Finite Difference</h2>
+          <p>This code fragment implements the Lax scheme:
+          </p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+std::vector<double> u(Nx), u_next(Nx);
+
+for (int j = 1; j < Nx - 1; j++) {
+  u_next[j] = 0.5 * (u[j+1] + u[j-1])
+              - (v * dt * 0.5 / dx) * (u[j+1] - u[j-1]);
+}
+u = u_next;
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Boundary Conditions</h2>
+          <p>What happens at the boundary?</p>
+          <div class="fragment">
+            <p>At $j = 0$, $j - 1$ would give us a negative index for the array,
+            which will result in a segmentation fault.</p>
+          </div>
+          <div class="fragment">
+            <p>Therefore, it is customary to reserve a layer of "ghost cells" at
+            each boundary. The physical domain goes from $j = 1$ to $j = N_x -
+            2$. $j = 0$ and $j = N_x - 1$ are the ghost cells.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Boundary Conditions</h2>
+          <p>What should be the values in ghost cells?</p>
+          <ul>
+            <li class="fragment">For periodic boundary condition, $u(0) = u(L)$, we can copy over the values
+            from the other end of the domain:</p>
+            <div style="width: 80%; margin: auto;">
+              <pre><code class="language-c++" data-trim data-noescape>
+u[0] = u[Nx - 2];
+u[Nx - 1] = u[1];
+              </code></pre>
+            </div>
+            </li>
+          <li class="fragment">
+            For Neumann boundary condition $\partial u/\partial x = 0$ at the
+            $x = 0$ boundary, we can set $u_0 = u_1$.
+            <div style="width: 80%; margin: auto;">
+              <pre><code class="language-c++" data-trim data-noescape>
+u[0] = u[1];
+              </code></pre>
+            </div>
+          </li>
+          <li class="fragment">
+            For Dirichlet boundary condition $u = 0$ at the
+            $x = 0$ boundary, we can set $u_0 = -u_1$.
+            <div style="width: 80%; margin: auto;">
+              <pre><code class="language-c++" data-trim data-noescape>
+u[0] = -u[1];
+              </code></pre>
+            </div>
+          </li>
+        </section>
+
+        <section>
+          <h2>Data Output</h2>
+          <p>Now we have a lot more data than when solving an ODE. It's
+          impractical to keep the solution at every time step.</p>
+          <div class="fragment">
+            <p>A typical solution loop may look like this:</p>
+            <div style="width: 80%; margin: auto;">
+              <pre><code class="language-c++" data-trim data-noescape>
+while (t < t_end) {
+  update(dt);
+  t += dt;
+  // Some way to determine when to output data
+  if (t > n * output_dt) {
+    output();
+    n += 1;
+  }
+}
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Data Output</h2>
+          <p>How do we output the data?</p>
+          <div class="fragment">
+            <p>One way is to write the data to a text file:</p>
+            <div style="width: 80%; margin: auto;">
+              <pre><code class="language-c++" data-trim data-noescape>
+void output(int n) {
+  std::ofstream f("data" + std::to_string(n) + ".csv");
+  for (int j = 0; j < Nx; j++) {
+    f << x[j] << "," << u[j] << std::endl;
+  }
+}
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>2D Arrays</h2>
+          <p>In 2D, our grid has two indices $(i, j)$. We need to represent the
+          unknown function $u_{i,j}$ as a 2D array.</p>
+          <p class="fragment">
+            However, there is no 2-dimensional memory. Computer RAM is
+            always linear. We need to represent a 2D array in 1D memory.
+          </p>
+        </section>
+
+        <section>
+          <h2>Memory Mapping</h2>
+          <p>Consider a 2D array $u_{i,j}$ with $i = 0, 1, \ldots, N_x - 1$ and
+          $j = 0, 1, \ldots, N_y - 1$.</p>
+          <div class="fragment">
+            <p>There are two popular ways to map this to 1D memory:</p>
+            <ul>
+              <div class="fragment">
+              <li>Row major: $n = j + i \times N_y$. The last index is contiguous in memory.</li>
+              <p>C/C++ is often considered to be using row major when defining
+              multi-dimensional arrays using <code>A[i][j]</code>. Numpy also
+              uses row major by default.</p>
+              </div>
+              <div class="fragment">
+              <li>Column major: $n = i + j \times N_x$. The first index is contiguous in memory.</li>
+              <p>Fortran and MATLAB use column major for their multi-dimensional arrays.</p>
+              </div>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Memory Mapping</h2>
+          <p>I recommend: do your own memory mapping explicitly. Define 2D (or higher dimensional) arrays
+            as a single <code>std::vector&lt;double&gt;</code>. Resize it to $N_x \times N_y$.</p>
+          <p class="fragment">
+            To access the element $u_{i,j}$, use the either the row major or
+            column major formula, but be consistent. For example:
+            $$
+            n = i + j \times N_x
+            $$
+            <div style="width: 80%; margin: auto;" class="fragment">
+              <pre><code class="language-c++" data-trim data-noescape>
+std::vector<double> u(Nx * Ny);
+for (int j = 0; j < Ny; j++) {
+  for (int i = 0; i < Nx; i++) {
+    int n = i + j * Nx;
+    // Do something with u[n]
+  }
+}
+              </code></pre>
+            </div>
+            <p class="fragment">Write the contiguous loop as the inner loop.</p>
+          </p>
+        </section>
+
+        <section>
+          <h2>Boundary Conditions</h2>
+          <p>Ghost cells in 2D becomes 1D layers at each boundary.</p>
+          <div class="fragment">
+            <p>For periodic boundary condition, we can copy over the values
+            from the other end of the domain:</p>
+            <div style="width: 80%; margin: auto;">
+              <pre><code class="language-c++" data-trim data-noescape>
+for (int j = 0; j < Ny; j++) {
+  u[j * Nx] = u[j * Nx + Nx - 2];
+  u[j * Nx + Nx - 1] = u[j * Nx + 1];
+}
+for (int i = 0; i < Nx; i++) {
+  u[i] = u[(Ny - 2) * Nx + i];
+  u[(Ny - 1) * Nx + i] = u[Nx + i];
+}
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Data Output</h2>
+          <p>CSV files can typically contain a single 2D matrix. More
+          sophisticated binary data format is often used to write multiple data components.</p>
+          <p class="fragment">
+            In production use, the HDF5 data format is widely used in scientific
+            computing. It is a portable binary data format that can store multiple data
+            components in a single file. It is also self-describing, meaning
+            that the data format is stored in the file itself.
+          </p>
+          <p class="fragment">
+            HDF5 is supported by many programming languages, including C/C++,
+            Python, MATLAB, and Julia. The HDF5 library has a parallel version, allowing multiple
+            processes to write to the same file, which is useful for parallel
+            computing.
+          </p>
+        </section>
+
+        <section>
+          <h2>Project 2</h2>
+          <p>In Project 2, we will solve the equations for an ideal fluid:</p>
+          $$
+          \begin{align}
+          \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{v}) &= 0 \\
+          \frac{\partial \mathbf{v}}{\partial t} + (\mathbf{v} \cdot \nabla) \mathbf{v} &= -\frac{1}{\rho} \nabla P
+          \end{align}
+          $$
+          <p class="fragment">These are called "Euler equations". They are the
+          limit of Navier-Stokes equations when fluid viscosity becomes zero.</p>
+        </section>
+
+        <section>
+          <h2>Finite Volume Method</h2>
+          <p>The fluid equations can be written in a conservative form:</p>
+          $$
+          \frac{\partial Q}{\partial t} + \nabla \cdot \mathbf{F} = 0
+          $$
+          <p>where $Q$ is one of the conserved quantities.</p>
+          <p class="fragment">
+            This equation says that the change of $Q$ in a volume is determined
+            only by the divergence of its flux $\mathbf{F}$. It can only flow
+            from one place to another, but cannot be created or destroyed.
+          </p>
+        </section>
+
+        <section>
+          <h2>Finite Volume Method</h2>
+          <p>For example, the flux of fluid density $\rho$ is $\rho \mathbf{v}$,
+          so its equation is:</p>
+          $$
+          \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{v}) = 0
+          $$
+        </section>
+
+        <section>
+          <h2>Finite Volume Method</h2>
+          <p>The finite volume method exploits this structure, allowing us to
+          write the update as:</p>
+          $$
+          \begin{align}
+          \int_\mathrm{cell}Q^{n+1} \mathrm{d}V &= \int_\mathrm{cell}Q^n \mathrm{d}V - \Delta t\int_\mathrm{cell} \nabla \cdot \mathbf{F} \mathrm{d}V \\
+          &= \int_\mathrm{cell}Q^n \mathrm{d}V - \Delta t\int_\mathrm{boundary} \mathbf{F} \cdot \mathrm{d}\mathbf{S}
+          \end{align}
+          $$
+          <p class="fragment">
+            Define $\bar{Q}$ as the average $Q$ in each cell, we can write:
+            $$
+            \bar{Q}^{n+1}\Delta V = \bar{Q}^n \Delta V - \Delta t\sum_\mathrm{faces} \mathbf{F} \cdot \mathbf{S}
+            $$
+          </p>
+          <p class="fragment">
+            $\rho$ by itself is a conserved quantity, and
+            $\int_\mathrm{cell}\rho \mathrm{d}V$ is the mass in the cell. This
+            is what we use as one of the conserved quantities in Project 2.
+          </p>
+        </section>
+
+        <section>
+          <h2>Finite Volume Method</h2>
+          <p>There are many ways to construct the fluxes at the cell faces. One way is the Rusanov flux:</p>
+          $$
+          F = \frac{1}{2}(F_L + F_R) - \frac{1}{2} \max(v_L, v_R)(Q_R - Q_L)
+          $$
+          <p class="fragment">Subscript $L$ and $R$ are quantities calculated
+          using the fluid variables in the cell to the left and right of the
+          face. This is what we will be using in Project 2.</p>
+        </section>
+
+        <section>
+          <h2>Kelvin-Helmholtz Instability</h2>
+          <p>The Kelvin-Helmholtz instability occurs at an interface in a fluid
+          where two sides move at different velocities:</p>
+          <video controls="" style="width: 40%;"><source src=
+            "./kelvin-helmholtz.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Kelvin-Helmholtz Instability</h2>
+          <p>The KH instability is ubiquitous in nature:</p>
+          <img src="cloud.jpg" width="50%">
+        </section>
+
+        <section>
+          <h2>Kelvin-Helmholtz Instability</h2>
+          <p>The KH instability is ubiquitous in nature:</p>
+          <img src="jupiter.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Kelvin-Helmholtz Instability</h2>
+          <p>Why use finite volume? This is the result from the usual Lax method:</p>
+          <video controls="" style="width: 40%;"><source src=
+            "./kh-lax.mp4" type="video/mp4"></video>
+          <p class="fragment">Numerical diffusion is so strong that it completely overwhelms the instability.</p>
+        </section>
+
+        <section>
+          <h2>Finite Volume Method</h2>
+          <p>To capture discontinuities in the fluid, an even better way is to
+          introduce a <em>Riemann solver</em> at each cell boundary.</p>
+          <img src="riemann-problem.webp" width="50%">
+        </section>
+
+        <section>
+          <h2>Finite Volume Method</h2>
+          <p>The KH instability with a Riemann solver:</p>
+          <img src="https://www.astro.princeton.edu/~jstone/Athena/tests/kh/khmovie.gif" alt="KH" width="45%">
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
