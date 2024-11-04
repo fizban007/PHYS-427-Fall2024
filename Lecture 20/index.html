@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 20</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>Diffusion Equation</h2>
+          <p>The diffusion equation looks like this:</p>
+          $$
+          \frac{\partial u}{\partial t} = D \frac{\partial^2 u}{\partial x^2}
+          $$
+          <p>where $D$ is the diffusion constant. What is its dimension (unit)?</p>
+          <p class="fragment">
+            Diffusion equation models the diffusion of a quantity $u$ in space.
+            For example, the heat equation is a diffusion equation with $u$ being
+            the temperature.
+          </p>
+        </section>
+
+        <section>
+          <h2>Diffusion Equation</h2>
+          <p>Let's give the FTCS scheme another opportunity:</p>
+          $$
+          \frac{u_j^{n+1} - u_j^n}{\Delta t} = D \frac{u_{j+1}^n - 2 u_j^n + u_{j-1}^n}{\Delta x^2}
+          $$
+          <p>What is its stability criterion?</p>
+          <div class="fragment">
+            $$
+            \xi = 1 - \frac{4D\Delta t}{\Delta x^2} \sin^2\left(\frac{k \Delta x}{2}\right)
+            $$
+            <p>The scheme is stable when $2D\Delta t \leq \Delta x^2$. The time
+            step size should be less than the diffusion time across a cell.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Diffusion Equation</h2>
+          <p>Let's implement it. Choosing $\Delta t = \Delta x^2/2D$.</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./diffusion-slow.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Diffusion Equation</h2>
+          <p>It turns out $\Delta t \sim \Delta x^2/D$ is too slow. If we are
+          interested in things happening on length scales $L$, then we need $n =
+          L^2/\Delta x^2$ time steps!</p>
+          <p class="fragment">How can we take much larger time steps without
+          breaking the algorithm?</p>
+        </section>
+
+        <section>
+          <h2>Implicit FTCS</h2>
+          <p class="fragment">Remember in ODEs, implicit schemes were introduced
+          for stiff problems to overcome stability problems. We can use the same concept here:
+          $$
+          \frac{u_j^{n+1} - u_j^n}{\Delta t} = D \frac{u_{j+1}^{n+1} - 2 u_j^{n+1} + u_{j-1}^{n+1}}{\Delta x^2}
+          $$</p>
+          <p class="fragment">This is called the <em>implicit</em> FTCS, or BTCS, B for backward.</p>
+        </section>
+
+        <section>
+          <h2>Implicit FTCS</h2>
+          <p>What is the stability criterion for this scheme?</p>
+          <p class="fragment">
+            $$
+            \xi = \frac{1}{\displaystyle 1 + 4\alpha \sin^2\left(\frac{k \Delta x}{2}\right)}
+            $$
+            where $\alpha = D\Delta t/\Delta x^2$.
+          </p>
+          <p class="fragment">$|\xi|<1$ for any $\Delta t$. The implicit FTCS
+          scheme is <em>unconditionally stable</em>.</p>
+        </section>
+
+        <section>
+          <h2>Implicit FTCS</h2>
+          <p>However, there is only one problem:</p>
+          $$
+          \frac{u_j^{n+1} - u_j^n}{\Delta t} = D \frac{u_{j+1}^{n+1} - 2 u_j^{n+1} + u_{j-1}^{n+1}}{\Delta x^2}
+          $$
+          <p class="fragment">This is a system of linear equations with $u_j^{n+1}$
+          being the unknown vector. Can we write down the matrix $A$?</p>
+        </section>
+
+        <section>
+          <h2>Implicit FTCS</h2>
+          <p>The matrix $A$ associated with the implicit FTCS scheme is:</p>
+          $$
+          A = \begin{pmatrix}
+            1 + 2\alpha & -\alpha & 0 & \cdots & 0 & 0 & 0 \\
+            -\alpha & 1 + 2\alpha & -\alpha & \cdots & 0 & 0 & 0 \\
+            0 & -\alpha & 1 + 2\alpha & \cdots & 0 & 0 & 0 \\
+            \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+            0 & 0 & 0 & \cdots & 1 + 2\alpha & -\alpha & 0 \\
+            0 & 0 & 0 & \cdots & -\alpha & 1 + 2\alpha & -\alpha \\
+            0 & 0 & 0 & \cdots & 0 & -\alpha & 1 + 2\alpha \\
+          \end{pmatrix}
+          $$
+          <p>This is a tri-diagonal matrix that is diagonally dominant.</p>
+        </section>
+
+        <section>
+          <h2>Implicit FTCS</h2>
+          <p>At every time step, we solve the linear system:
+          $$
+            \mathbf{A} \mathbf{u}^{n+1} = \mathbf{u}^n
+          $$</p>
+          <p class="fragment">Since $\mathbf{A}$ is tri-diagonal, the easiest
+            method is to use LU decomposition (see <a href="../Lecture 14/index.html">Lecture 14</a>). We only need to find its LU
+          decomposition once, and then we can solve the linear system at every
+          time step applying the same LU matrices.</p>
+        </section>
+
+        <section>
+          <h2>Implicit FTCS</h2>
+          <p>Let's see how it does. Choosing $\Delta t = 10^{-4} = 100 \Delta x^2/D$.</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./diffusion-fast.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Second Order Accuracy in Time</h2>
+          <p>The implicit FTCS scheme is still 1st order accurate in time. To
+          achieve 2nd order accuracy in time, we can take the average between
+          the FTCS and implicit FTCS schemes:</p>
+          $$
+          \frac{u_j^{n+1} - u_j^n}{\Delta t} = \frac{D}{2} \left(\frac{u_{j+1}^{n+1} - 2 u_j^{n+1} + u_{j-1}^{n+1}}{\Delta x^2} + \frac{u_{j+1}^n - 2 u_j^n + u_{j-1}^n}{\Delta x^2}\right)
+          $$
+          <p>Why is this scheme second order accurate in time?</p>
+          <p class="fragment">This numerical scheme is called the <em>Crank-Nicolson</em> scheme,
+          and is the recommended scheme for diffusion-type PDEs.</p>
+        </section>
+
+        <section>
+          <h2>Crank-Nicolson Scheme</h2>
+          <p>Let's work out the amplification factor:</p>
+          <p class="fragment">
+            $$
+            \xi = \frac{\displaystyle 1 - 2\alpha \sin^2\left(\frac{k \Delta x}{2}\right)}{\displaystyle 1 + 2\alpha \sin^2\left(\frac{k \Delta x}{2}\right)}
+            $$
+          </p>
+          <p class="fragment">
+            Again, this scheme is unconditionally stable.
+          </p>
+        </section>
+
+        <section>
+          <h2>Crank-Nicolson Scheme</h2>
+          <p>Again, one needs to solve a tri-diagonal system at every time step.
+          However, this time the right hand side is not simply $\mathbf{u}^n$:</p>
+          $$
+          \mathbf{A} \mathbf{u}^{n+1} = \mathbf{B} \mathbf{u}^n
+          $$
+          <p class="fragment">
+            The matrix $\mathbf{A}$ has $(-\alpha, 1 + 2\alpha, -\alpha)$ on its
+            diagonals, while the matrix $\mathbf{B}$ has $(\alpha, 1 - 2\alpha, \alpha)$
+            on its diagonals. Here $\alpha = D\Delta t/2\Delta x^2$.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>The Schrödinger equation is the fundamental equation of quantum
+          mechanics:</p>
+          $$
+          i \hbar \frac{\partial \psi}{\partial t} = -\frac{\hbar^2}{2m} \frac{\partial^2 \psi}{\partial x^2} + V(x) \psi
+          $$
+          <p class="fragment">It is like a diffusion equation in imaginary time,
+          so the methods today are applicable.</p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>We first get rid of the units by performing non-dimensionalization,
+          the equation looks like:
+            $$
+            i \frac{\partial \psi}{\partial t} = -\frac{1}{2} \frac{\partial^2 \psi}{\partial x^2} + V(x) \psi
+            $$
+          </p>
+          <p class="fragment">Let's use the implicit FTCS scheme:
+          $$
+          i \frac{\psi_j^{n+1} - \psi_j^n}{\Delta t} = -\frac{1}{2} \frac{\psi_{j+1}^{n+1} - 2 \psi_j^{n+1} + \psi_{j-1}^{n+1}}{\Delta x^2} + V(x) \psi_j^{n+1}
+          $$
+          </p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>The amplification factor for the implicit FTCS scheme is:</p>
+          $$
+          \xi = \frac{1}{\displaystyle 1+i\left[\frac{2\Delta t}{\Delta x^2}\sin^2\left(\frac{k\Delta x}{2}\right) + V_j \Delta t\right]}
+          $$
+          <p class="fragment">The scheme is unconditionally stable. However, it
+            does not preserve amplitudes. In quantum mechanical language, it is not <em>unitary</em>.</p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>Unitarity is important in quantum mechanics. The wave function is
+          understood as a probability amplitude. The probability of finding the
+          particle at location $x$ is $P(x) = |\psi^2(x)|$. It satisfies the
+          normalization condition:
+          $$
+          \int_{-\infty}^{\infty} |\psi(x)|^2 dx = 1
+          $$
+          </p>
+          <p class="fragment">Amplitude decay is not a desirable trait of the numerical method when
+          solving quantum mechanics!</p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>If we formally write the Schrödinger equation as:</p>
+          $$
+          i\frac{\partial \psi}{\partial t} = \hat{H} \psi
+          $$
+          <p>where $\hat{H}$ is the Hamiltonian operator, then the implicit FTCS
+          scheme is effectively:</p>
+          <p class="fragment">
+            $$
+            \psi^{n+1} = \left(1 + i\hat{H}\Delta t\right)^{-1} \psi^n
+            $$
+            $(1 + i\hat{H}\Delta t)^{-1}$ is a non-unitary approximation to the time evolution operator $e^{-i\hat{H}\Delta t}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>The cure is to use the so-called "Cayley's form" for $e^{i\hat{H}\Delta t}$:
+          $$
+            e^{-i\hat{H}\Delta t} \approx \frac{\displaystyle 1 - \frac{1}{2}i\hat{H}\Delta t}{\displaystyle 1 + \frac{1}{2}i\hat{H}\Delta t}
+          $$
+          </p>
+          <p class="fragment">
+            Then the numerical scheme becomes:
+            $$
+            \left(1 + \frac{1}{2}i\hat{H}\Delta t\right)\psi_j^{n+1} = \left(1 - \frac{1}{2}i\hat{H}\Delta t\right)\psi_j^n
+            $$
+            In fact, this is equivalent to the Crank-Nicolson scheme!
+          </p>
+        </section>
+
+        <section>
+          <h2>The Schrödinger Equation</h2>
+          <p>Let's see the Crank-Nicolson scheme in action:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./schrodinger.mp4" type="video/mp4"></video>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
