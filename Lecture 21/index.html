@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 21</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>Boundary Value Problems</h2>
+          <p>Elliptic PDEs are often posed as boundary value problems, such as
+          the Poisson equation in 2D:</p>
+          $$
+          \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = \rho(x,y)
+          $$
+          <div class="fragment">
+            <p>There are two main types of boundary conditions:
+              <ul>
+                <li>Dirichlet: $u = f(x, y)$ on the boundary</li>
+                <li class="fragment">Neumann: $\partial u/\partial n = v(x, y)$ on the boundary,
+                where $\mathbf{n}$ is the direction normal to the boundary</li>
+              </ul>
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Relaxation Methods</h2>
+          <p>A typical way to solve boundary value problems is the relaxation
+          method.</p>
+          <div class="fragment">
+            <p>It attempts to seek solutions to the <em>time-dependent</em> equation
+              $$
+              \frac{\partial u}{\partial t} = \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} - \rho(x,y)
+              $$
+              in the limit $t \to \infty$, with the given boundary conditions.
+            </p>
+          </div>
+          <p class="fragment">
+            Since this is a diffusion-type equation with $D = 1$, we can use the methods we have
+            introduced for diffusion to solve this problem.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>For example, consider the FTCS method with $\Delta x = \Delta y = \Delta$:</p>
+          $$
+          u_{i,j}^{n+1} = u_{i,j}^n + \frac{\Delta t}{\Delta^2} (u_{i+1,j}^n + u_{i-1,j}^n + u_{i,j+1}^n + u_{i,j-1}^n - 4 u_{i,j}^n) - \rho_{i,j}\Delta t
+          $$
+          <p class="fragment">
+            This method is only stable when $\Delta t \leq \frac{1}{4} \Delta^2$. If
+            we take the maximum time step size, the method becomes:
+            $$
+            u_{i,j}^{n+1} = \frac{1}{4} (u_{i+1,j}^n + u_{i-1,j}^n + u_{i,j+1}^n + u_{i,j-1}^n - \rho_{i,j}\Delta^2)
+            $$
+          </p>
+          <p class="fragment">
+            This is equivalent to simply averaging the 4 neighbouring points and
+            subtracting the source term.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>This method is called <em>Jacobi's method</em>, and it is related to
+          a property of the Laplace equation. If $u$ is a solution to the Laplace equation:</p>
+          $$
+          \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0
+          $$
+          <p>Then the average of $u$ over a small sphere is equal to the value
+          of $u$ at the center of the sphere.</p>
+          <p class="fragment">Jacobi's method simply keeps setting $u$ to be the
+          average of its 4 neighbors plus a source term, until it converges.</p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>As we discussed in diffusion problems, the FTCS method at the
+          stability limit is very slow. Similarly, Jacobi's method is very slow
+          in converging to the desired solution.</p>
+          <p class="fragment">
+            To quantify the rate of convergence, let us introduce some mathematical language.
+            We write the Jacobi iteration as:
+            $$
+            \mathbf{u}^{n+1} = \mathbf{A} \mathbf{u}^n + \mathbf{b}
+            $$
+            where $\mathbf{A}$ is called the <em>iteration matrix</em>, and
+            $\mathbf{b}$ is a vector that represents the source term. Solving the original problem
+            is equivalent to finding the fixed point of this iteration.
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>In order to achieve convergence, the iteration matrix should have
+          all its eigenvalues less than 1. We call the absolute value of the
+          largest eigenvalue of $\mathbf{A}$ its "spectral radius" $\rho_s$.</p>
+          <p class="fragment">
+            For Jacobi's method on a $N\times N$ grid, the spectral radius is:
+            $$
+            \rho_s \approx 1 - \frac{\pi^2}{2N^2}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Jacobi's Method</h2>
+          <p>After $n$ iterations, the overall error is reduced by $\rho_s^n$.
+          If our goal is to reduce the error by a factor of $10^{-p}$, then the
+          number of iterations required is:</p>
+          <div class="fragment">
+            $$
+            n \approx \frac{p \log 10}{-\log \rho_s}
+            $$
+          </div>
+          <p class="fragment">
+            Plugging in the spectral radius for Jacobi's method, we find that:
+            $$
+            n \approx \frac{2p N^2\log 10}{\pi^2} \approx \frac{1}{2} p N^2
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>A small improvemennt over Jacobi's method is the Gauss-Seidel method</p>
+          $$
+          u_{i,j}^{n+1} = \frac{1}{4} (u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \rho_{i,j}\Delta^2)
+          $$
+          <p class="fragment">
+            Although the right hand side makes use of $u^{n+1}$, it does not
+            require solving a set of linear equations. Instead, we can simply
+            update the grid points in a sweep from left to right, top to bottom.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>For example, the following code implements the Gauss-Seidel method:</p>
+          <div style="width: 80%; margin: auto;">
+            <pre><code class="language-c++" data-trim data-noescape>
+for (int j = 1; j < Ny - 1; j++) {
+  for (int i = 1; i < Nx - 1; i++) {
+    int n = i + j * Nx;
+    u[n] = 0.25 * (u[n + 1] + u[n - 1]
+                 + u[n + Nx] + u[n - Nx]
+                 - rho[n] * delta * delta);
+  }
+}
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Gauss-Seidel Method</h2>
+          <p>
+            The Gauss-Seidel method is faster than Jacobi's method, but it is
+            still very slow. The spectral radius is the square of Jacobi's:
+            $$
+            \rho_s \approx 1 - \frac{\pi^2}{N^2}
+            $$
+          </p>
+          <p class="fragment">The number of iterations required to reduce error
+          by a factor of $10^{-p}$ is:
+            $$
+            n \approx \frac{p N^2\log 10}{\pi^2} \approx \frac{1}{4} p N^2
+            $$
+            It's about a factor of 2 faster than Jacobi's method.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Successive overrelaxation (SOR) is a method that converges
+          significantly faster than Gauss-Seidel or Jacobi's method.</p>
+          <p class="fragment">
+            The idea is to add a fraction $\omega$ of the difference between the
+            new and old values to the new value:
+            $$
+            u_{i,j}^{n+1} = (1 - \omega) u_{i,j}^n + \frac{\omega}{4} (u_{i+1,j}^n + u_{i-1,j}^{n+1} + u_{i,j+1}^n + u_{i,j-1}^{n+1} - \rho_{i,j}\Delta^2)
+            $$
+          </p>
+          <p class="fragment">
+            When $\omega = 1$, this is the Gauss-Seidel method. When $1 < \omega < 2$, the method
+            converges faster than Gauss-Seidel.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>The key of SOR lies in choosing $\omega$.</p>
+          <p class="fragment">
+            The optimal choice of $\omega$ is often only known empirically. For
+            the Poisson equation in 2D, the optimal choice is:
+            $$
+            \omega \approx 2 - \frac{1}{N}
+            $$
+          </p>
+          <p class="fragment">
+            The rate of convergence is very sensitive to $\omega$, and the best rate
+            is achieved when $\omega$ is close to the optimal choice.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Under the optimal choice, the spectral radius of SOR is:
+            $$
+            \rho_\mathrm{SOR} \approx 1 - \frac{2\pi}{N}
+            $$
+          </p>
+          <p class="fragment">
+            The number of iterations required to reduce error by a factor of $10^{-p}$ is now:
+            $$
+            n \approx \frac{p N\log 10}{\pi} \approx \frac{1}{3} p N
+            $$
+            This is significantly faster than Gauss-Seidel!
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Here is the convergence for different $\omega$ for Poisson equation
+          on a $1024\times 1024$ grid:</p>
+          <img src="convergence.png" width="50%">
+          <p class="fragment">It turns out $\omega \approx 2 - 1/N$ is a pretty good choice.</p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Some practical details for implementing SOR:</p>
+          <p class="fragment">
+            You can use the normal Jacobi iteration formula with the SOR factor.
+            Practically, it does not make a huge difference vs Gauss-Seidel:
+            $$
+            u_{i,j}^{n+1} = u_{i,j}^n + \frac{\omega}{4} (u_{i,j}^n + u_{i-1,j}^{n} + u_{i,j+1}^n + u_{i,j-1}^{n} - \rho_{i,j}\Delta^2 - 4 u_{i,j}^n)
+            $$
+          </p>
+          <p class="fragment">
+            The terms in the parentheses can be thought of as a residue. For
+            convergence, one can require that the maximum of the residue on the
+            grid is less than some tolerance $\varepsilon$. This is the
+            condition to terminate the iteration.
+          </p>
+        </section>
+
+        <section>
+          <h2>Successive Overrelaxation</h2>
+          <p>Solving the equation $\nabla^2V = -\rho$ with
+          homogeneous Neumann boundary conditions:</p>
+          <!-- <img src="poisson-rho.png" alt="rho" style="width:30%">
+               <img src="poisson-V.png" alt="V" style="width:30%"> -->
+          <img src="poisson-rho.png" width="40%">
+          <img src="poisson-V.png" width="40%">
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>Finite element method is designed to solve elliptic PDEs as
+          boundary value problems, and it's very widely used in the industry.
+          It's also frequently called "finite element analysis".</p>
+          <img src="finit-element-analysis.jpg" width="50%">
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>Let's illustrate the basic idea of FEM using the Poisson equation
+            $\nabla^2u = \rho$ again.</p>
+          <p class="fragment">Define $\phi(x, y)$ as a test function that
+          is only nonzero in a small region $R$ and vanishes on the boundary.
+          The following integral is zero if $u$ satisfies the Poisson equation:
+          $$ \int_R \left[\phi \nabla^2 u - \rho \phi\right]\,dxdy = 0 $$
+          </p>
+          <p class="fragment">
+            Using divergence theorem, we can transform the equation into:
+            $$
+            \int_R \left[\nabla\phi \cdot \nabla u + \rho\phi\right]\,dxdy = 0
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>Suppose we construct a number of these locally non-zero functions $\phi_i(x, y)$ and
+          expand the unknown function $u(x, y)$ in terms of these functions:</p>
+          $$
+          u(x, y) = \sum_i u_i \phi_i(x, y)
+          $$
+          <p class="fragment">
+            $u_i$ can be thought of as the value of $u$ at the center of the
+            $i$-th element.
+          </p>
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>Plugging the expansion into the integral equation, we have:</p>
+          $$
+          \sum_i u_i \int_R \nabla\phi_i \cdot \nabla \phi_j\,dxdy = -\int_R\rho(x, y)\phi_j\,dxdy
+          $$
+          <p class="fragment">
+            If the elements are small enough, the $\rho(x, y)$ can be considered
+            constant within each element, and the integral on the right hand side
+            can be evaluated directly. This gives a linear system of equations
+            for the unknowns $u_i$:
+            $$
+            \sum_i A_{ij} u_i = \rho_j
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>In practice, a 2D computational domain is often discretized into a
+          triagular grid, and the basis functions $\phi_i(x, y)$ are triangular
+          interpolation functions.</p>
+          <img src="dolphin_mesh.png" width="35%">
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>Typically, every triangle is associated 3 basis functions $\phi_{a, b, c}$, one for
+          each vertex.</p>
+          <p class="fragment">
+            They are chosen such that, for example, $\phi_a = 1$ at vertex $a$,
+            and $\phi_a = 0$ at vertices $b$ and $c$. Within the triangle,
+            $\phi_a$ is a linear function of $x$ and $y$. Outside the triangle,
+            $\phi_a = 0$. Similarly for $\phi_b$ and $\phi_c$.
+          </p>
+          <p class="fragment">
+            An explicit expression for $\phi_a(x, y)$ can be found using the above constraints:
+            $$
+            \phi_a(x, y) = \frac{1}{2S}\left[(x_by_c - x_cy_b) + (y_b - y_c)x + (x_b - x_c)y\right]
+            $$
+            where $S$ is the area of the triangle.
+          </p>
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>
+            The finite element equation is:
+          $$
+          \sum_i u_i \int_R \nabla\phi_i \cdot \nabla \phi_j\,dxdy = \int_R\rho(x, y)\phi_j\,dxdy
+          $$
+          </p>
+          <p class="fragment">Since the basis functions $\phi_i$ are linear,
+          their derivatives $\nabla\phi_i$ are quite easy to write down
+          analytically. The cross term $\int \nabla\phi_i\cdot\nabla\phi_j$
+          vanishes if triangles $i$ and $j$ do not share a vertex.</p>
+          <p class="fragment">For values of $u_i$ on the boundary, the terms are
+          moved to the right hand side and becomes part of the source term.</p>
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>
+            The matrix $\mathbf{A}$ in the finite element equation is sparse,
+            since only neighboring triangles produce nonzero coefficients. It is
+            also symmetric by construction.
+          </p>
+          <img src="fem_sparse.png" width="40%">
+        </section>
+
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>The final step is to solve a sparse matrix equation
+          $\mathbf{A}\mathbf{u} = \mathbf{b}$.</p>
+          <p class="fragment">
+            For small problems, sparse LU decomposition or Cholesky
+            decomposition work well. Use a reputable library with sparse matrix
+            capabilities.
+          </p>
+          <p class="fragment">
+            For large problems, the <em>conjugate gradient</em> method is prefered.
+          </p>
+        </section>
+
+        <!-- <section>
+             <h2>Finite Element Method</h2>
+             <p>FEM is also closely related to the spectral method. Both methods
+             expands the unknown function as a linear superposition of basis functions:</p>
+             $$
+             u(x, y) = \sum_i u_i \phi_i(x, y)
+             $$
+             <p class="fragment">
+             The difference is that FEM uses piecewise linear basis functions that are
+             nonzero only in a small region, while spectral method uses global
+             basis functions that are defined everywhere. The global nature of
+             spectral methods is one of the reasons it converges exponentially.
+             </p>
+             </section>
+        -->
+        <section>
+          <h2>Finite Element Method</h2>
+          <p>
+            In practice, FEM is a very mature algorithm with many software
+            packages and domain-specific variations. It is an extremely
+            important method to know for a computational physicist.
+          </p>
+          <a href="https://en.wikipedia.org/wiki/List_of_finite_element_software_packages">List of FEM packages</a>
+        </section>
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
