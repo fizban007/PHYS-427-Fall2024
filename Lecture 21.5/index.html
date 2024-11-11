@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 21.5</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Numerical PDE</h2>
+        </section>
+
+        <section>
+          <h2>Scaling</h2>
+          <p>How does computational time scale with the problem size?</p>
+          <p class="fragment">For example, if we double the number of grid points in a 1D simulation,
+          how much longer does it take to run the simulation?</p>
+          <p class="fragment">
+            Due to the CFL condition, the time step must also be reduced by a
+            factor of 2. Therefore, the total simulation time scales as at least $N^2$.
+          </p>
+          <p class="fragment">
+            For 3D problems, doubling the number of grid points in each dimension increases the
+            total computational time by a factor of at least 16! This is the <em>curse of dimensionality</em>.
+          </p>
+        </section>
+
+        <section>
+          <h2>Scaling</h2>
+          <p>How do we attack larger problems?</p>
+          <p class="fragment">Typically, we need to make use of more
+          computational resources, i.e. scale to more cores.</p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>Parallelization over different machines on a network is often called "distributed computing".</p>
+          <p class="fragment">An extreme example is the SETI@Home project, which provides a desktop application
+          that people can download and run on their own computers. The application uses your idle CPU to do computation
+          and report to the server, in order to help find aliens.</p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>A more common setting is a computational cluster that is connected to the same local network.</p>
+          <img src="frontier.jpg" width="50%">
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>A cluster consists of individual "nodes", each of which is
+          basically a multi-core computer.</p>
+          <p class="fragment">
+            For example, each node on Frontier has 64 CPU cores, 512 GB of DDR4
+            RAM, and effectively 8 separate GPUs. Each GPU has 14,080 cores.
+            These nodes are connected with a 800 Gbps network connection.
+            Frontier has 9,408 nodes in total. The system can achieve a
+            sustained performance of 1.2 ExaFLOP/s.
+          </p>
+          <div class="fragment">
+            <a href="https://www.top500.org/lists/top500/2023/11/">TOP500 List</a>
+          </div>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>How to program for supercomputers?</p>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>The standard protocol for communication between computing nodes is
+          the Message-Passing Interface (MPI). MPI provides a collection of
+          functions to send and receive serialized data between nodes.</p>
+          <div class="fragment">
+            <code>int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)</code>
+          </div>
+          <div class="fragment">
+            <code>int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag,
+             MPI_Comm comm, MPI_Status *status)</code>
+          </div>
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>To parallelize a simulation (e.g. fluid simulation or other PDE solver), the
+          computational domain is often decomposed into chunks that are assigned to different
+          MPI ranks:</p>
+          <img src="Domain-decomposition.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Distributed Computing</h2>
+          <p>Each subdomain is surrounded by ghost cells, which hold the information from
+          the neighboring subdomain. After each update, the content of the ghost cells are
+          updated to reflect the new values from the neighbors.</p>
+          <p class="fragment">The way we implemented periodic boundary conditions in Project 2
+          is an example of such communication, except that we were communicating with ourselves.</p>
+        </section>
+
+        <section>
+          <h2>Parallel Scaling</h2>
+          <p>When scaling to large supercomputers, it is important to talk about
+            how a code will scale. There are two types: <em>strong scaling</em> and <em>weak scaling</em>.</p>
+        </section>
+
+        <section>
+          <h2>Amdahl's Law</h2>
+          <p>In parallel computing, Amdahl's law gives the theoretical speedup
+          for the execution of a fixed task when more and more processors.</p>
+          <p class="fragment">
+            Suppose $0\leq p\leq 1$ is the portion of the program that is parallelizable. The
+            total speedup when using $n$ parallel processors can be estimated as:
+            $$
+            S = \frac{1}{(1 - p) + p / n}
+            $$
+          </p>
+          <p class="fragment">
+            Even in the limit of $n\to \infty$, the maximum speedup that can be achieved is
+            still $S \approx 1/(1 - p)$. If $p = 0.9$, $S$ is at most 10.
+          </p>
+        </section>
+
+        <section>
+          <h2>Amdahl's Law</h2>
+          <p>Amdahl's law assumes breaking down a fixed-size problem into
+          smaller and smaller parallel pieces. This process is called "strong
+          scaling".</p>
+          <p class="fragment">
+            It is often difficult to find perfect scaling in this limit, as any
+            finite-size problem may have a fixed portion that is not parallelizable, which
+            limit the parallel speedup.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gustafson's Law</h2>
+          <p>Gustafson's law gives the theoretical speedup of a problem using
+            parallel computing when the problem size also increases with the
+            number of processors.
+          </p>
+          <p class="fragment">
+            Again suppose that $0 \leq p \leq 1$ is the portion of the program
+            that is parallelizable. The total speedup when using $n$ parallel
+            processors compared to using only one processor is:
+            $$
+            S = (1 - p) + p\times n
+            $$
+          </p>
+          <p class="fragment">
+            In other words, the non-parallel portion of the program does not
+            change much with the increasing number of processors.
+            Solve a bigger problem using more processors will make the non-parallel part
+            less important.
+          </p>
+        </section>
+
+        <section>
+          <h2>Gustafson's Law</h2>
+          <p>Gustafson's law describes "weak scaling", where the problem size scales with the
+          number of parallel processors, while the workload on each processor stays the same.
+          This is the more typical way to take advantage of larger amounts of computational
+          resources.</p>
+          <p class="fragment">However, certain algorithms may not scale linearly with problem
+          size (e.g. matrix multiplication). In that case, weak scaling does not work as well
+          as the ideal Gustafson's law.</p>
+          <p class="fragment">When applying for supercomputer resources, it is often required to
+          demonstrate the scaling properties of your code, so that it can adapt well to the
+          massive parallel structure of the machine.</p>
+        </section>
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
