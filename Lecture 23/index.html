@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 23</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Monte Carlo Methods</h2>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>Monte Carlo integration is a method to estimate the value of an
+            integral by using random numbers.</p>
+          <img src="Monte_Carlo_Integral.png" alt="monte-carlo" width="40%">
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>Given $f(\mathbf{x})$ and we want to evaluate a definite integral:
+          $$
+            I = \int_S f(\mathbf{x}) d\mathbf{x}
+          $$
+            where $S$ is a spatial region that may be irregular.</p>
+          <p class="fragment">If $f(\mathbf{x}) = 1$, then this integral simply
+          gives the volume of $S$.</p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>Monte Carlo integration evaluates the integral by repeatedly taking
+          a random point $\mathbf{x}$ in the region $S$, then a random number
+          $y\in [f_\mathrm{min}, f_\mathrm{max}]$ and compare it with $f(\mathbf{x})$.</p>
+          <p class="fragment">
+            We count how many $y$ values are less than $f(\mathbf{x})$. The integral
+            $I$ can be estimated as:
+            $$
+            I = \frac{\text{# of points under $f$}}{\text{Total # of points}}\times V
+            $$
+          </p>
+          <p class="fragment">
+            $V$ is the volume of $S$ times $f_\mathrm{max} - f_\mathrm{min}$. For
+            1-dimensional integrals, $S$ is simply the interval of integration $[a, b]$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>Let's look at an extreme example. Consider the integral:
+          $$
+            I = \int_0^2 \sin^2\left(\frac{1}{x(2-x)}\right)\,dx
+          $$</p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>The function is well-behaved in the middle of the interval, but
+          extremely oscillatory near the two endpoints.</p>
+          <img src="function.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>The correct value of the integral is around $1.4514$, but 10-point
+          Gauss quadrature gives around $57.9290$!</p>
+          <p class="fragment">Adaptive Simpson's rule integration gives around
+          $5004$, and has trouble converging at all.</p>
+          <p class="fragment">Monte Carlo integration with $1,000,000$ samples
+          gives me $1.45155$, very close to the actual value.</p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>How to estimate the error on Monte Carlo integration?</p>
+          <p class="fragment">
+            Let $I = (k/N)V$, where $k$ is the number of points under $f$ and
+            $N$ is the total number of points. The probability of a single point
+            falling under $f$ is $p = I/V$. The probability of getting exactly
+            $k$ points under the curve is:
+            $$
+            P(k) = {N\choose k}p^k (1-p)^{N-k}
+            $$
+          </p>
+          <p class="fragment">
+            The number of points under the curve follows a binomial distribution.
+          </p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>The variance of binomial distribution is:
+          $$
+            \sigma^2 = Np(1-p)
+          $$</p>
+          <p class="fragment">
+            Therefore, the expected error on the integral is:
+            $$
+            \langle \epsilon\rangle = \left<\frac{|\Delta k|}{N}\right>V = \sigma\frac{V}{N} = \sqrt{\frac{p(1-p)}{N}}V
+            $$
+          </p>
+          <p class="fragment">
+            The error of Monte Carlo integration scales with $1/\sqrt{N}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>If $f$ changes drastically within the integration domain, it is
+          sometimes difficult to directly implement this version of Monte Carlo
+          integration. An alternative version is usually superior.</p>
+          <p class="fragment">
+            We can always write the integral as:
+            $$
+            I = \int_S f(\mathbf{x}) d\mathbf{x} = \langle f\rangle\int_S d\mathbf{x}
+            $$
+            where $\langle f\rangle$ is the average value of $f$ over the
+            integration domain.
+          </p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>Therefore, finding the integral of $f$ becomes equivalent to
+          finding the average value of $f$ plus finding the volume of the
+          integration domain.</p>
+          <p class="fragment">
+            To find the average value of $f$, we can simply take $N$ random
+            points in the integration domain and take the average of $f$ at
+            these points:
+            $$
+            \langle f\rangle = \frac{1}{N}\sum_{i=1}^N f(\mathbf{x}_i)
+            $$
+          </p>
+          <p class="fragment">
+            For complicated integration domains, we can use another Monte Carlo
+            integration to find the volume of the integration domain.
+          </p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>This method has the advantage of not referring to $f_\mathrm{max}$
+          or $f_\mathrm{min}$. Therefore, it can handle improper integrals like the following:</p>
+          $$
+          \int_0^1 \frac{1}{\sqrt{x}}\,dx = 2
+          $$
+          <p class="fragment">
+            To evaluate this integral, we can simply take $N$ random points in
+            the interval $[0, 1]$ and take the average of $1/\sqrt{x}$ at these
+            points, multiplied by the interval length $1$.
+          </p>
+          <p class="fragment">
+            Using $1,000,000$ samples, my Monte Carlo integration gives $2.0041$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Integration</h2>
+          <p>How to estimate the error for the average value method?</p>
+          <p class="fragment">
+            The variance of the average value is:
+            $$
+            \mathrm{Var}(f) = \sigma^2 = \frac{1}{N}\sum_{i=1}^N (f(\mathbf{x}_i) - \langle f\rangle)^2
+            $$
+            Therefore, the expected error on the integral is given by:
+            $$
+            \langle \epsilon\rangle = \frac{\sqrt{N\times \mathrm{Var}(f)}}{N}\mathrm{Vol}(S) \sim \frac{1}{\sqrt{N}}\mathrm{Vol}(S)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>For functions with extreme variance in the integration domain,
+          Monte Carlo integration will in general suffer from a large
+          statistical error. How to reduce it?</p>
+          <p class="fragment">
+            The typical solution is to draw points $\mathbf{x}_i$ from a
+            non-uniform distribution that can help reduce the variance of the
+            integrand. This technique is called <em>importance sampling</em>.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>For a general function $g(\mathbf{x})$, we can always define a <em>weighted average</em> over
+          the region $S$ as:
+          $$
+          \langle g\rangle_w = \frac{\int_S g(\mathbf{x}) w(\mathbf{x}) d\mathbf{x}}{\int_S w(\mathbf{x}) d\mathbf{x}}
+          $$
+          where $w(\mathbf{x})$ is a weight function that we can choose arbitrarily.</p>
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>For Monte Carlo integration, we can choose an arbitrary weight
+          function $w(\mathbf{x})$ and rewrite the integral as:
+          $$
+          I = \int_S f(\mathbf{x}) d\mathbf{x} = \int_S \frac{f(\mathbf{x})}{w(\mathbf{x})} w(\mathbf{x}) d\mathbf{x}
+          $$
+          </p>
+          <p class="fragment">
+            This allows us to write the original integral as a weighted average of $f/w$:
+            $$
+            I = \left< \frac{f}{w}\right>_w \int_S w(\mathbf{x}) d\mathbf{x}
+            $$
+          </p>
+          <p class="fragment">
+            This is a generalization of our average value method, where $w(\mathbf{x}) = 1$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>How do we actually compute the weighted average?</p>
+          <p class="fragment">
+            We can define the probability density function $p(\mathbf{x})$ as:
+            $$
+            p(\mathbf{x}) = \frac{w(\mathbf{x})}{\int_S w(\mathbf{x}) d\mathbf{x}}
+            $$
+            and draw random points $\mathbf{x}_i$ from this distribution.
+          </p>
+          <p class="fragment">
+            Then the weighted average of any function $g(\mathbf{x})$ can be computed as:
+           $$
+            \langle g\rangle_w = \int_S g(\mathbf{x}) p(\mathbf{x}) d\mathbf{x} \approx \frac{1}{N}\sum_{i=1}^N g(\mathbf{x}_i)
+            $$
+            where $\mathbf{x}_i$ are the random points drawn from the distribution $p(\mathbf{x})$.
+          </p>
+        </section>
+
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Therefore, the recipe for doing importance sampling to evaluate the
+          integral of function $f$ is to compute the following sum:
+            $$
+            I = \frac{1}{N}\sum_{i=1}^N \frac{f(\mathbf{x}_i)}{w(\mathbf{x}_i)} \int_S w(\mathbf{x}) d\mathbf{x}
+            $$
+          </p>
+          <p class="fragment">
+            The sample points $\mathbf{x}_i$ are drawn with the probability
+            density function $p(\mathbf{x})$:
+            $$
+            p(\mathbf{x}) = \frac{w(\mathbf{x})}{\int_S w(\mathbf{x}) d\mathbf{x}}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>The statistical error associated with this method can be estimated as:
+          $$
+          \langle \varepsilon\rangle = \frac{\sqrt{N\times \mathrm{Var}(f/w)}}{N}\int_S w(\mathbf{x}) d\mathbf{x}
+          $$</p>
+          <p class="fragment">
+            The numerator is because the variance of $N$ independent samples is $N$ times
+            the variance of each sample. The denominator is because we are computing
+            the weighted average of $N$ samples.
+          </p>
+          <p class="fragment">
+            For appropriately chosen weight function $w(\mathbf{x})$, the variance
+            of $f/w$ can be much smaller than the variance of $f$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>How to choose the weight function $w(\mathbf{x})$?</p>
+          <p class="fragment">
+            We want to choose $w$ so that it is close to $f$, but relatively
+            easy to sample from.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Consider the following integral:</p>
+          $$
+          I = \int_0^1 x^{-1/2}e^{-x}\,\mathrm{d}x
+          $$
+          <p>Which part of the integrand should be absorbed into a weight function?</p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>If we choose $w(x) = x^{-1/2}$, then the corresponding probability distribution is:
+          $$
+          p(x) = \frac{w(x)}{\int_0^1 w(x)\,\mathrm{d}x} = \frac{1}{2\sqrt{x}}
+          $$</p>
+          <p class="fragment">This can be sampled using the inverse function method:
+          $$
+            F(x) = \int_0^x p(x')\,\mathrm{d}x' = \sqrt{x},\quad x = F^{-1}(u) = u^2
+          $$
+            where $u$ is chosen from a uniform distribution between $0$ and $1$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>To evaluate the original integral, we draw $N$ samples $\{x_i\}$
+          from the distribution $p(x)$, and compute:
+            $$
+            \begin{align}
+            I &= \frac{1}{N}\sum_{i=1}^N \frac{f(x_i)}{w(x_i)} \int_0^1 w(x)\,\mathrm{d}x \\
+            &= \frac{2}{N}\sum_{i=1}^N e^{-x_i}
+            \end{align}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Here is a comparison with 100,000 samples, evaluated 1000 times:</p>
+          <img src="importance-sampling.png" width="55%">
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Another use of importance sampling is computing the likelihood of some extremely rare
+          events. Let $N(x)$ be the standard normal distribution, and I would like to know the
+          probability $P(x > 4)$.</p>
+          <p class="fragment">
+            Normally we would need to draw a huge number of samples to get a
+            reasonable number of events above $4$ standard deviations. However,
+            we can use importance sampling to reduce the number of samples required.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Effectively, we want to evaluate the integral:
+          $$
+            P(x > 4) = \int_4^\infty N(x)\,\mathrm{d}x,\quad \text{where }N(x) = \frac{1}{\sqrt{2\pi}}e^{-x^2/2}
+          $$</p>
+          <p class="fragment">
+            The result is $P(x > 4) \approx 3.167\times 10^{-5}$. But even
+            1,000,000 samples only gets us order unity error.
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Result from sampling the normal distribution with
+          1,000,000 points, repeated 1000 times:</p>
+          <img src="normal-distribution.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Consider using the following weight function:</p>
+          $$
+          w(x) = \begin{cases}
+          e^{-(x - 4)}, & x \geq 4 \\
+          0, & x < 4
+          \end{cases}
+          $$
+          <p class="fragment">
+            This can also be sampled using the inverse function method:
+            $$
+            F(x) = \int_4^x w(x')\,\mathrm{d}x' = 1 - e^{4-x},\quad x = F^{-1}(u) = 4 - \log(1 - u)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>We sample $N$ points $\{x_i\}$ from the distribution $w(x)$, then compute:</p>
+          $$
+          \begin{align}
+          P(x > 4) &= \frac{1}{N}\sum_{i=1}^N \frac{N(x_i)}{w(x_i)} \int_4^\infty w(x)\,\mathrm{d}x \\
+          &= \frac{1}{N}\sum_{i=1}^N \frac{1}{\sqrt{2\pi}}e^{-x_i^2/2 + x_i - 4}
+          \end{align}
+          $$
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Result from 1,000,000 samples, repeated 1000 times:</p>
+          <img src="importance-sampling-2.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Importance Sampling</h2>
+          <p>Result from 1,000,000 samples, repeated 1000 times:</p>
+          <img src="importance-sampling-3.png" width="50%">
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
