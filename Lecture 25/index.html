@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 25</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Statistical Mechanics</h2>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>In statistical mechanics, a physical system in thermal equilibrium
+          with temperature $T$ can occupy a series of states with energies $E_i$. The
+          probability for the system to be in any particular state is given by
+          the Boltzmann distribution:
+          $$
+            P(E_i) = \frac{e^{-E_i/k_BT}}{Z}
+          $$</p>
+          <p class="fragment">
+            where $k_B$ is the Boltzmann constant, and $Z$ acts like a
+            normalization constant, and is called the <em>partition function</em> of
+            the system:
+            $$
+            Z = \sum_i e^{-E_i/k_BT}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>A very fundamental question in statistical mechanics is to find the
+          expectation value of a physical quantity $X$. For example, this
+          quantity can just be the energy:
+          $$
+          \langle E \rangle = \sum_i E_i P(E_i) = \frac{1}{Z}\sum_i E_i e^{-E_i/k_BT}
+          $$
+          </p>
+          <p class="fragment">
+            The physical quantity can be other things, such as the magnetization
+            of a ferromagnet, or the number of particles in a particular state, etc.
+          </p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>In general, the partition function of a system is very difficult to
+          compute. As a result, evaluating the expectation value of a physical
+          quantity is usually nontrivial.</p>
+          <p class="fragment">Monte Carlo integration is often used to evaluate
+          this expectation value, and importance sampling has a very intuitive
+          physical meaning.</p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>Consider again the expectation value of a physical quantity $X$
+          with respect to the Boltzmann distribution:
+          $$
+            \langle X \rangle = \sum_i X_i P(E_i) = \frac{1}{Z}\sum_i X_i e^{-E_i/k_BT}
+          $$
+          </p>
+          <p class="fragment">
+            In the spirit of Monte Carlo integration, we can approximate this
+            expectation value by choosing $N$ random states $i$, and computing
+            the above average value. However, we can also apply a weight function
+            $w_i$ to the states, and sample the states according to this weight
+            function.
+          </p>
+          <p class="fragment">
+            If we choose a weight function $w_i$, what should be the best choice?
+          </p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>Consider the following choice of weight function:
+            $$
+            w_i = P(E_i) = \frac{e^{-E_i/k_BT}}{Z}
+            $$
+          </p>
+          <p class="fragment">
+            This is already normalized, so the corresponding probability
+            distribution is simply itself. The expectation
+            value of $X$ is then a weighted average:
+            $$
+            \langle X \rangle_w = \frac{1}{N}\sum_{i=1}^N \frac{X_iP(E_i)}{w_i} \sum_k w_k = \frac{1}{N}\sum_{i=1}^N X_i
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>Therefore, the Monte Carlo method of evaluating the expectation
+          value of any variable in a statistical system in thermal equilibrium is very simple:</p>
+          <p class="fragment">
+            Choose $N$ states according the Boltzmann distribution, and compute the
+            average of the variable over these states:
+            $$
+            \langle X \rangle = \frac{1}{N}\sum_{i=1}^N X_i
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>For example, the energy of the system is given by:
+          $$
+             E = \frac{1}{N}\sum_i E_i
+          $$
+          where $E_i$ is drawn from the exponential distribution $P(E_i)$:
+          $$
+          P(E_i) \propto e^{-E_i/k_BT}
+          $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Statistical Mechanics</h2>
+          <p>But drawing random states following the Boltzmann distribution is
+          no simple task!</p>
+          <p class="fragment">
+            Consider a system with 100 electrons, each with two possible spin
+            configurations: up or down. The total number of states is $2^{100}$, which is
+            approximately $10^{30}$.
+          </p>
+          <p class="fragment">
+            If we want to sample the Boltzmann distribution, we need to sample
+            from $10^{30}$ discrete states using their energies. For any given energy,
+            there are a large number of states with that energy.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Ising Model</h2>
+          <p>An example of such a system is the so-called Ising model:
+          $$
+            H = -J \sum_{\langle i, j \rangle} s_i s_j
+          $$</p>
+          <p class="fragment">
+            $H$ is the Hamiltonian of the system. $J$ is the coupling constant,
+            which determines the strength of the interaction between neighboring
+            spins. $s_i$ is the spin of the $i$th electron which may be $+1$ or
+            $-1$, and the sum $\langle i,j\rangle$ is over all neighboring pairs
+            of electrons.
+          </p>
+          <p class="fragment">
+            The Ising model is a simple model of ferromagnetism, where the spin alignment
+            leads to lower overall energy.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Ising Model</h2>
+          <p>For the Ising model, the energy of a state is given by the Hamiltonian:
+          $$
+            E = H = -J \sum_{\langle i, j \rangle} s_i s_j
+          $$</p>
+          <p class="fragment">
+            For example, if all the spins are aligned, then the energy is minimized
+            and the system is in the lowest energy state. At finite temperature however,
+            the system will have a nonzero probability of being in higher energy states.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Ising Model</h2>
+          <p>How to generate a state for the Ising model from the Boltzmann distribution?</p>
+        </section>
+
+        <section>
+          <h2>Markov Chain</h2>
+          <p>Since constructing a state from scratch is quite expensive, we can
+            reformulate the problem to look at the <em>transition</em> between states.</p>
+          <p>A Markov Chain is a sequence of states where the transition
+          probability from state $i$ to state $j$ in one step is independent
+          from the history of the sequence.</p>
+        </section>
+
+        <section>
+          <h2>Markov Chain</h2>
+          <p>Starting from some arbitrary initial state, we construct a sequence
+          of states $S_1$, $S_2$, $S_3$, $\dots$ If at step $n$ the system is in
+          state $i$, then the probability of the system to be in state $j$ at step $n+1$ is the
+            <em>transition probability</em> $T_{ij}$.</p>
+          <div class="fragment">
+            <p>$T_{ij}$ should satisfy some properties:</p>
+            <ul>
+              <li class="fragment">$\sum_j T_{ij} = 1$. The total probability of transitioning to all other states
+              should be 1.</li>
+              <li class="fragment">$P_iT_{ij} = P_jT_{ji}$. This is called the <em>detailed
+              balance equation</em>. It ensures that eventually all states will be visited according
+              to the right probability. $P_i$ is the probability of the system being in state $i$.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Markov Chain</h2>
+          <p>The detailed balance condition for the Boltzmann distribution reads:
+          $$
+            \frac{T_{ij}}{T_{ji}} = \frac{P(E_j)}{P(E_i)} = e^{-(E_j - E_i)/k_B T}
+          $$</p>
+          <p class="fragment">How to construct such a transition probability?</p>
+        </section>
+
+        <section>
+          <h2>Markov Chain</h2>
+          <p>The common way to construct $T_{ij}$ is to use something similar to
+          rejection sampling. We propose a random state $j$ according to some
+          proposal distribution, and accept the move with the following
+          probability:
+            $$
+            P_a = \begin{cases} 1 & \text{if }E_i > E_j \\
+            e^{-(E_j - E_i)/k_B T} & \text{if }E_i < E_j \end{cases}
+            $$</p>
+          <p class="fragment">If the move is rejected, then the system stays at state $i$. This ensures
+          that $\sum_j T_{ij} = 1$.</p>
+        </section>
+
+        <section>
+          <h2>Markov Chain</h2>
+          <p>Does this scheme satisfy the detailed balance equation?</p>
+          <p class="fragment">
+            Suppose $E_j > E_i$, and there are $M$ such possible states $j$:
+            $$
+            T_{ij} = \frac{1}{M}e^{-(E_j - E_i)/k_B T},\quad T_{ji} = \frac{1}{M},\quad \frac{T_{ij}}{T_{ji}} = e^{-(E_j - E_i)/k_B T}
+            $$
+          </p>
+          <p class="fragment">
+            Suppose $E_j < E_i$, and there are $M$ such possible states $j$:
+            $$
+            T_{ij} = \frac{1}{M},\quad T_{ji} = \frac{1}{M}e^{-(E_i - E_j)/k_B T},\quad \frac{T_{ij}}{T_{ji}} = e^{-(E_j - E_i)/k_B T}
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain</h2>
+          <p>Constructing this kind of Markov Chain using the given transition
+            probability is called the <em>Metropolis-Hastings algorithm</em>.</p>
+          <p class="fragment">
+            Starting at an arbitrary state, the Markov Chain will eventually come into <em>thermal equilibrium</em>.
+            The distribution of states will satisfy the Boltzmann distribution.
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>The Metropolis-Hastings MCMC algorithm can be summarized as the following:</p>
+          <ul>
+            <li class="fragment">Choose a random initial state</li>
+            <li class="fragment">Select a new state to move to according to a proposal distribution</li>
+            <li class="fragment">Compute the probability $P_a$ of accepting this move</li>
+            <li class="fragment">Draw a uniform random variable $u$ between $0$
+            and $1$, accept the move if $u < P_a$. Otherwise stay at the current state</li>
+            <li class="fragment">Go to the second step and repeat this procedure</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>MCMC simulation history for the energy $E$ of a 2D Ising model at finite temperature:</p>
+          <img src="mcmc.png" width="55%">
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>MCMC typically takes some number of iterations to reach thermal
+          equilibrium. The distribution before equilibrium is unreliable.</p>
+          <p class="fragment">
+            Outside of statistical physics, this initial period is called burn-in.
+          </p>
+          <p class="fragment">
+            It is typically hard to predict how long the burn-in period will be,
+            so it is crucial to look at the results to determine whether an equilibrium is
+            reached.
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>MCMC is a very general method that can be used to sample from
+          arbitrary probability distributions. For continuous distributions, the
+          Markov Chain still consists of discrete steps $x_1$, $x_2$, $x_3$,
+          $\dots$</p>
+          <p class="fragment">
+            The general Metropolis-Hastings algorithm consists of a "proposal distribution" $g(x,
+            x_n)$ of $x$ given $x_n$, and an "acceptance probability" $A(x, x_n)$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>The general recipe of the Metropolis algorithm is:</p>
+          <ul>
+            <li class="fragment">Given the variable value $x_n$ at step $n$, generate a new
+            candidate $x$ from the proposal distribution $g(x, x_n)$.</li>
+            <li class="fragment">Compute the acceptance probability:
+              $$
+              A(x, x_n) = \min\left(1, \frac{P(x)}{P(x_n)}\frac{g(x_n, x)}{g(x, x_n)}\right)
+              $$
+            </li>
+            <li class="fragment">Generate a uniform random number $0 < u < 1$.
+            If $u < A(x, x_n)$ then accept the new value as $x_{n+1}$. Otherwise reject it and
+            do nothing.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>For general problems, choosing the proposal distribution $g(x,
+          x_n)$ is often an art. When chosen well, the Markov Chain can converge to the equilibrium
+          very quickly. When chosen badly, it never reaches the desired equilibrium.</p>
+          <p class="fragment">As a result, it is often not possible to directly predict the number of
+          steps required in the burn-in period. Trial-and-error is often needed.</p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>Once a Markov Chain is burned-in, it can be used to easily generate
+          a series of random variables from the target distribution. These random variables can then be
+          used to compute the desired statistical properties of the distribution.</p>
+          <p class="fragment">
+            Back in statistical mechanics, the series of states after reaching thermal equilibrium is
+            an excellent collection of sampled states that can be used to compute the expectation value
+            of any physical quantity $X$:
+            $$
+            \langle X\rangle = \frac{1}{N}\sum_i X_i
+            $$
+          </p>
+        </section>
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>

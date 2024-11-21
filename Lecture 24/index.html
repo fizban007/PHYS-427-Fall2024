@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 24</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Monte Carlo Method for Stochastic Processes</h2>
+        </section>
+
+        <section>
+          <h2>Stochastic Processes</h2>
+          <p>Stochastic processes are described by a series of random variables that evolve over time.</p>
+          <div class="fragment">
+            <ul>
+              <li>Random walk</li>
+              <li>Brownian Motion</li>
+              <li>Radioactive decay</li>
+              <li>Stock market</li>
+              <li>...</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Stochastic Processes</h2>
+          <p>A discrete stochastic process is simply a sequence of random
+          variables where each one obeys some probability distribution:</p>
+          $$
+          X_0, X_1, X_2, \ldots
+          $$
+          <p class="fragment">If the distribution of random variable $X_n$
+          depends only on the information at step $n$, not on the entire history
+          of events, then the process is called a <em>Markov process</em>.</p>
+        </section>
+
+        <section>
+          <h2>Stochastic Processes</h2>
+          <p>For example:</p>
+          <ul>
+            <li class="fragment">Is coin toss a Markov process?</li>
+            <li class="fragment">Is rolling dice repeatedly a Markov process?</li>
+            <li class="fragment">Is drawing random cards from a single deck a Markov process?</li>
+          </ul>
+          <p class="fragment">We usually call a discrete-time Markov process a <em>Markov Chain</em>.</p>
+        </section>
+
+        <section>
+          <h2>Stochastic Processes</h2>
+          <p>A continuous-time stochastic process is a process where the index
+          variable is continuous instead of discrete, e.g. $X_t$.</p>
+          <p class="fragment">
+            The probability distribution function may evolve with time, e.g. $p(X, t)$.
+          </p>
+          <p class="fragment">
+            Examples of continuous-time stochastic processes include Brownian
+            motion, radioactive decay, scattering, etc.
+          </p>
+        </section>
+
+
+        <section>
+          <h2>Brownian Motion</h2>
+          <p>Brownian motion is a stereotypical stochastic process that arises
+          naturally in physics.</p>
+          <p class="fragment">It describes the random motion of particles suspended in
+          a fluid, constantly subject to the bombardment of fluid molecules
+          pushing it in random directions.</p>
+          <img class="fragment" src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Brownian_motion_large.gif" width="30%">
+        </section>
+
+        <section>
+          <h2>Brownian Motion</h2>
+          <p>One of Einstein's 1905 classic papers is on Brownian motion, and he
+          discovered the correspondence between Brownian motion and a diffusion process.</p>
+          <p class="fragment">
+            The density of Brownian particles $\rho(x, t)$ satisfies the diffusion equation:
+            $$
+            \frac{\partial \rho}{\partial t} = D\frac{\partial^2\rho}{\partial x^2}
+            $$
+          </p>
+          <p class="fragment">
+            If $N$ Brownian particles start from the origin at time $t = 0$, then the solution to the diffusion equation is:
+            $$
+            \rho(x, t) = \frac{1}{\sqrt{4\pi Dt}}\exp\left(-\frac{x^2}{4Dt}\right)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Brownian Motion</h2>
+          <p>Over time, the mean position of the particle does not change, $\left&lt;x\right&gt;=0$,
+          but the mean square displacement is nonzero:
+          $$
+          \left&lt;x^2\right&gt; = 2Dt
+          $$
+          </p>
+          <p class="fragment">
+            The deviation of the position from the origin increases with $\sqrt{t}$. Equivalently, the variance increases as $\sigma^2 = 2Dt$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Brownian Motion</h2>
+          <p>Is Brownian motion a Markov process?</p>
+        </section>
+
+        <section>
+          <h2>Brownian Motion</h2>
+          <p>In mathematics, Brownian motion is described by the Wiener process $W_t$:</p>
+          <ul>
+            <li class="fragment">$W_0 = 0$</li>
+            <li class="fragment">Future increments $W_{t + \Delta t} - W_t$ are independent of past values</li>
+            <li class="fragment">$W_{t + \Delta t} - W_t$ is normally distributed: $W_{t + \Delta t} - W_t \sim \mathcal{N}(0, \Delta t)$</li>
+            <li class="fragment">$W_t$ is almost surely continous in $t$</li>
+          </ul>
+          <p class="fragment">
+            $\mathcal{N}(0, \Delta t)$ is a normal distribution with mean $0$ and variance $\sigma^2 = \Delta t$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Stochastic Differential Equations</h2>
+          <p>The Wiener process can be used to define stochastic
+          differential equations (SDEs). A typical equation is of the form:</p>
+          $$
+          \mathrm{d}X_t = \mu(X_t, t)\,\mathrm{d}t + \sigma(X_t, t)\,\mathrm{d}W_t
+          $$
+          <p class="fragment">
+            For constant $\mu$ and $\sigma$, this describes a Brownian motion
+            with a net drift and diffusion constant $D = \sigma^2/2$. The equation
+            is called the Langevin equation. It can be easily solved: $$ X_t =
+            X_0 + \mu t + \sigma W_t $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Stochastic Differential Equations</h2>
+          <p>The method to simulate SDEs is similar to methods of solving ODEs.
+          However, in the case of SDEs, the Euler scheme often is good enough:
+            $$
+            X_{t + \Delta t} = X_t + \mu(X_t, t)\,\Delta t + \sigma(X_t, t)\,\Delta W_t
+            $$
+          </p>
+          <p class="fragment">
+            Here, $\Delta W_t$ is a random variable that is normally distributed
+            with mean $0$ and variance $\Delta t$. In other words, we need to
+            draw a random number at each time step from the normal distribution
+            $\mathcal{N}(0, \Delta t)$.
+          </p>
+          <p class="fragment">
+            Equivalently, we can draw a random number from the normal
+            distribution $\mathcal{N}(0, 1)$ and multiply it by $\sqrt{\Delta
+            t}$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Simulating SDEs</h2>
+          <p>To simulate Brownian motion starting at $x_0$, with drift $\mu$ and
+          diffusion $\sigma$, we simply iterate:</p>
+          $$
+          x_{n + 1} = x_n + \mu \Delta t + \sigma \sqrt{\Delta t}\,\mathcal{N}(0, 1)
+          $$
+        </section>
+
+        <section>
+          <h2>Simulating SDEs</h2>
+          <p>This is the Brownian motion of a single particle simulated:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./brownian.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Simulating SDEs</h2>
+          <p>For a distribution of particles, a simulation should look like a
+          diffusion process. This is done with $1000$ particles:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./brownian-diffusion.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Stochastic Differential Equations</h2>
+          <p>Another SDE that is often discussed is:
+            $$
+            \mathrm{d}X_t = \mu\,X_t\,\mathrm{d}t + \sigma\,X_t\,\mathrm{d}W_t
+            $$
+          </p>
+          <p class="fragment">
+            This equation describes geometric Brownian motion (GBM), which is used to
+            model stock prices in mathematical finance.
+          </p>
+          <p class="fragment">
+            The equation has an analytic solution:
+            $$
+            X_t = X_0\exp\left(\left(\mu - \frac{\sigma^2}{2}\right)t + \sigma W_t\right)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Simulating GBM</h2>
+          <p>
+            For geometric Brownian motion, we can use the following iteration:
+            $$
+            x_{n + 1} = x_n + x_n(\mu \Delta t + \sigma \sqrt{\Delta t}\,\mathcal{N}(0, 1))
+            $$
+          </p>
+          <p class="fragment">
+            Note that the drift and diffusion are now relative to the current value.
+          </p>
+        </section>
+
+        <section>
+          <h2>Stochastic Differential Equations</h2>
+          <p>We can easily simulate the geometric Brownian motion as well:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./gbm.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Monte Carlo Method</h2>
+          <p>Simulating a stochastic process by following the evolution of a
+            single element is another type of <em>Monte Carlo method</em>.</p>
+          <p class="fragment">
+            The method is named after the famous casino in Monaco, where the
+            roulette wheel was invented. The method was first used to study
+            neutron diffusion by Enrico Fermi and John von Neumann in 1946. Read
+            about it <a href="https://library.lanl.gov/cgi-bin/getfile?00326866.pdf">here</a>.
+          </p>
+          <p class="fragment">
+            In most cases, we are interested in statistical properties of the
+            process, such as the mean and variance. To obtain these, we need to
+            simulate many trajectories and look at the collective behavior.
+          </p>
+        </section>
+
+        <section>
+          <h2>Fokker-Planck Equation</h2>
+          <p>The Brownian motion SDE can be used to derive a partial differential
+            equation (PDE) that describes who the probability distribution of the
+            process evolves over time.
+            $$
+            \mathrm{d}X_t = \mu(X_t, t)\,\mathrm{d}t + \sigma(X_t, t)\,\mathrm{d}W_t
+            $$
+          </p>
+          <p class="fragment">
+            The above SDE corresponds to a deterministic PDE:
+            $$
+            \frac{\partial}{\partial t}p(x, t) = -\frac{\partial}{\partial x}\left[\mu(x, t)p(x, t)\right] + \frac{\partial^2}{\partial x^2}\left[D(x, t)p(x, t)\right]
+            $$
+          </p>
+          <p class="fragment">
+            This PDE is called the Fokker-Planck equation, and $D = \sigma^2/2$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Fokker-Planck Equation</h2>
+          <p>The correspondence between a parabolic PDE and a stochastic
+          differential equation allows us to solve PDEs using a stochastic
+          method.</p>
+          <p class="fragment">
+            For example, consider the following PDE:
+            $$
+            \frac{\partial}{\partial t}p(x, t) = -\mu\frac{\partial}{\partial x}xp(x, t) + \frac{\sigma^2}{2}\frac{\partial^2}{\partial x^2}x^2p(x, t)
+            $$
+          </p>
+          <p class="fragment">
+            This turns out to be the Fokker-Planck equation for geometric brownian motion. Therefore,
+            we can use Monte Carlo simulations to solve this particular equation.
+          </p>
+        </section>
+
+        <section>
+          <h2>Geometric Brownian Motion</h2>
+          <p>The Fokker-Planck equation for GBM has an analytic solution for
+          initial condition $p(x, 0) = \delta(x - x_0)$:</p>
+          $$
+          p(x, t) = \frac{1}{x\sqrt{2\pi\sigma^2t}}\exp\left[-\frac{(\log x - \log x_0 - (\mu - \sigma^2/2)t)^2}{2\sigma^2t}\right]
+          $$
+          <p class="fragment">
+            This is called the log-normal distribution, which is the probability
+            distribution of a random variable whose logarithm is normally
+            distributed.
+          </p>
+        </section>
+
+        <section>
+          <h2>Geometric Brownian Motion</h2>
+          <p>The statistical properties of the solution are:</p>
+          <p class="fragment">
+            $$
+            \langle x\rangle = x_0 e^{\mu t}
+            $$
+          </p>
+          <p class="fragment">
+            $$
+            \langle x^2\rangle = x_0^2 e^{(\sigma^2 + 2\mu) t}
+            $$
+          </p>
+          <p class="fragment">
+            $$
+            \langle \log x\rangle = \log x_0 + (\mu - \sigma^2/2)t
+            $$
+          </p>
+          <p class="fragment">
+            $$
+            \langle \log^2 x\rangle - \langle \log x\rangle^2 = \sigma^2 t
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Geometric Brownian Motion</h2>
+          <p>Here is the Monte Carlo simulation (using 50,000 particles) vs the
+          analytic solution:</p>
+          <video controls="" style="width: 50%;"><source src=
+            "./gbm2.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Fokker-Planck Equation</h2>
+          <p>In higher dimensions, the Fokker-Planck equation looks like this:</p>
+          $$
+          \frac{\partial}{\partial t}p(\mathbf{x}, t) = -\sum_{i=1}^d\frac{\partial}{\partial x_i}\left[\mu_i(\mathbf{x}, t)p(\mathbf{x}, t)\right] + \frac{1}{2}\sum_{i=1}^d\sum_{j=1}^d\frac{\partial^2}{\partial x_i\partial x_j}\left[D_{ij}(\mathbf{x}, t)p(\mathbf{x}, t)\right]
+          $$
+          <p class="fragment">
+            In dimensions higher than 3, the Fokker-Planck equation is not easy
+            to solve using traditional numerical methods (e.g. finite difference) anymore,
+            which is where Monte Carlo methods come in handy.
+          </p>
+        </section>
+
+        <section>
+          <h2>Fokker-Planck Equation</h2>
+          <p>What equation looks like the Fokker-Planck equation, often shows up
+          in physics, and often involves many dimensions?</p>
+        </section>
+
+        <section>
+          <h2>Quantum Monte Carlo</h2>
+          <p>Quantum Monte Carlo is a class of algorithms that use Monte Carlo
+             methods to solve the Schrödinger equation.</p>
+          <p class="fragment">
+            In particular, if replace time with imaginary time $t\to it$, the Schrödinger
+            equation becomes formally similar to the Fokker-Planck equation:
+            $$
+            \frac{\partial}{\partial t}\psi(\mathbf{x}, t) = -\frac{1}{2}\sum_{i=1}^d\frac{\partial^2}{\partial x_i^2}\psi(\mathbf{x}, t) + V(\mathbf{x})\psi(\mathbf{x}, t)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Quantum Monte Carlo</h2>
+          <p>Using many stochastic walkers to solve the imaginary-time Schrödinger
+            equation is called <em>diffusion Monte Carlo</em> (DMC).</p>
+          <p class="fragment">
+            For many body systems, e.g. $N$ electrons/nucleons, the collective
+            wavefunction $\psi(\mathbf{x}, t)$ is a function of $3N$ spatial
+            coordinates. Monte Carlo methods become the one of the most viable
+            ways to directly solve the Schrödinger equation.
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
