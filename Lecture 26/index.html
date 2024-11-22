@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 26</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>Last time, we discussed the Metropolis-Hastings algorithm for MCMC. The
+          ingredients for the algorithm are: a proposal distribution $g(x, x_n)$, and
+          an acceptance probability.</p>
+          <p class="fragment">
+            For Metropolis-Hastings, the acceptance probability is:
+            $$
+              A(x, x_n) = \min\left(1, \frac{P(x)}{P(x_n)}\frac{g(x_n, x)}{g(x, x_n)}\right)
+            $$
+          </p>
+          <p class="fragment">
+            If the proposal distribution $g(x, x_n)$ is symmetric, then the acceptance probabilty
+            reduces to $A(x, x_n) = \min(1, P(x)/P(x_n))$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>Let's look at the probability distribution function:
+          $$
+            P(x) \propto e^{-x^2}|\cos(5x)|
+          $$</p>
+          <p class="fragment">
+            We will choose the proposal distribution to be a normal distribution
+            centered around $x_n$ and variance 1:
+            $$
+            g(x, x_n) = N(x_n, 1)
+            $$
+          </p>
+          <p class="fragment">
+            Is this proposal distribution symmetric between $x$ and $x_n$?
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>This is the result with 1,000,000 samples:</p>
+          <img src="distribution1.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>Consider the following distribution with two widely separated peaks:
+          $$
+            P(x) \propto \exp(-(x - 5)^2) + \exp(-(x + 5)^2)
+          $$</p>
+          <p class="fragment">
+            How to choose the proposal distribution to ensure we sample both peaks?
+          </p>
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>Result from 1,000,000 samples and $g(x, x_n) = N(x_n, 1)$:</p>
+          <img src="mcmc-1peak.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Markov Chain Monte Carlo</h2>
+          <p>Result from 1,000,000 samples and $g(x, x_n) = N(x_n, 10)$:</p>
+          <img src="mcmc-2peak.png" width="50%">
+        </section>
+
+        <section>
+          <h2>2D Ising Model</h2>
+          <p>Last time we talked about the energy evolution of a Markov Chain
+          for the 2D Ising model:</p>
+          <img src="ising-energy.png" width="50%">
+        </section>
+
+        <section>
+          <h2>2D Ising Model</h2>
+          <p>Here is the energy distribution (taken after the initial burn-in phase):</p>
+          <img src="ising-energy-distribution.png" width="50%">
+          <p class="fragment">Why is this different from just $P(E) \sim e^{-E/k_B T}$?</p>
+        </section>
+
+        <section>
+          <h2>2D Ising Model</h2>
+          <p>The Boltzmann distribution is the probability of finding the system
+          at a given state, not the probability of finding the energy of the system. Multiple
+          different states can have the same energy.</p>
+          <p class="fragment">To correctly find the probability distribution of
+          system energy $E$, one needs to account for all degeneracies in the
+            system, i.e. count all states with the same energy $E$.</p>
+          <p class="fragment">As a result, $P(E)$ can peak where many states
+          share the same energy, even though individual states follow the
+          Boltzmann distribution.</p>
+        </section>
+
+        <section>
+          <h2>MCMC for Optimization</h2>
+          <p>The Boltzmann distribution says that the probability of finding
+          state $i$ is given by its energy and the system temperature. If temperature goes to
+          zero, then the system should land at the lowest energy state.</p>
+          <p class="fragment">
+            Therefore, a computational strategy of finding the ground state of a
+            system is to do an MCMC simulation while taking the temperature $T\to 0$.
+          </p>
+          <p class="fragment">
+            However, the danger is that if the system gets stuck at a <em>local</em> minimum
+            energy state, but temperature prematurely goes to zero, our MCMC
+            procedure will forever stuck there (why?).
+          </p>
+        </section>
+
+        <section>
+          <h2>MCMC for Optimization</h2>
+          <p>A rapidly cooled system can get stuck in a local energy minimum is
+            a fact known for centuries <span class="fragment">by blacksmiths and glassworkers!</span></p>
+          <p class="fragment">
+            The common strategy to mitigate this effect is to heat the object to high temperatures and
+            let it cool down slowly. This process is called <em>annealing</em>,
+            which can remove internal stresses and help avoid forming defects in
+            the final product.
+          </p>
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>
+            The corresponding strategy in MCMC is to initialize the system with
+            high enough temperature $k_B T$ that it equilibriates quickly.
+          </p>
+          <p class="fragment">
+            Then, we decrease the temperature using a "cooling schedule":
+            $$
+            T = T_0e^{-t/\tau}
+            $$
+          </p>
+          <p class="fragment">
+            $\tau$ is the cooling time scale, and it determines the
+            effectiveness of the method. Typically we want slow cooling, or
+            large $\tau$. However, larger $\tau$ also means longer simulation time.
+          </p>
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>One potential example of using MCMC as an optimization technique is the
+          traveling salesman problem.</p>
+          <img src="travelling_salesman_problem.png" width="40%">
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>Define our system energy as the total distance traveled by the salesman:
+            $$
+            H = D = \sum_{i=0}^{N-1}|\mathbf{x}_{i+1}-\mathbf{x}_i|
+            $$
+          </p>
+          <p class="fragment">
+            Here $i$ denotes the order of the cities visited, and $\mathbf{x}$
+            is the position of the city. A "state" is a total order of all the cities
+            that visit each city exactly once and return to the initial city at the end.
+          </p>
+          <p class="fragment">
+            MCMC requires two ingredients, proposal distribution and acceptance
+            probability. What should we use?
+          </p>
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>A straightforward way to propose a next step is to flip a random pair of adjacent
+            cities, $i \leftrightarrow i + 1$.</p>
+            <p class="fragment">Then, this proposed next step is accepted
+          according to a "system temperature", which we start high and decrease
+          with a cooling schedule.</p>
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>Consider the following city configuration:</p>
+          <img src="salesman-cities.png" width="40%">
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>This is how the MCMC process goes:</p>
+          <video controls="" style="width: 40%;"><source src=
+            "./salesman.mp4" type="video/mp4"></video>
+        </section>
+
+        <section>
+          <h2>Simulated Annealing</h2>
+          <p>If one lowers the temperature too quickly, this is what happens:</p>
+          <video controls="" style="width: 40%;"><source src=
+            "./salesman-fast.mp4" type="video/mp4"></video>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
