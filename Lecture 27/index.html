@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 27</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Bayesian Inference</h2>
+        </section>
+
+        <section>
+          <h2>Bayes Theorem</h2>
+          <p>Bayesian inference is one of the major use cases for MCMC. I hope by the end
+          of this lecture you will understand why.</p>
+          <p class="fragment">The basis of Bayesian inference is Bayes theorem. For two events $A$ and $B$, Bayes theorem states that
+            the probability of event $A$ <em>given</em> the event $B$ is:
+          $$
+          P(A|B) = \frac{P(B|A)P(A)}{P(B)}
+          $$</p>
+          <p class="fragment">
+            The conditional probability $P(A|B)$ is defined as $P(A|B) = P(A\cap B)/P(B)$.
+          </p>
+        </section>
+
+        <section>
+          <h2>Bayes Theorem</h2>
+          <p>Bayes theorem seems to be stating something obvious, but it can be
+          often used to arrive at conclusions not at all trivial.</p>
+          <p class="fragment">
+            Let's consider an example. Suppose we have a test for a disease
+            that is 99% accurate. That is, if you have the disease, the test will
+            return a positive result 99% of the time. If you don't have the disease,
+            the test will return a negative result 99% of the time. Suppose the
+            disease is rare, and only 1 in 1000 people have it. If you take the test
+            and it returns a positive result, what is the probability that you have
+            the disease?
+          </p>
+        </section>
+
+        <section>
+          <h2>Bayes Theorem</h2>
+          <p>The probability of you having the disease with a positive result is only 9%!:
+          $$
+            P(D|+) = \frac{P(+|D)P(D)}{P(+)} = \frac{0.99\times 0.001}{0.99\times 0.001 + 0.01\times 0.999} = 0.09
+          $$</p>
+          <p class="fragment">
+            The main reason for this result is that it is very unlikely that you
+            have the disease in the first place. Since the test returns a false
+            positive 1% of the time, the number of false positives tends to be
+            much larger than the number of true positives.
+          </p>
+        </section>
+
+        <section>
+          <h2>Bayes Theorem</h2>
+          <p>The probability of having the disease in general $P(D)$ is called the <em>prior probability</em>. It
+          reflects our current beliefs about the general probability of an event happening.</p>
+          <p class="fragment">
+            The conditional probability of having the disease, given the positive test result $P(D|+)$, is called the <em>posterior
+            probability</em>. It reflects our adjusted belief given the data at hand.
+          </p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>In science, Bayes theorem is often use to answer the question: What
+          is the most likely model parameters given some data we observe?</p>
+          <p class="fragment">A "Model" can be any mathematical prescription
+          describing nature, with certain parameters. For example, in Brownian
+          motion, the drift $\mu$
+          and diffusion coefficient $D$ are parameters of the model.</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>In Bayesian inference, there is a fundamental distinction between:</p>
+          <ul>
+            <li>Observable quantities $x$, which is the data we collect.</li>
+            <li class="fragment">Unknown parameters $\theta$, which is what we want to infer.</li>
+          </ul>
+          <p class="fragment">$\theta$ can represent model parameters, missing
+          data, hidden variables, etc. But these parameters are treated as
+          random variables with their own distributions</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>A model can be thought of as $P(x|\theta)$, the probability of
+          getting data $x$ given the parameters $\theta$. Such a model often
+          accounts for uncertainties in obtaining data $x$. $P(x|\theta)$ is
+          often called the "likelihood".</p>
+          <p class="fragment">However, in the Bayesian view, $\theta$ is
+          unknown, and we as model builders need to specify a "prior
+          distribution" $P(\theta)$ that describes this uncertainty.</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Bayes Theorem now automatically gives us the posterior probability
+          for any model parameter given some observed data:
+          $$
+          P(\theta|x) = \frac{P(x|\theta)P(\theta)}{\int P(x|\theta)P(\theta)\,d\theta} \propto P(x|\theta)P(\theta)
+          $$</p>
+          <p class="fragment">In other words, the posterior distribution is the
+          product of the prior distribution with the likelihood function.</p>
+          <p class="fragment">The prior distribution describes our uncertainty about $\theta$ <em>before</em> we
+            see the data. The posterior distribution describes our uncertainty <em>after</em> we see the data.</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Let's consider an example. My model is a normal distribution $N(0,
+          \sigma^2)$ with 0 mean and some unknown variance $\sigma^2$. Therefore $\theta$ can be taken as the standard deviation $\sigma$.</p>
+          <p class="fragment">I don't know much about $\sigma$, so I will
+          assume a uniform prior $P(\sigma) = 0.2$ for $0\leq \sigma \leq 5$.</p>
+          <p class="fragment">Now I make a measurement, $x = x_0$. With this new knowledge, what can I say about
+          the parameter $\sigma$?</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>The posterior probability for $\sigma$ is given by the Bayes theorem:
+          $$
+            P(\sigma|x_0) \propto P(x_0|\sigma)P(\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-x_0^2/2\sigma^2}\times 0.2
+          $$</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>This is the posterior distribution of $\sigma$ for different $x$ values:</p>
+          <img src="normal_variance.png" width="55%">
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Suppose we have multiple measurements $\{x_i\}$, the likelihood function is now the product of individual likelihoods:
+          $$
+            P(\{x_i\}|\sigma) = \prod_i \frac{1}{\sqrt{2\pi\sigma^2}}e^{-x_i^2/2\sigma^2}
+          $$</p>
+          <p class="fragment">
+            The posterior distribution is now:
+            $$
+            P(\sigma|\{x_i\}) \propto P(\{x_i\}|\sigma)P(\sigma) = \prod_i \frac{1}{\sqrt{2\pi\sigma^2}}e^{-x_i^2/2\sigma^2}\times 0.2
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>For example, given a dataset $\{0.0, 0.01, 0.01, 0.02, 0.02, 0.03, 0.03, 4\}$, the posterior distribution of the
+          standard deviation $\sigma$ looks like this:</p>
+          <img src="normal_variance_dataset.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>"A Bayesian is one who, vaguely expecting a horse and catching a
+            glimpse of a donkey, strongly concludes he has seen a mule"</p>
+        </section>
+
+        <section>
+          <h2>The Role of MCMC</h2>
+          <p>How does Bayesian inference connect to MCMC?</p>
+          <p class="fragment">
+            In the earlier example, we can calculate the posterior distribution
+            of $\sigma$ analytically. However, in most cases, the posterior
+            distribution is not analytically tractable. In such cases, we need
+            to use MCMC to sample from the posterior distribution, in order to
+            compute its mean and variance.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Role of MCMC</h2>
+          <p>Consider our normal distribution example again. We want to sample directly from the posterior
+          distribution:
+          $$
+            P(\sigma|x) \propto P(x|\sigma)P(\sigma)
+          $$</p>
+          <p class="fragment">
+            In order to do this, we construct a Markov chain starting at a random $\sigma_0$. Then,
+            we use the Metropolis-Hastings algorithm to generate the next step, until we arrive at an
+            equilibrium distribution.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Role of MCMC</h2>
+          <p>Given $\sigma_0$, our proposal distribution can simply be $g(\sigma_1) = N(\sigma_0, 0.1^2)$. The acceptance
+            probability is then:
+          $$
+            A(\sigma_1) = \min\left(1, \frac{P(\sigma_1|x)}{P(\sigma_0|x)}\right) = \min\left(1, \frac{P(x|\sigma_1)P(\sigma_1)}{P(x|\sigma_0)P(\sigma_0)}\right)
+          $$</p>
+          <p class="fragment">
+            $P(x|\sigma_0)$ and $P(x|\sigma_1)$ mean the probability of getting data $x$ at parameter $\sigma_0$ and $\sigma_1$.
+          </p>
+        </section>
+
+        <section>
+          <h2>The Role of MCMC</h2>
+          <p>Result of MCMC simulation for the same dataset $\{0.0, 0.01, 0.01, 0.02, 0.02, 0.03, 0.03, 4\}$:</p>
+          <img src="mcmc.png" width="55%">
+        </section>
+
+        <section>
+          <h2>The Role of MCMC</h2>
+          <p>A crucial advantage of MCMC is that it does not need to compute the denominator in Bayes theorem:
+          $$
+            P(\theta|x) = \frac{P(x|\theta)P(\theta)}{\int P(x|\theta)P(\theta)\,d\theta} \propto P(x|\theta)P(\theta)
+          $$</p>
+          <p class="fragment">Computing $P(x|\theta)$ is "model evaluation", and
+          is what this course has been all about up to now. We can now use all
+          these techniques to compute the inverse problem of finding the
+          probability distribution of the unknown parameters!</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Let's consider another example. Say we have a model of correlation between people's weight and height:
+            $$
+            W_i = \alpha + \beta H_i + \epsilon_i
+            $$
+            where $\epsilon_i \sim N(0, \sigma^2)$ is a normally distributed random variable.
+          </p>
+          <p class="fragment">The parameters of this model are $\alpha$, $\beta$, and $\sigma$.</p>
+        </section>
+
+        <!-- <section>
+             <h2>Bayesian Inference</h2>
+             <p>The goal is to compute the posterior distribution $P(\alpha, \beta, \sigma|\mathbf{x})$ given
+             some data vector $\mathbf{W}$ and $\mathbf{H}$:
+             $$
+             P(\alpha, \beta, \sigma|\mathbf{W}, \mathbf{H}) \propto \prod_{i=1}^N P(W_i, H_i|\alpha, \beta, \sigma)P(\alpha)P(\beta)P(\sigma)
+             $$</p>
+             </section>
+        -->
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Assuming we took this set of data data $\{H_i, W_i\}$:</p>
+          <img src="weight_vs_height_random.png" width="45%">
+          <p class="fragment">The goal is to infer the parameters $\alpha$, $\beta$, and $\sigma$.</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Let's assume that the prior distributions are:
+          $$
+            \begin{align}
+              P(\alpha) &= N(0, 10^2) \\
+              P(\beta) &= N(0, 10^2) \\
+              P(\sigma) &= 0.1 \quad(\text{uniform with } 0 <\sigma < 10)
+            \end{align}
+          $$</p>
+          <p class="fragment">The posterior distribution is then:
+            $$
+              P(\alpha, \beta, \sigma|\mathbf{W}, \mathbf{H}) \propto \left[\prod_{i=1}^N P(W_i, H_i|\alpha, \beta, \sigma)\right]P(\alpha)P(\beta)P(\sigma)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>How to compute the probability $P(W_i, H_i|\alpha, \beta, \sigma)$?</p>
+          <p class="fragment">Under the model assumption, the data is normally distributed with mean $\alpha + \beta H_i$ and standard deviation $\sigma$:
+          $$
+            P(W_i, H_i|\alpha, \beta, \sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(W_i - \alpha - \beta H_i)^2}{2\sigma^2}\right)
+          $$</p>
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Normal Metropolis-Hastings would require us to start from some parameter vector $(\alpha_0, \beta_0, \gamma_0)$,
+          and come up with a proposal $g$ that generates the next triplet $(\alpha_1, \beta_1, \gamma_1)$.
+          Then we accept this new triplet according to the standard acceptance probability.</p>
+          <p class="fragment">However, in higher dimensions, constructing a
+          proposal distribution may be non-trivial, and acceptance rate can be
+          rather low.</p>
+        </section>
+
+        <section>
+          <h2>Gibbs Sampling</h2>
+          <p>The Gibbs sampling technique draws random samples one dimension at a time. So for our example, we sample the
+          three parameters one by one:
+          $$
+            \begin{align}
+              \alpha_{n+1} &\sim P(\alpha|\beta_n, \sigma_n, \mathbf{W}, \mathbf{H}) \\
+              \beta_{n+1} &\sim P(\beta|\alpha_{n+1}, \sigma_n, \mathbf{W}, \mathbf{H}) \\
+              \sigma_{n+1} &\sim P(\sigma|\alpha_{n+1}, \beta_{n+1}, \mathbf{W}, \mathbf{H})
+            \end{align}
+          $$</p>
+        </section>
+
+        <section>
+          <h2>Gibbs Sampling</h2>
+          <p>For example, the distribution for $\alpha$ alone can be written as:
+          $$
+            \begin{align}
+              P(\alpha|\beta_n, \sigma_n, \mathbf{W}, \mathbf{H}) &\propto P(\alpha, \beta_n, \sigma_n|\mathbf{W}, \mathbf{H}) \\
+              &\propto \left[\prod_{i=1}^N P(W_i, H_i|\alpha, \beta_n, \sigma_n)\right]P(\alpha)P(\beta_n)P(\sigma_n) \\
+              &\propto \left[\prod_{i=1}^N \frac{1}{\sqrt{2\pi\sigma_n^2}}\exp\left(-\frac{(W_i - \alpha_n - \beta_n H_i)^2}{2\sigma_n^2}\right)\right]P(\alpha)
+            \end{align}
+          $$</p>
+        </section>
+
+        <section>
+          <h2>Gibbs Sampling</h2>
+          <p>In this particular example, the distribution for $\alpha$ is a
+          normal distribution (times the prior), and we can write down its mean and variance:
+          $$
+            P(\alpha|\beta_n, \sigma_n, \mathbf{W}, \mathbf{H}) = \mathcal{N}\left(\frac{\sum_{i=1}^N(W_i - \beta_n H_i)}{N}, \frac{\sigma_n^2}{N}\right)P(\alpha)
+          $$</p>
+          <p class="fragment">In more complex cases, we will still need to use the 1D
+          Metropolis algorithm to sample this distribution.</p>
+        </section>
+
+        <section>
+          <h2>Gibbs Sampling</h2>
+          <p>Similarly, we can write down the distributions for $\beta$ and $\sigma$:
+          $$
+            \begin{align}
+              P(\beta|\alpha_{n+1}, \sigma_n, \mathbf{W}, \mathbf{H}) &= \mathcal{N}\left(\frac{\sum_{i=1}^N(W_i - \alpha_{n+1})H_i}{\sum_{i=1}^NH_i^2}, \frac{\sigma_n^2}{\sum_{i=1}^NH_i^2}\right)P(\beta) \\
+              P(1/\sigma^2|\alpha_{n+1}, \beta_{n+1}, \mathbf{W}, \mathbf{H}) &= \text{Gamma}\left(\frac{N}{2}, \frac{\sum_{i=1}^N(W_i - \alpha_{n+1} - \beta_{n+1}H_i)^2}{2}\right)P(1/\sigma^2)
+            \end{align}
+          $$</p>
+          <p class="fragment">
+             The Gamma distribution is defined as:
+              $$
+                \text{Gamma}(k, \theta) = \frac{1}{\Gamma(k)\theta^k}x^{k-1}e^{-x/\theta}
+              $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Corner Plot</h2>
+          <p>The result of carrying out the full Gibbs sampling algorithm on our example can be plotted as:</p>
+          <img src="corner_plot.png" width="45%">
+        </section>
+
+        <section>
+          <h2>Corner Plot</h2>
+          <p>This is often called a corner plot. Diagonal plots are simply the histograms of the individual parameters, and off-diagonal plots represent
+          the cross-correlation between a pair of parameters.</p>
+           <p class="fragment">Another way to think of this is that it
+          visualizes the high-dimensional parameter space one 2D slice at a
+          time.</p>
+        </section>
+
+        <section>
+          <h2>Corner Plot</h2>
+          <img src="corner_plot_pulsar.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Bayesian Inference</h2>
+          <p>Nowadays there are many MCMC packages for Bayesian inference. For
+            example, <a href="https://www.pymc.io/welcome.html">PyMC</a> and <a href="https://emcee.readthedocs.io/en/stable/">emcee</a> are
+          two Python packages that encapsulate the whole Bayesian modelling process using MCMC methods.</p>
+        </section>
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
