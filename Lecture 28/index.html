@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 28</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Machine Learning</h2>
+        </section>
+
+        <section>
+          <h2>Machine Learning</h2>
+          <p>Machine learning is a field of artificial intelligence where
+          statistical methods are used to train machines to perform tasks
+          without explicit instructions.</p>
+          <p class="fragment">In recent years, ML has made significant progress:
+          AlphaGo, DALL E, ChatGPT, etc. Most of the recent progress has been
+          attributed to deep neural networks.</p>
+        </section>
+
+        <section>
+          <h2>Neural Networks</h2>
+          <p>Neural networks are composed of layers of
+          "neurons". Each neuron is a function that takes in a vector of inputs
+          and outputs a scalar value.</p>
+          <img src="deep_neural_network.png" width="60%">
+          <!-- <p class="fragment">The output of a neuron is called an activation.
+               The activation of a neuron is computed by applying a non-linear
+               function to a linear combination of the inputs.</p> -->
+        </section>
+
+        <section>
+          <h2>Neural Networks</h2>
+          <p>Each neuron/node takes a linear combination of all the results from the
+          previous layer, optionally add some "bias", then applies an
+          "activation function" to it which introduces nonlinearity.</p>
+          <img src="neuron.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Neural Networks</h2>
+          <p>Some common activation functions:</p>
+          <ul>
+            <li class="fragment">Sigmoid:
+              $
+              \displaystyle f(x) = \frac{1}{1 + e^{-x}}
+              $
+            </li>
+            <li class="fragment">Hyperbolic tangent:
+              $
+              \displaystyle f(x) = \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+              $
+            </li>
+            <li class="fragment">Rectified Linear Unit (ReLU):
+              $
+              \displaystyle f(x) = \max(0, x)
+              $
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Neural Networks</h2>
+          <p>Given a network shape and the corresponding weights and biases, a
+          deep neural network has the potential to approximate any nonlinear
+          function.</p>
+          <p class="fragment">But how does a neural network learn? In other words,
+          how to find the best weights $w_i$ and biases $b_i$?</p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>Given some training input and output data, the training of a neural
+          network works by updating the network weights iteratively, minimizing
+          the error on the output:</p>
+          <p class="fragment">
+            $$
+            w_i^{\mathrm{new}} = w_i^{\mathrm{old}} - a \frac{\partial \varepsilon}{\partial w_i}
+            $$
+          </p>
+          <p class="fragment">
+            This is called "gradient descent" method. The partial derivative
+            $\partial \varepsilon / \partial w_i$ is the gradient of the error
+            with respect to the weight $w_i$.
+          </p>
+          <p class="fragment">
+            The parameter $a$ is called the "learning rate".
+          </p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>How to compute the partial derivatives $\partial \varepsilon / \partial w_i$?</p>
+          <p class="fragment">
+            The typical procedure is called "backpropagation". It uses the
+            partial derivatives of intermediate steps to compute the partial
+            derivative with respect to every weight.
+          </p>
+          <p class="fragment">
+            Automatic Differentiation is the go-to method (<a href="../Lecture 17.5/index.html#/17">Lecture 17.5</a>)
+            for computing and storing all the intermediate derivatives. It uses the chain rule repeatedly to compute
+            the derivatives at every step, going backwards from the result to the original input.
+          </p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>Let's work out a very simple network step by step to see how backpropagation works:</p>
+          <img src="nn_example.png" width="60%">
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>The diagram describes the following mathematical expressions:
+          $$
+            \begin{align}
+            h_1 &= f(w_{11}i_1 + w_{12}i_2) \\
+            h_2 &= f(w_{21}i_1 + w_{22}i_2) \\
+            o &= f(w_{o1}h_1 + w_{o2}h_2)
+            \end{align}
+          $$</p>
+          <p class="fragment">$f$ is the activation function we choose. We will
+          use $f(x) = \tanh(x)$. I chose to not add any biases.</p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>The training error is often called the "loss function" or "cost
+          function". A typical choice is the mean-squared error:
+            $$
+            \varepsilon_\mathrm{MSE} = \sum_i \left(o_i - t_i\right)^2
+            $$
+          </p>
+          <p class="fragment">Since our network gives only one output, the error is simply
+          $$
+            \varepsilon_\mathrm{MSE} = (o - t)^2
+          $$</p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>The partial derivatives with respect to the two final weights can be written as:
+            $$
+            \frac{\partial \varepsilon}{\partial w_{o1}} = \frac{\partial \varepsilon}{\partial o}
+            \frac{\partial o}{\partial w_{o1}} = \frac{1}{2}(o - t)h_1f'(w_{o1}h_1 + w_{o2}h_2)
+            $$
+          </p>
+          <p class="fragment">
+            $$
+            \frac{\partial \varepsilon}{\partial w_{o2}} = \frac{\partial \varepsilon}{\partial o}
+            \frac{\partial o}{\partial w_{o2}} = \frac{1}{2}(o - t)\,h_2f'(w_{o1}h_1 + w_{o2}h_2)
+            $$
+          </p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>The partial derivatives with respect to earlier weights are slightly more involved:
+          $$
+            \begin{align}
+            \frac{\partial \varepsilon}{\partial w_{11}} &= \frac{\partial \varepsilon}{\partial o}
+            \frac{\partial o}{\partial h_1}\frac{\partial h_1}{\partial w_{11}} \\
+            &= \frac{1}{2}(o - t)\,w_{o1}f'(w_{o1}h_1 + w_{o2}h_2)\,i_1f'(w_{11}i_1 + w_{12}i_2)
+            \end{align}
+          $$</p>
+          <p class="fragment">Similar for other derivatives with respect to
+          $w_{12}$, $w_{21}$, and $w_{22}$.</p>
+        </section>
+
+        <section>
+          <h2>Training Neural Networks</h2>
+          <p>Given a training data point with input $\{i_1, i_2\}$ and output
+          target $t$, we run many epochs of backpropagation to minimize the
+          mean-squared difference between the network output $o$ and the training target $t$:
+          $$
+            w_i^{\mathrm{new}} = w_i^{\mathrm{old}} - a \frac{\partial \varepsilon_\mathrm{MSE}}{\partial w_i}
+          $$</p>
+          <p class="fragment">In practice, all the derivatives are automatically
+          computed during network evaluation, which allow the backpropagation process
+          simply using those stored derivatives.</p>
+        </section>
+
+        <section>
+          <h2>Types of Learning</h2>
+          <p>What we have discussed is "supervised learning", where the neural network learns
+          a certain model by minimizing the error on the training data.</p>
+          <p class="fragment">"Unsupervised learning" does not include a set of
+          output data for the model to train on. Instead, the loss functions are
+          often intrinsic statistical properties of the model. In the generative
+          case of Large Language Models (LLM) or text-to-image models, the loss functions are
+          often measured by how well the outputs from the model reproduces training input data.</p>
+          <p class="fragment">"Reinforcement learning" trains through
+            trial-and-error instead of direct backpropagation. It is often used
+            with Monte Carlo methods where agents are simulate <em>en masse</em> to find the
+            optimal decision-making process.
+        </section>
+
+        <section>
+          <h2>Software Packages</h2>
+          <p>Nowadays many software frameworks for machine learning exist: Tensorflow, PyTorch, Keras,
+          Caffe, etc.</p>
+          <p class="fragment">GPUs are the main platform for training large
+          models, due to their computational power and optimizations. The Nvidia GTC used to
+          focus on graphics and computing. Now it's mostly AI!</p>
+        </section>
+
+        <section>
+          <h2>Physics Informed Neural Network</h2>
+        </section>
+
+        <section>
+          <h2>Physics Informed Neural Network</h2>
+          <p>Physics Informed Neural Network (PINN) is a recent development in
+            the field of machine learning. It combines the power of neural networks
+            with the physical constraints of the problem.</p>
+          <p class="fragment">
+            A PINN is simply a supervised learning problem where the loss function
+            includes the physical constraints of the problem. For example, in a fluid
+            dynamics problem, the loss function can include the Navier-Stokes equations as well
+            as appropriate boundary conditions.
+          </p>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
