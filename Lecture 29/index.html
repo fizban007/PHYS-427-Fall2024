@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Computational Physics Lecture 29</title>
+    <link rel="stylesheet" href="../dist/reset.css">
+    <link rel="stylesheet" href="../dist/reveal.css">
+    <link rel="stylesheet" href="../dist/theme/serif.css"
+      id="theme">
+    <!-- <link rel="stylesheet" href="./dist/theme/night.css" id="theme"> -->
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href=
+      "../plugin/highlight/monokai.css" id="highlight-theme">
+    <link rel="stylesheet" href=
+      "../css/style.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Machine Learning</h2>
+        </section>
+
+        <section>
+          <h2>Physics Informed Neural Network</h2>
+          <p>Physics Informed Neural Network (PINN) is a recent development in
+            the field of machine learning. It combines the power of neural networks
+            with the physical constraints of the problem.</p>
+          <p class="fragment">
+            A PINN is simply a supervised learning problem where the loss
+            function includes the physical constraints of the problem. For
+            example, in a fluid dynamics problem, the loss function can include
+            the Navier-Stokes equations as well as appropriate boundary
+            conditions.
+          </p>
+        </section>
+
+        <section>
+          <h2>PINN Example</h2>
+          <p>Burger's equation:
+            $$
+            \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = \nu \frac{\partial^2 u}{\partial x^2}
+            $$
+          </p>
+          <p class="fragment">
+            This is a nonlinear PDE that comes up in several areas of mathematics, including fluid
+            dynamics, nonlinear acoustics, etc. The main feature of this equation is that it often
+            leads to the formation of a shock wave.
+          </p>
+        </section>
+
+        <section>
+          <h2>Burger's Equation</h2>
+          <p>We can set up a very simple algorithm to solve the Burger's
+          equation using finite difference method:
+          $$
+            u_i^{n+1} = u_i^n - u_i^n\frac{u_{i+1}^n - u_{i-1}^n}{2\Delta x}\Delta t + \nu \frac{u_{i+1}^n - 2u_i^n + u_{i-1}^n}{\Delta x^2}\Delta t
+          $$</p>
+          <p class="fragment">
+            This is essentially the FTCS method adapted to this equation. Unlike
+            the advection equation, this is stable as long as CFL condition is
+            satisfied, due to the diffusion term.
+          </p>
+        </section>
+
+        <section>
+          <h2>Burger's Equation</h2>
+          <p>We choose a simple initial condition: $u(x) = \sin(\pi x)$, with
+          Dirichlet boundary conditions at $x=0$ and $x=2$, $u(0) = u(2) = 0$. The viscosity
+          $\nu$ is chosen to be $\nu = 0.01/\pi$.</p>
+          <img src="burgers_ic.png" width="50%">
+        </section>
+
+        <section>
+          <h2>Burger's Equation</h2>
+          <p>Applying the FTCS scheme to evolve the equation, we obtain the
+          solution at $t = 0.48$:</p>
+          <img src="burgers_result_fd.png" width="50%">
+          <p class="fragment">
+            A shock spontaneously forms near $t\approx 0.5$.
+          </p>
+        </section>
+
+        <section>
+          <h2>PINN</h2>
+          <p>Now we want to construct a neural network to solve this equation.
+          The network I construct is very simple: it has 4 layers with sizes 32, 64, 64, 32.</p>
+          <p class="fragment">
+            I choose $\tanh(x)$ as my activation function. Others may also work, but it's a
+            matter of trial and error.
+          </p>
+        </section>
+
+        <section>
+          <h2>PINN</h2>
+          <p>In order to train the network, we need to define a loss function to
+          minimize. The standard method is to define several loss functions
+          representing different parts of the problem, then adding them together:
+          $$
+            \mathrm{Loss} = L_\mathrm{PDE} + L_\mathrm{IC} + L_\mathrm{BC}
+          $$</p>
+        </section>
+
+        <section>
+          <h2>PINN Results</h2>
+          <p>After about 5 minutes (!) of training on my RTX 3090, the result is the following:</p>
+          <img src="burgers_pinn_compare.png" width="50%">
+        </section>
+
+        <section>
+          <h2>PINN Results</h2>
+          <p>This is the evolution of the different components of the loss function:</p>
+          <img src="burgers_pinn_loss.png" width="50%">
+        </section>
+
+        <section>
+          <h2>PINN</h2>
+          <div>What are the pros and cons of PINN?</div>
+        </section>
+
+      </div>
+    </div>
+    <!-- <script src="js/head.min.js"></script> -->
+    <!-- <script>
+         head.js(
+         "vendor/jquery.min.js",
+         // "vendor/three.js/build/three.min.js",
+         // "vendor/three.js/examples/js/controls/OrbitControls.js",
+         /* "vendor/socket.io-client/dist/socket.io.js", */
+         // "vendor/THREE.MeshLine.js",
+         /* "vendor/dat.gui.min.js",*/
+         "vendor/EventEmitter.js",
+         // "js/samples.js",
+         );
+         </script> -->
+    <script src="../dist/reveal.js"></script>
+    <script src="../plugin/math/math.js"></script>
+    <script src="../plugin/notes/notes.js"></script>
+    <script src="../plugin/markdown/markdown.js"></script>
+    <script src="../plugin/highlight/highlight.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        transition: "fade",
+        slideNumber: true,
+        history: true,
+        center: true,
+        width: "100%",
+        height: "100%",
+        disableLayout: false,
+        navigationMode: "default",
+        // minScale: 1,
+        // maxScale: 1,
+        margin: 0.2,
+        padding: 0,
+        hash: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          // pass other options into `MathJax.Hub.Config()`
+          TeX: { Macros: { RR: "{\\bf R}" } }
+        },
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+      });
+      Reveal.configure({
+        keyboard: {
+          81: null, // Do not respond to Q
+          // 32: null, // Do not respond to space
+        }
+      });
+      // Reveal.addEventListener("slidechanged", function(event) {
+      //   var foot1 = document.getElementById("footer1");
+      //   var foot2 = document.getElementById("footer2");
+      //
+      //   if (Reveal.getIndices().h === 0) {
+      //     foot1.style.display = "none";
+      //     foot2.style.display = "none";
+      //   } else {
+      //     foot1.style.display = "block";
+      //     foot2.style.display = "block";
+      //   }
+      // });
+      //
+    </script>
+  </body>
+</html>
